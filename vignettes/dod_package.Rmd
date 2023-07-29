@@ -1,0 +1,52 @@
+---
+title: "Package Overview"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
+    fig_caption: yes
+    fig_width: 3.5
+    fig_height: 3.5
+    dpi: 72
+    dev.args: list(pointsize=11)
+vignette: >
+  %\VignetteIndexEntry{Package Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Purpose
+
+This package was created as a tool to improve access to various types of oceanographic data from open sources.
+
+## Oceanographic Data Options
+
+The following table shows the types of data the package currently downloads and the functions used to do so:
+
+|       Data Type                      |       Function |
+|                                -----:|          -----:|
+|ctd                                   | `dod.ctd`      |
+|buoy                                  | `dod.buoy`     |
+|topographic                           | `dod.topo`     |
+|coastline                             | `dod.coastline`|
+|meteorological                        | `dod.met`      |
+|advanced microwave scanning radiometer| `dod.amsr`     |
+
+Expansion of these options is welcomed.
+
+## Development
+
+Contributions to the `dod` package are encouraged. The basic structure of each function involves finding a data source online to use as a `server` containing many files and constructing a `url` from which the function can download specific data.
+
+**eg** For BATS, the server and url are identified with:
+
+	server <- "http://batsftp.bios.edu/BATS/ctd/ASCII/"
+	url <- paste0(server, "b",ID, "_info.txt")
+	
+
+
