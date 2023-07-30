@@ -1,3 +1,8 @@
+# dod 0.1.4
+
+* move project to github.com/dankelley/dod
+* `dod.amsr()` improvements.
+
 # dod 0.1.3
 
 * `dod.amsr()` is now local, as opposed to a call to `oce::download.amsr()`.
