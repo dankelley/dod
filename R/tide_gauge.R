@@ -28,6 +28,8 @@
 #'
 #' @template destdirTemplate
 #'
+#' @template ageTemplate
+#'
 #' @template debugTemplate
 #'
 #' @importFrom utils read.csv
@@ -37,7 +39,7 @@
 #'
 #' @export
 dod.tideGauge <- function(ID=NULL, start=Sys.Date()-30,
-    end=Sys.Date(), variable="water_level", file=NULL, destdir=".", debug=0)
+    end=Sys.Date(), variable="water_level", file=NULL, destdir=".", age=1, debug=0)
 {
     if (is.null(ID))
         stop("ID must be supplied")
@@ -58,7 +60,7 @@ dod.tideGauge <- function(ID=NULL, start=Sys.Date()-30,
         server, variable, start, end, ID)
     dodDebug(debug, "url: ", url, "\n", sep="")
     filename <- try(
-        dod.download(url=url, destdir=destdir, file=file, age=0, debug=debug-1L),
+        dod.download(url=url, destdir=destdir, file=file, age=age, debug=debug-1L),
         silent=TRUE)
     if (inherits(filename, "try-error"))
         stop("cannot download \"", file, "\" from \"", url, "\"")
