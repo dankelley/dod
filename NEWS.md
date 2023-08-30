@@ -1,3 +1,7 @@
+# dod 0.1.5
+
+* `dod.tideGauge()` added.
+
 # dod 0.1.4
 
 * move project to github.com/dankelley/dod
