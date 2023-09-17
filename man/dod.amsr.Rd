@@ -65,15 +65,13 @@ and \code{day} is, of course, the first step in debugging errors.
 }
 \section{Historical note}{
 
-Until July 2023, \code{\link[=dod.amsr]{dod.amsr()}} worked by calling \code{\link[oce:download.amsr]{oce::download.amsr()}}.
+Until July 2023, \code{\link[=dod.amsr]{dod.amsr()}} worked by calling \code{download.amsr()}
+from the \code{oce} package.
 However, at that time, the author noticed changes in both
 the directory structure of the remote server, and the format of the
 data files. The new directory structure was addressed by a complete
 rewrite of the code within \code{dod}, and a severing of the connection
-to \code{\link[oce:download.amsr]{oce::download.amsr()}}.  The new file format cannot be addressed
-within the present package, and will require changes to
-\code{oce::read.amsr()}, building upon the method that is shown in the
-\sQuote{Examples} section of the present documentation.
+to the \code{oce} function.
 }
 
 \examples{

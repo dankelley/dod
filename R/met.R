@@ -1,19 +1,141 @@
 #' Download meteorological timeseries data
 #'
-#' Get meteorological data from an Environment Canada website, using
-#' [oce::download.met()].
+#' [dod.met()] attempts to download data from Environment Canada's
+#' historical-data website, and to cache the files locally. Lacking a published
+#' API, this function must rely on reverse-engineering of queries handled by
+#' that web server.  For that reason, it is brittle.
 #'
-#' @param ... arguments passed to [oce::download.met()].
+#' If this function fails, users might try using Gavin Simpson's `canadaHCD`
+#' package (reference 2). This package maintains a copy of the Environment
+#' Canada listing of stations, and its `find_station()` function provides an easy
+#' way to determine Station IDs.  After that, its `hcd_hourly` function (and
+#' related functions) make it easy to read data. These data can then be
+#' converted to the `met` class with `as.met()` in the `oce` package,
+#' although doing so leaves many important metadata blank.
 #'
-#' @importFrom oce download.met
+#' @param id A number giving the "Station ID" of the station of interest. If not
+#' provided, `id` defaults to 6358, for Halifax International Airport. See
+#' \dQuote{Details}.
 #'
-#' @return [dod.met] returns a character value holding the full pathname
-#' of the downloaded file.
+#' @param year A number giving the year of interest. Ignored unless `deltat`
+#' is `"hour"`. If `year` is not given, it defaults to the present year.
+#'
+#' @param month A number giving the month of interest. Ignored unless `deltat`
+#' is `"hour"`. If `month` is not given, it defaults to the present
+#' month.
+#'
+#' @param deltat Optional character string indicating the time step of the
+#' desired dataset. This may be `"hour"` or `"month"`.
+#' If `deltat` is not given, it defaults to `"hour"`.
+#'
+#' @param type String indicating which type of file to download, either
+#' `"xml"` (the default) for an XML file or `"csv"` for a CSV file.
+#'
+#' @template destdirTemplate
+#'
+#' @param destfile optional name of destination file. If not provided,
+#' this function creates a reasonable name.
+#'
+#' @param force Logical value indicating whether to force a download, even
+#' if the file already exists locally.
+#'
+#' @param quiet Logical value passed to [download.file()]; a `TRUE` value
+#' silences output.
+#'
+#' @template debugTemplate
+#'
+#' @return String indicating the full pathname to the downloaded file.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#'\dontrun{
+#' library(dod)
+#' # Download data for Halifax International Airport, in September
+#' # of 2003. This dataset is used for data(met) provided with oce.
+#' # Note that requests for data after 2012 month 10 yield all
+#' # missing values, for reasons unknown to the author.
+#' metFile <- dod.met(6358, 2003, 9, destdir=".")
+#'}
+#'
+#' @references
+#' 1. Environment Canada website for Historical Climate Data
+#' `https://climate.weather.gc.ca/index_e.html`
+#'
+#' 2. Gavin Simpson's `canadaHCD` package on GitHub
+#' `https://github.com/gavinsimpson/canadaHCD`
+#'
+#' @family functions that download files
+#' @family things related to met data
 #'
 #' @export
-dod.met <- function(...)
+#'
+#' @importFrom utils capture.output
+#'
+#' @author Dan Kelley
+dod.met <- function(id, year, month, deltat, type="xml",
+    destdir=".", destfile, force=FALSE, quiet=FALSE, debug=0)
 {
-    oce::download.met(...)
+    if (missing(id))
+        id <- 6358
+    id <- as.integer(id)
+    if (missing(deltat))
+        deltat <- "hour"
+    deltatChoices <- c("hour", "month") # FIXME: add "day"
+    deltatIndex <- pmatch(deltat, deltatChoices)
+    if (!(type %in% c("csv", "xml")))
+        stop("type '", type, "' not permitted; try 'csv' or 'xml'")
+    if (is.na(deltatIndex))
+        stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
+    deltat <- deltatChoices[deltatIndex]
+    if (deltat == "hour") {
+        today <- as.POSIXlt(Sys.time(), tz="UTC")
+        if (missing(year))
+            year <- today$year + 1900
+        if (missing(month)) {
+            month <- today$mon + 1         # so 1=jan etc
+            month <- month - 1             # we want *previous* month, which should have data
+            if (month == 1) {
+                year <- year - 1
+                month <- 12
+            }
+        }
+        # Next line is an example that worked as of Feb 2, 2017
+        # http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
+        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
+            "format=", type,
+            "&stationID=", id,
+            "&Year=", year,
+            "&Month=", month,
+            "&timeframe=1&submit=Download+Data", sep="")
+        if (missing(destfile))
+            destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
+    } else if (deltat == "month") {
+        # Next line reverse engineered from monthly data at Resolute. I don't imagine we
+        # need Year and Month and Day.
+        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?stationID=",
+            id, "&format=", type, "&timeframe=3&submit=Download+Data", sep="")
+        #id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
+        if (missing(destfile)) {
+            destfile <- sprintf("met_%d_monthly.%s", id, type)
+        }
+    } else {
+        stop("deltat must be \"hour\" or \"month\"")
+    }
+    destination <- paste(destdir, destfile, sep="/")
+    dodDebug(debug, "url:", url, "\n")
+    if (!force && 1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+        dodDebug(debug, "Not downloading \"", destfile, "\" because it is already present in the \"", destdir, "\" directory\n", sep="")
+    } else {
+        utils::capture.output({download.file(url, destination, quiet=TRUE)})
+        dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
+    }
+    # NOTE: if the format=csv part of the URL is changed to format=txt we get
+    # the metadata file. But dealing with that is a bit of coding, both at the
+    # download stage and at the read.met() stage, and I don't think this is
+    # worthwhile.  The better scheme may be for users to move to the XML
+    # format, instead of sticking with the CSV format.
+    destination
 }
 
 #' Download sounding data

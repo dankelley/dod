@@ -2,18 +2,81 @@
 % Please edit documentation in R/coastline.R
 \name{dod.coastline}
 \alias{dod.coastline}
-\title{Download coastline data}
+\title{Download a coastline File}
 \usage{
-dod.coastline(...)
+dod.coastline(
+  resolution,
+  item = "coastline",
+  destdir = ".",
+  destfile,
+  server = "naturalearth",
+  debug = 0
+)
 }
 \arguments{
-\item{...}{arguments passed to
-\code{\link[oce:download.coastline]{oce::download.coastline()}}.}
+\item{resolution}{A character value specifying the desired resolution. The permitted
+choices are \code{"10m"} (for 1:10M resolution, the most detailed),
+\code{"50m"} (for 1:50M resolution)
+and \code{"110m"} (for 1:110M resolution). If \code{resolution} is not supplied,
+\code{"50m"} will be used.}
+
+\item{item}{A character value indicating the quantity to be downloaded.
+This is normally one of \code{"coastline"}, \code{"land"}, \code{"ocean"},
+\code{"rivers_lakes_centerlines"}, or \code{"lakes"}, but the NaturalEarth
+server has other types, and advanced users can discover their names by inspecting
+the URLs of links on the NaturalEarth site, and use them for \code{item}.
+If \code{item} is not supplied, it defaults to \code{"coastline"}.}
+
+\item{destdir}{a character value indicating the directory
+in which to store downloaded files.}
+
+\item{destfile}{optional name of destination file. If not provided,
+this function creates a reasonable name.}
+
+\item{server}{A character value specifying the server that is to supply
+the data. At the moment, the only permitted value is \code{"naturalearth"},
+which is the default if \code{server} is not supplied.}
+
+\item{debug}{an integer value indicating the level of debugging. If
+this exceeds 0, then some debugging messages will be printed. This
+value is passed down to related functions, but with 1 subtracted
+for each pass.}
 }
 \value{
-String indicating the full pathname to the downloaded file.
+A character value indicating the filename of the result; if
+there is a problem of any kind, the result will be the empty
+string.
 }
 \description{
-This function downloads topographic data using
-\code{\link[oce:download.coastline]{oce::download.coastline()}}.
+Constructs a query to the NaturalEarth server (see reference 1) to download coastline
+data (or lake data, river data, etc) in any of three resolutions.
 }
+\examples{
+\dontrun{
+library(oce)
+# User must create directory ~/data/coastline first.
+# As of September 2016, the downloaded file, named
+# "ne_50m_coastline.zip", occupies 443K bytes.
+filename <- dod.coastline(destdir="~/data/coastline")
+coastline <- read.coastline(filename)
+plot(coastline)
+}
+
+}
+\references{
+\enumerate{
+\item The NaturalEarth server is at \verb{https://www.naturalearthdata.com}
+}
+}
+\seealso{
+The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
+
+Other functions that download files: 
+\code{\link{dod.met}()},
+\code{\link{dod.topo}()}
+}
+\author{
+Dan Kelley
+}
+\concept{functions that download files}
+\concept{things related to coastline data}

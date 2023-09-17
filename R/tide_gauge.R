@@ -68,7 +68,7 @@
 #' @template debugTemplate
 #'
 #' @importFrom utils read.csv write.csv
-#' @importFrom rjson fromJSON
+## @importFrom rjson fromJSON
 #'
 #' @return [dod.tideGauge()] returns the full pathname of the
 #' constructed file (in the CHS case) or the downloaded
@@ -143,7 +143,7 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
     dodDebug(debug, "destdir=\"", destdir, "\"\n", sep="")
     if (agency == "CHS") {
         if (!requireNamespace("rjson", quietly=TRUE))
-            stop("must install.packages(\"rjson\") before using download.tideGauge() with agency=\"CHS\"")
+            stop("must install.packages(\"rjson\") before using dod.tideGauge() with agency=\"CHS\"")
         url <- "https://api-iwls.dfo-mpo.gc.ca/api/v1/stations"
         s <- readLines(url, warn=FALSE)
         d <- rjson::fromJSON(s)
@@ -210,8 +210,4 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
     if (inherits(filename, "try-error"))
         stop("cannot download \"", file, "\" from \"", url, "\"")
     return(filename)
-}
-
-if (FALSE) {
-
 }

@@ -48,15 +48,13 @@
 #' of the downloaded file.
 #'
 #' @section Historical note:
-#' Until July 2023, [dod.amsr()] worked by calling [oce::download.amsr()].
+#' Until July 2023, [dod.amsr()] worked by calling `download.amsr()`
+#' from the `oce` package.
 #' However, at that time, the author noticed changes in both
 #' the directory structure of the remote server, and the format of the
 #' data files. The new directory structure was addressed by a complete
 #' rewrite of the code within `dod`, and a severing of the connection
-#' to [oce::download.amsr()].  The new file format cannot be addressed
-#' within the present package, and will require changes to
-#' `oce::read.amsr()`, building upon the method that is shown in the
-#' \sQuote{Examples} section of the present documentation.
+#' to the `oce` function.
 #'
 #' @examples
 #' # This example is not run because it downloads a 12Mb file.

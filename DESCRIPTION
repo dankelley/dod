@@ -7,7 +7,7 @@ Maintainer: Dan Kelley <dan.kelley@dal.c>
 Description: The package is used to download various types of oceanographic data including ctd, topography, advanced microwave scanning radiometer, and meteorological data.
 License: GPL (>= 2)
 Encoding: UTF-8
-Suggests: knitr, ncdf4, ocedata, rjson, rmarkdown, testthat
+Suggests: knitr, ncdf4, rjson, rmarkdown, terra, testthat
 RoxygenNote: 7.2.3
 BugReports: https://github.com/dankelley/dod/issues
 Roxygen: list(markdown = TRUE)

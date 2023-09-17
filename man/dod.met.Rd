@@ -4,16 +4,99 @@
 \alias{dod.met}
 \title{Download meteorological timeseries data}
 \usage{
-dod.met(...)
+dod.met(
+  id,
+  year,
+  month,
+  deltat,
+  type = "xml",
+  destdir = ".",
+  destfile,
+  force = FALSE,
+  quiet = FALSE,
+  debug = 0
+)
 }
 \arguments{
-\item{...}{arguments passed to \code{\link[oce:download.met]{oce::download.met()}}.}
+\item{id}{A number giving the "Station ID" of the station of interest. If not
+provided, \code{id} defaults to 6358, for Halifax International Airport. See
+\dQuote{Details}.}
+
+\item{year}{A number giving the year of interest. Ignored unless \code{deltat}
+is \code{"hour"}. If \code{year} is not given, it defaults to the present year.}
+
+\item{month}{A number giving the month of interest. Ignored unless \code{deltat}
+is \code{"hour"}. If \code{month} is not given, it defaults to the present
+month.}
+
+\item{deltat}{Optional character string indicating the time step of the
+desired dataset. This may be \code{"hour"} or \code{"month"}.
+If \code{deltat} is not given, it defaults to \code{"hour"}.}
+
+\item{type}{String indicating which type of file to download, either
+\code{"xml"} (the default) for an XML file or \code{"csv"} for a CSV file.}
+
+\item{destdir}{a character value indicating the directory
+in which to store downloaded files.}
+
+\item{destfile}{optional name of destination file. If not provided,
+this function creates a reasonable name.}
+
+\item{force}{Logical value indicating whether to force a download, even
+if the file already exists locally.}
+
+\item{quiet}{Logical value passed to \code{\link[=download.file]{download.file()}}; a \code{TRUE} value
+silences output.}
+
+\item{debug}{an integer value indicating the level of debugging. If
+this exceeds 0, then some debugging messages will be printed. This
+value is passed down to related functions, but with 1 subtracted
+for each pass.}
 }
 \value{
-\link{dod.met} returns a character value holding the full pathname
-of the downloaded file.
+String indicating the full pathname to the downloaded file.
 }
 \description{
-Get meteorological data from an Environment Canada website, using
-\code{\link[oce:download.met]{oce::download.met()}}.
+\code{\link[=dod.met]{dod.met()}} attempts to download data from Environment Canada's
+historical-data website, and to cache the files locally. Lacking a published
+API, this function must rely on reverse-engineering of queries handled by
+that web server.  For that reason, it is brittle.
 }
+\details{
+If this function fails, users might try using Gavin Simpson's \code{canadaHCD}
+package (reference 2). This package maintains a copy of the Environment
+Canada listing of stations, and its \code{find_station()} function provides an easy
+way to determine Station IDs.  After that, its \code{hcd_hourly} function (and
+related functions) make it easy to read data. These data can then be
+converted to the \code{met} class with \code{as.met()} in the \code{oce} package,
+although doing so leaves many important metadata blank.
+}
+\examples{
+\dontrun{
+library(dod)
+# Download data for Halifax International Airport, in September
+# of 2003. This dataset is used for data(met) provided with oce.
+# Note that requests for data after 2012 month 10 yield all
+# missing values, for reasons unknown to the author.
+metFile <- dod.met(6358, 2003, 9, destdir=".")
+}
+
+}
+\references{
+\enumerate{
+\item Environment Canada website for Historical Climate Data
+\verb{https://climate.weather.gc.ca/index_e.html}
+\item Gavin Simpson's \code{canadaHCD} package on GitHub
+\verb{https://github.com/gavinsimpson/canadaHCD}
+}
+}
+\seealso{
+Other functions that download files: 
+\code{\link{dod.coastline}()},
+\code{\link{dod.topo}()}
+}
+\author{
+Dan Kelley
+}
+\concept{functions that download files}
+\concept{things related to met data}

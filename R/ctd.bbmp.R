@@ -29,7 +29,6 @@
 #' @template debugTemplate
 #'
 #' @importFrom utils read.csv
-## @importFrom oce read.oce
 #'
 #' @return [dod.ctd.bbmp] returns a character value naming the file that
 #' was retrieved. This may be either an index file or a data file; see

@@ -104,10 +104,5 @@ dod.ctd.bats <- function(ID, info=FALSE, file=NULL, destdir=".", age=0, debug=0)
                 stop("Unable to download \"", url, "\" or \"", url2, "\" to \"", filename, "\"")
         }
         return(filename)
-        #if (read) {
-        #    names <- c("ID", "date","latitude", "longitude", "pressure","depth","temperature","conductivity", "salinity", "oxygen", "beamAttenuationCoefficient",
-        #        "fluorescence", "PAR")
-        #    return(read.csv(filename, sep="\t", header=FALSE, col.names= names))
-        #}
     }
 }
