@@ -1,3 +1,7 @@
+# dod 0.1.6
+
+* `dod.tideGauge()` can now handle both CHS and NOAA downloads.
+
 # dod 0.1.5
 
 * `dod.tideGauge()` added.

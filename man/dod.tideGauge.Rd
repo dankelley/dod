@@ -6,9 +6,11 @@
 \usage{
 dod.tideGauge(
   ID = NULL,
-  start = Sys.Date() - 30,
-  end = Sys.Date(),
-  variable = "water_level",
+  variable = "height",
+  agency = "CHS",
+  start = NULL,
+  end = NULL,
+  resolution = NULL,
   file = NULL,
   destdir = ".",
   age = 1,
@@ -17,26 +19,41 @@ dod.tideGauge(
 }
 \arguments{
 \item{ID}{a character (or possibly integer) value specifying the
-numeric identifier of the tide gauge.  This is not the name of
-the station; for example, the station at Cedar Key in Florida is
-queried by using \code{ID=8727520}.}
+numeric identifier of the tide gauge. For Canadian data, this
+is either the station number or the station name (e.g. number 491
+corresponds to the "Bedford Institute" station).  For American
+data, it is a numerical code.}
 
-\item{start, end}{the start and end days of the desired observations.
-This may either be a Date object, or character value that can be
-converted to one by \code{\link[=as.Date]{as.Date()}}, e.g. "2023-08-30".
-If not provided, \code{start} is set to 30 days before the present day,
-and \code{end} is set to the present day.}
+\item{variable}{a character value indicating the name of the variable to
+be downloaded.  This defaults to \code{"height"} for observed height (called \code{"wlo"}
+on the CHS server and \code{"water_level"} on the NOAA server).  The other
+choice is \verb{"heightPredicted" (called }"wlp"\verb{by CHS and}"predictions"\verb{by NOAA). In either case,}time\code{and}QC` are also stored alongside
+the variable.}
 
-\item{variable}{a character value indicating the name of the
-variable for which data is to be downloaded.  At present, this
-must be either \code{"water_level"} or \code{"predictions"}, with the
-former being the default.}
+\item{agency}{a character value indicating the agency from which data will be
+sought. Use \verb{"CHS" for Canadian tide gauges (the default), or }"NOAA"` for
+American tide gauges.}
 
-\item{file}{a character value indicating the name to be used
-for the downloaded data.  If not provided, this is constructed
-as e.g. \code{"tide_N_S_E_V.csv"} where \code{N} is the station number,
-\code{S} and \code{E} are the start and end dates written in 8-digit format
-(i.e. sans the \code{"-"} characters), and \code{V} is the variable
+\item{start, end}{POSIXt times or character values that can be converted
+to such times (via \code{\link[=as.POSIXct]{as.POSIXct()}} with \code{tz="UTC"}) that indicate
+the time interval for the requested data.
+If either \code{start} or \code{end} is not supplied, then a default
+of the past week is used.}
+
+\item{resolution}{character value indicating the resolution, only used
+if \code{agency} is \code{"CHS"}.  The choices are \verb{"ONE_MINUTE", }"THREE_MINUTES"\verb{(the default),}"FIVE_MINUTES"\verb{, }"FIFTEEN_MINUTES"\verb{, and }"SIXTY_MINUTES"\verb{.  The server website indicates that }"Not all resolution are available for every station and every time series."`
+It also indicates that
+"The time frame available increases with the resolution, it is equal
+to a week (7 days) multiplied by the resolution, but the maximum
+available is 31 days. (a month)".  This second statement perhaps
+means that it is possible to download at most 1 week of data for
+1-minute resolution.}
+
+\item{file}{a character value indicating the name to be used for the
+downloaded data.  If not provided, this is constructed as e.g.
+\code{"tide_A_N_S_E_V.csv"} where \code{A} is the value of the agency argument, \code{N} is
+the station ID number, \code{S} and \code{E} are the start and end dates written in
+8-digit format (i.e. sans the \code{"-"} characters), and \code{V} is the variable
 name.}
 
 \item{destdir}{a character value indicating the directory
@@ -57,9 +74,55 @@ for each pass.}
 }
 \value{
 \code{\link[=dod.tideGauge]{dod.tideGauge()}} returns the full pathname of the
-downloaded file.
+constructed file (in the CHS case) or the downloaded
+file (in the NOAA case). This is a comma-separated file, with
+first column named \code{"Date Time"}, and second column named either
+\code{"Water Level"} or \code{"Predictions"}, according to the specified
+value of \code{variable}. (The names in the output file derive
+from the names in files returned by the NOAA server.)
 }
 \description{
-\code{\link[=dod.tideGauge]{dod.tideGauge()}} downloads tide-gauge data from NOAA, returning
-the name of the downloade file.
+\code{\link[=dod.tideGauge]{dod.tideGauge()}} downloads tide-gauge data from either
+Canadian or American tide gauges.
+}
+\details{
+Downloads are done from for either the Canadian Hydrographic Service (CHS) or
+from the American National Oceanographic and Atmospheric
+Agency (NOAA), respectively (see References 1 and 2). The resultant data are saved in
+either constructed filenames, or filenames provided by the user;
+in either case, if a recent file already exists with the indicated name,
+then no data are downloaded.
+
+For NOAA files, water level and predictions are provided on the same
+time sequence, but for CHS files, this is not the case, e.g. predictions
+(in the author's tests) are on 15 minute intervals, starting at an
+hour marker, but observations may be at a variety of times, depending
+\code{start} and \code{end}.  Therefore, numerical comparision with CHS data
+will require interpolation (see \sQuote{Examples}).
+}
+\examples{
+\dontrun{
+library(dod)
+library(oce)
+ofile <- dod.tideGauge(491)
+pfile <- dod.tideGauge(491, "heightPredicted")
+O <- read.csv(ofile)
+O$time <- as.POSIXct(O$Date.Time, tz="UTC")
+P <- read.csv(pfile)
+P$time <- as.POSIXct(P$Date.Time, tz="UTC")
+# Top panel: observation (black) and prediction (gray)
+par(mfrow=c(2, 1))
+oce.plot.ts(O$time, O$Water.Level, ylab="Water Level [m]")
+lines(P$time, P$Predictions, col="gray", type="l")
+# Bottom panel: misfit
+Pinterp <- approxfun(P$time, P$Predictions)
+oce.plot.ts(O$time, O$Water.Level-Pinterp(O$time), ylab="Deviation [m]")
+}
+
+}
+\references{
+\enumerate{
+\item https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html
+\item https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
+}
 }
