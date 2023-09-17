@@ -17,3 +17,4 @@
 tests/testthat/testthat-problems.rds
 sounding*dat
 *csv
+*.xml

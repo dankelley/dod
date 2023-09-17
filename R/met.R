@@ -6,7 +6,7 @@
 #' that web server.  For that reason, it is brittle.
 #'
 #' If this function fails, users might try using Gavin Simpson's `canadaHCD`
-#' package (reference 2). This package maintains a copy of the Environment
+#' package (reference 2). That package maintains a copy of the Environment
 #' Canada listing of stations, and its `find_station()` function provides an easy
 #' way to determine Station IDs.  After that, its `hcd_hourly` function (and
 #' related functions) make it easy to read data. These data can then be
@@ -44,7 +44,8 @@
 #'
 #' @template debugTemplate
 #'
-#' @return String indicating the full pathname to the downloaded file.
+#' @return [dod.met()] returns a character value holding the full
+#' pathname of the downloaded file.
 #'
 #' @author Dan Kelley
 #'
@@ -209,5 +210,7 @@ dod.met.sounding <- function(station="73110", year, month, day, region="naconf",
     dodDebug(debug, "url=\"", url, "\"\n", sep="")
     file <- paste0("/sounding", "_", station, "_", year, "_", month, ".dat")
     dodDebug(debug, "file=\"", destdir, "/", file , "\"\n", sep="")
+    cat("https://climate.weather.gc.ca/climate_data/hourly_data_e.html?timeframe=1&Year=2023&Month=9&Day=16&hlyRange=2019-03-19%7C2023-09-16&dlyRange=2019-03-19%7C2023-09-15&mlyRange=%7C&StationID=53938&Prov=NS&urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=1840&EndYear=2023&selRowPerPage=25&Line=8&searchMethod=contains&txtStationName=halifax\n")
+    browser()
     dod.download(url, destdir=destdir, file=file, age=age, debug=debug-1)
 }
