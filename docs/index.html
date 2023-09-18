@@ -87,12 +87,13 @@
 <p>The following example shows how to (1) download an index of ctd data files resulting from observations made as part of the BBMP program in the year 2022 and then (2) use functions in the oce package to read and plot the first file in that index.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># 1. Get index</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(dod)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>index <span class="ot">&lt;-</span> <span class="fu">dod.ctd</span>(<span class="st">"BBMP"</span>, <span class="dv">2022</span>, <span class="at">index=</span><span class="cn">TRUE</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>item <span class="ot">&lt;-</span> index[<span class="dv">1</span>, <span class="st">"file"</span>]</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># 2. Get the first file, and plot it</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>file <span class="ot">&lt;-</span> <span class="fu">dod.ctd</span>(<span class="st">"BBMP"</span>, <span class="dv">2022</span>, item)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">read.ctd</span>(file))</span></code></pre></div>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>indexFile <span class="ot">&lt;-</span> <span class="fu">dod.ctd</span>(<span class="st">"BBMP"</span>, <span class="dv">2022</span>, <span class="at">index=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>index <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(indexFile, <span class="at">header=</span><span class="cn">TRUE</span>, <span class="at">skip=</span><span class="dv">2</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>item <span class="ot">&lt;-</span> index[<span class="dv">1</span>, <span class="st">"FILE"</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># 2. Get the first file, and plot it</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>file <span class="ot">&lt;-</span> <span class="fu">dod.ctd</span>(<span class="st">"BBMP"</span>, <span class="dv">2022</span>, item)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">read.ctd</span>(file) <span class="sc">|&gt;</span> <span class="fu">plot</span>()</span></code></pre></div>
 <div class="float">
 <img src="reference/figures/README-example-1.png" alt="Sample CTD plot."><div class="figcaption">Sample CTD plot.</div>
 </div>

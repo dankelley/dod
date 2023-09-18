@@ -20,12 +20,13 @@ The following example shows how to (1) download an index of ctd data files resul
 
     # 1. Get index
     library(dod)
-    index <- dod.ctd("BBMP", 2022, index=TRUE)
-    item <- index[1, "file"]
+    indexFile <- dod.ctd("BBMP", 2022, index=TRUE)
+    index <- read.csv(indexFile, header=TRUE, skip=2)
+    item <- index[1, "FILE"]
     # 2. Get the first file, and plot it
     file <- dod.ctd("BBMP", 2022, item)
     library(oce)
-    plot(read.ctd(file))
+    read.ctd(file) |> plot()
 
 ![Sample CTD plot.](man/figures/README-example-1.png)
 
