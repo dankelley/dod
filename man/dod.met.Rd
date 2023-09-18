@@ -12,7 +12,7 @@ dod.met(
   type = "xml",
   destdir = ".",
   destfile,
-  age = 1,
+  age = 0,
   quiet = FALSE,
   debug = 0
 )

@@ -1,6 +1,7 @@
 # dod 0.1.6
 
 * `dod.tideGauge()` can now handle both CHS and NOAA downloads.
+* All links to the oce package are removed, to avoid circular dependencies.
 
 # dod 0.1.5
 

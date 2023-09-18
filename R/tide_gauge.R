@@ -105,7 +105,7 @@
 #'
 #' @export
 dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
-    start=NULL, end=NULL, resolution=NULL, file=NULL, destdir=".", age=1, debug=0)
+    start=NULL, end=NULL, resolution=NULL, file=NULL, destdir=".", age=0, debug=0)
 {
     if (is.null(ID))
         stop("ID must be supplied")

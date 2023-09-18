@@ -13,7 +13,7 @@ dod.tideGauge(
   resolution = NULL,
   file = NULL,
   destdir = ".",
-  age = 1,
+  age = 0,
   debug = 0
 )
 }
