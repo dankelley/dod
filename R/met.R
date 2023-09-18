@@ -36,8 +36,7 @@
 #' @param destfile optional name of destination file. If not provided,
 #' this function creates a reasonable name.
 #'
-#' @param force Logical value indicating whether to force a download, even
-#' if the file already exists locally.
+#' @template ageTemplate
 #'
 #' @param quiet Logical value passed to [download.file()]; a `TRUE` value
 #' silences output.
@@ -75,7 +74,7 @@
 #'
 #' @author Dan Kelley
 dod.met <- function(id, year, month, deltat, type="xml",
-    destdir=".", destfile, force=FALSE, quiet=FALSE, debug=0)
+    destdir=".", destfile, age=0, quiet=FALSE, debug=0)
 {
     if (missing(id))
         id <- 6358
@@ -125,12 +124,8 @@ dod.met <- function(id, year, month, deltat, type="xml",
     }
     destination <- paste(destdir, destfile, sep="/")
     dodDebug(debug, "url:", url, "\n")
-    if (!force && 1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
-        dodDebug(debug, "Not downloading \"", destfile, "\" because it is already present in the \"", destdir, "\" directory\n", sep="")
-    } else {
-        utils::capture.output({download.file(url, destination, quiet=TRUE)})
-        dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
-    }
+    utils::capture.output({download.file(url, destination, age=age, quiet=TRUE)})
+    dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
     # NOTE: if the format=csv part of the URL is changed to format=txt we get
     # the metadata file. But dealing with that is a bit of coding, both at the
     # download stage and at the read.met() stage, and I don't think this is
