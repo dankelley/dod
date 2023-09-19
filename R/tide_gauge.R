@@ -1,12 +1,7 @@
 #' Download tide-gauge data
 #'
 #' [dod.tideGauge()] downloads tide-gauge data from either
-#' Canadian or American tide gauges. FIXME: note that this function
-#' was original designed for NOAA data, but in September of 2023 it
-#' was modified to also handle a new format used by CHS.  The NOAA code may work,
-#' and it may fail.  Likely by October of 2023 the code will have settled down
-#' for both cases.  And that might involve some column renaming.  Long story
-#' short, this is a work-in-progress function.
+#' Canadian (CHS) or American (NOAA) tide gauges.
 #'
 #' Downloads are done from for either the Canadian Hydrographic Service (CHS) or
 #' from the American National Oceanographic and Atmospheric
@@ -53,10 +48,10 @@
 #' 1-minute resolution.
 #'
 #' @param variable a character value indicating the name of the variable to
-#' be downloaded.  This defaults to `"height"` for observed height (called `"wlo"`
-#' on the CHS server and `"water_level"` on the NOAA server).  Another
-#' permitted choice is `"heightPredicted" (called `"wlp"` by CHS and `"predictions"`
-#' by NOAA). In either of these two cases, `Time` and `QC` are also stored alongside
+#' be downloaded.  This defaults to `"water_level"` for observed water
+#' level (called `"wlo"` on the CHS server and `"water_level"` on the NOAA server).
+#' Another permitted choice is `"predictions" (called `"wlp"` by CHS and `"predictions"`
+#' by NOAA). In either of these two cases, `time` and `QC` are also stored alongside
 #' the variable.  But there is a third case: if `variable` is `"metadata"`,
 #' then *no* file is saved; instead, the return value is a list containing
 #' information about the station, such as its code number, its official
@@ -82,16 +77,14 @@
 #' and `agency` is `"CHS"`; otherwise it returns a file name (with
 #' full path included).  For the CHS case this is a constructed filename,
 #' since the CHS server provides data, not files.  For the 
-#' NOAA case, it is a downloaded file.  FIXME: discuss variable
-#' names here ... but first I have to decide whether CHS should mimic
-#' NOAA, since I find the NOAA names silly.
+#' NOAA case, it is a downloaded file.
 #'
 #' @examples
 #'\dontrun{
 #' library(dod)
 #' library(oce)
 #' ofile <- dod.tideGauge(491)
-#' pfile <- dod.tideGauge(491, "heightPredicted")
+#' pfile <- dod.tideGauge(491, "predictions")
 #' O <- read.csv(ofile)
 #' O$time <- as.POSIXct(O$Date.Time, tz="UTC")
 #' P <- read.csv(pfile)
@@ -100,9 +93,9 @@
 #' par(mfrow=c(2, 1))
 #' oce.plot.ts(O$time, O$Water.Level, ylab="Water Level [m]")
 #' lines(P$time, P$Predictions, col="gray", type="l")
-#' # Bottom panel: misfit
-#' Pinterp <- approxfun(P$time, P$Predictions)
-#' oce.plot.ts(O$time, O$Water.Level-Pinterp(O$time), ylab="Deviation [m]")
+#' # Bottom panel: misfit. Note the interpolation to observation time.
+#' misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
+#' oce.plot.ts(O$time, misfit, ylab="Deviation [m]")
 #'}
 #'
 #' @references
@@ -112,7 +105,7 @@
 #' 2. https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
 #'
 #' @export
-dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
+dod.tideGauge <- function(ID=NULL, variable="water_level", agency="CHS",
     start=NULL, end=NULL, resolution=NULL,
     file=NULL, destdir=".", age=0, debug=0)
 {
@@ -126,8 +119,8 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         stop("'agency' must be either \"CHS\" or \"NOAA\"")
     if (length(variable) != 1L)
         stop("'variable' must be of length 1")
-    if (!variable %in% c("height", "heightPredicted", "metadata"))
-        stop("variable must be \"height\", \"heightPredicted\" or \"metadata\", but it is \"", variable, "\"")
+    if (!variable %in% c("water_level", "predictions", "metadata"))
+        stop("variable must be \"water_level\", \"predictions\" or \"metadata\", but it is \"", variable, "\"")
     if (is.null(start) || is.null(end)) {
         end <- as.POSIXct(Sys.time(), tz="UTC")
         start <- end - 7*86400
@@ -205,8 +198,8 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         }
         # OK, now we know the user wants data
         variableRemote <- variable
-        variableRemote <- gsub("^height$", "wlo", variableRemote)
-        variableRemote <- gsub("^heightPredicted$", "wlp", variableRemote)
+        variableRemote <- gsub("^water_level$", "wlo", variableRemote)
+        variableRemote <- gsub("^predictions$", "wlp", variableRemote)
         url <- sprintf("api-iwls.dfo-mpo.gc.ca/api/v1/stations/%s/data?time-series-code=%s&from=%s&to=%s&resolution=%s",
             stationID,
             variableRemote,
@@ -221,7 +214,11 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         time <- gsub("Z$", "", gsub("T", " ", time)) # for output
         QC <- sapply(d, \(x) x$qcFlagCode)
         var  <- sapply(d, \(x) x$value)
-        res <- data.frame("Time"=time, "Height"=var, "QC"=QC)
+        if (variable == "water_level") {
+            res <- data.frame("Date.Time"=time, "Water.Level"=var, "QC"=QC)
+        } else if (variable == "predictions") {
+            res <- data.frame("Date.Time"=time, "Predictions"=var, "QC"=QC)
+        }
         dodDebug(debug, "about to save data in \"", file, "\"\n", sep="")
         write.csv(res, file=file, row.names=FALSE)
         return(file)
@@ -230,8 +227,6 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         server <- "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
         # Rename variable
         variableRemote <- variable
-        variableRemote <- gsub("^height$", "water_level", variableRemote)
-        variableRemote <- gsub("^heightPredicted$", "predictions", variableRemote)
         url <- sprintf("%s?product=%s&application=NOS.COOPS.TAC.WL&begin_date=%s&end_date=%s&datum=MLLW&station=%s&time_zone=GMT&units=metric&interval=&format=CSV",
             server, variableRemote, start, end, ID)
     } else {

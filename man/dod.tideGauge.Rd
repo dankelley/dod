@@ -6,7 +6,7 @@
 \usage{
 dod.tideGauge(
   ID = NULL,
-  variable = "height",
+  variable = "water_level",
   agency = "CHS",
   start = NULL,
   end = NULL,
@@ -25,9 +25,9 @@ corresponds to the "Bedford Institute" station).  For American
 data, it is a numerical code.}
 
 \item{variable}{a character value indicating the name of the variable to
-be downloaded.  This defaults to \code{"height"} for observed height (called \code{"wlo"}
-on the CHS server and \code{"water_level"} on the NOAA server).  Another
-permitted choice is \verb{"heightPredicted" (called }"wlp"\verb{by CHS and}"predictions"\verb{by NOAA). In either of these two cases,}Time\code{and}QC\verb{are also stored alongside the variable.  But there is a third case: if}variable\code{is}"metadata"`,
+be downloaded.  This defaults to \code{"water_level"} for observed water
+level (called \code{"wlo"} on the CHS server and \code{"water_level"} on the NOAA server).
+Another permitted choice is \verb{"predictions" (called }"wlp"\verb{by CHS and}"predictions"\verb{by NOAA). In either of these two cases,}time\code{and}QC\verb{are also stored alongside the variable.  But there is a third case: if}variable\code{is}"metadata"`,
 then \emph{no} file is saved; instead, the return value is a list containing
 information about the station, such as its code number, its official
 name, its datum, etc.}
@@ -79,18 +79,11 @@ for each pass.}
 and \code{agency} is \code{"CHS"}; otherwise it returns a file name (with
 full path included).  For the CHS case this is a constructed filename,
 since the CHS server provides data, not files.  For the
-NOAA case, it is a downloaded file.  FIXME: discuss variable
-names here ... but first I have to decide whether CHS should mimic
-NOAA, since I find the NOAA names silly.
+NOAA case, it is a downloaded file.
 }
 \description{
 \code{\link[=dod.tideGauge]{dod.tideGauge()}} downloads tide-gauge data from either
-Canadian or American tide gauges. FIXME: note that this function
-was original designed for NOAA data, but in September of 2023 it
-was modified to also handle a new format used by CHS.  The NOAA code may work,
-and it may fail.  Likely by October of 2023 the code will have settled down
-for both cases.  And that might involve some column renaming.  Long story
-short, this is a work-in-progress function.
+Canadian (CHS) or American (NOAA) tide gauges.
 }
 \details{
 Downloads are done from for either the Canadian Hydrographic Service (CHS) or
@@ -112,7 +105,7 @@ will require interpolation (see \sQuote{Examples}).
 library(dod)
 library(oce)
 ofile <- dod.tideGauge(491)
-pfile <- dod.tideGauge(491, "heightPredicted")
+pfile <- dod.tideGauge(491, "predictions")
 O <- read.csv(ofile)
 O$time <- as.POSIXct(O$Date.Time, tz="UTC")
 P <- read.csv(pfile)
@@ -121,9 +114,9 @@ P$time <- as.POSIXct(P$Date.Time, tz="UTC")
 par(mfrow=c(2, 1))
 oce.plot.ts(O$time, O$Water.Level, ylab="Water Level [m]")
 lines(P$time, P$Predictions, col="gray", type="l")
-# Bottom panel: misfit
-Pinterp <- approxfun(P$time, P$Predictions)
-oce.plot.ts(O$time, O$Water.Level-Pinterp(O$time), ylab="Deviation [m]")
+# Bottom panel: misfit. Note the interpolation to observation time.
+misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
+oce.plot.ts(O$time, misfit, ylab="Deviation [m]")
 }
 
 }
