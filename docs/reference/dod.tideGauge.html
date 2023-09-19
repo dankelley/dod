@@ -122,10 +122,10 @@ means that it is possible to download at most 1 week of data for
 <dt>file</dt>
 <dd><p>a character value indicating the name to be used for the
 downloaded data.  If not provided, this is constructed as e.g.
-<code>"tide_A_N_S_E_V.csv"</code> where <code>A</code> is the value of the agency argument, <code>N</code> is
+<code>"tide_A_N_S_E_R_V.csv"</code> where <code>A</code> is the value of the agency argument, <code>N</code> is
 the station ID number, <code>S</code> and <code>E</code> are the start and end dates written in
-8-digit format (i.e. sans the <code>"-"</code> characters), and <code>V</code> is the variable
-name.</p></dd>
+8-digit format (i.e. sans the <code>"-"</code> characters), <code>R</code> is the resolution in
+minutes, and <code>V</code> is the variable name.</p></dd>
 
 
 <dt>destdir</dt>
@@ -157,10 +157,9 @@ for each pass.</p></dd>
 <p><code>dod.tideGauge()</code> returns the full pathname of the
 constructed file (in the CHS case) or the downloaded
 file (in the NOAA case). This is a comma-separated file, with
-first column named <code>"Date Time"</code>, and second column named either
-<code>"Water Level"</code> or <code>"Predictions"</code>, according to the specified
-value of <code>variable</code>. (The names in the output file derive
-from the names in files returned by the NOAA server.)</p>
+first column named <code>"Time"</code>, and second column named
+<code>"Height"</code>. FIXME: does NOAA put both in same file? If so,
+we ought to name as such.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

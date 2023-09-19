@@ -51,10 +51,10 @@ means that it is possible to download at most 1 week of data for
 
 \item{file}{a character value indicating the name to be used for the
 downloaded data.  If not provided, this is constructed as e.g.
-\code{"tide_A_N_S_E_V.csv"} where \code{A} is the value of the agency argument, \code{N} is
+\code{"tide_A_N_S_E_R_V.csv"} where \code{A} is the value of the agency argument, \code{N} is
 the station ID number, \code{S} and \code{E} are the start and end dates written in
-8-digit format (i.e. sans the \code{"-"} characters), and \code{V} is the variable
-name.}
+8-digit format (i.e. sans the \code{"-"} characters), \code{R} is the resolution in
+minutes, and \code{V} is the variable name.}
 
 \item{destdir}{a character value indicating the directory
 in which to store downloaded files.}
@@ -76,10 +76,9 @@ for each pass.}
 \code{\link[=dod.tideGauge]{dod.tideGauge()}} returns the full pathname of the
 constructed file (in the CHS case) or the downloaded
 file (in the NOAA case). This is a comma-separated file, with
-first column named \code{"Date Time"}, and second column named either
-\code{"Water Level"} or \code{"Predictions"}, according to the specified
-value of \code{variable}. (The names in the output file derive
-from the names in files returned by the NOAA server.)
+first column named \code{"Time"}, and second column named
+\code{"Height"}. FIXME: does NOAA put both in same file? If so,
+we ought to name as such.
 }
 \description{
 \code{\link[=dod.tideGauge]{dod.tideGauge()}} downloads tide-gauge data from either

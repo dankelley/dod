@@ -56,10 +56,10 @@
 #'
 #' @param file a character value indicating the name to be used for the
 #' downloaded data.  If not provided, this is constructed as e.g.
-#' `"tide_A_N_S_E_V.csv"` where `A` is the value of the agency argument, `N` is
+#' `"tide_A_N_S_E_R_V.csv"` where `A` is the value of the agency argument, `N` is
 #' the station ID number, `S` and `E` are the start and end dates written in
-#' 8-digit format (i.e. sans the `"-"` characters), and `V` is the variable
-#' name.
+#' 8-digit format (i.e. sans the `"-"` characters), `R` is the resolution in
+#' minutes, and `V` is the variable name.
 #'
 #' @template destdirTemplate
 #'
@@ -73,10 +73,9 @@
 #' @return [dod.tideGauge()] returns the full pathname of the
 #' constructed file (in the CHS case) or the downloaded
 #' file (in the NOAA case). This is a comma-separated file, with
-#' first column named `"Date Time"`, and second column named either
-#' `"Water Level"` or `"Predictions"`, according to the specified
-#' value of `variable`. (The names in the output file derive
-#' from the names in files returned by the NOAA server.)
+#' first column named `"Time"`, and second column named
+#' `"Height"`. FIXME: does NOAA put both in same file? If so,
+#' we ought to name as such.
 #'
 #' @examples
 #'\dontrun{
@@ -112,7 +111,9 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
     if (!is.character(ID))
         ID <- as.character(ID)
     if (!is.character(agency))
-        agency <- as.character(agency)
+        stop("'agency' must be a character value")
+    if (!agency %in% c("CHS", "NOAA"))
+        stop("'agency' must be either \"CHS\" or \"NOAA\"")
     if (length(variable) != 1L)
         stop("'variable' must be of length 1")
     if (!variable %in% c("height", "heightPredicted"))
@@ -123,21 +124,35 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
     }
     start <- as.POSIXct(start, tz="UTC")
     end <- as.POSIXct(end, tz="UTC")
+    dodDebug(debug, "after conversions etc, start: \"", start, "\"\n", sep="")
+    dodDebug(debug, "after conversions etc, end:   \"", end, "\"\n", sep="")
     if (end < start)
         stop("'start' time (", format(start), " is not prior to 'end' time (", format(end), ")")
-    if (is.null(resolution))
-        resolution <- "THREE_MINUTES"
+    if (identical(agency, "CHS")) {
+        if (is.null(resolution))
+            resolution <- "THREE_MINUTES"
+        if (!is.character(resolution))
+            stop("'resolution' must be a character value")
+        resolutionNumeric <- switch(resolution,
+            "ONE_MINUTE"=1,
+            "THREE_MINUTES"=3,
+            "FIVE_MINUTES"=5,
+            "FIFTEEN_MINUTES"=15,
+            "SIXTY_MINUTES"=60)
+    } else if (identical(agency, "NOAA")) { # FIXME: is this right? (is anything still right?)
+        if (is.null(resolution)) {
+            resolution <- 60
+            resolutionNumeric <- 60
+        }
+    }
+    dodDebug(debug, "resolution=", resolution, ", resolutionNumeric=", resolutionNumeric, "\n")
     if (is.null(file))
-        file <- paste0("tide_gauge_", agency, "_", ID, "_",
-            format(start, "%Y%m%dT%H%M"),
-            "_",
-            format(end, "%Y%m%dT%H%M"),
-            "_",
-            resolution,
-            "_", variable, ".csv")
+        file <- paste0(paste("tide_gauge", agency, ID,
+                format(start, "%Y%m%dT%H%M"),
+                format(end, "%Y%m%dT%H%M"),
+                paste0(resolutionNumeric, "min"),
+                variable, sep="_"), ".csv")
     dodDebug(debug, "file=\"", file, "\"\n", sep="")
-    dodDebug(debug, "start: \"", start, "\"\n", sep="")
-    dodDebug(debug, "end: \"", end, "\"\n", sep="")
     startDigits <- gsub("-", "", start)
     endDigits <- gsub("-", "", end)
     dodDebug(debug, "destdir=\"", destdir, "\"\n", sep="")
@@ -183,14 +198,11 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         time <- gsub("Z$", "", gsub("T", " ", time)) # for output
         #qc <- sapply(d, \(x) x$qcFlagCode) # FIXME: unused
         var  <- sapply(d, \(x) x$value)
-        if (variable == "height") {
-            res <- data.frame("Date Time"=time, "Water Level"=var)
-        } else {
-            res <- data.frame("Date Time"=time, "Predictions"=var)
-        }
+        res <- data.frame("Time"=time, "Height"=var)
         dodDebug(debug, "about to save in file \"", file, "\"\n", sep="")
         write.csv(res, file=file, row.names=FALSE)
-        dodDebug(debug, "save data in file \"", file, "\"\n", sep="")
+        dodDebug(debug, "saving data in file \"", file, "\"\n", sep="")
+        return(file)
     } else if (agency == "NOAA") {
         #https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20230801&end_date=20230830&datum=MLLW&station=8727520&time_zone=GMT&units=metric&interval=&format=CSV
         server <- "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
