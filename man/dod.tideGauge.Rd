@@ -26,9 +26,11 @@ data, it is a numerical code.}
 
 \item{variable}{a character value indicating the name of the variable to
 be downloaded.  This defaults to \code{"height"} for observed height (called \code{"wlo"}
-on the CHS server and \code{"water_level"} on the NOAA server).  The other
-choice is \verb{"heightPredicted" (called }"wlp"\verb{by CHS and}"predictions"\verb{by NOAA). In either case,}time\code{and}QC` are also stored alongside
-the variable.}
+on the CHS server and \code{"water_level"} on the NOAA server).  Another
+permitted choice is \verb{"heightPredicted" (called }"wlp"\verb{by CHS and}"predictions"\verb{by NOAA). In either of these two cases,}Time\code{and}QC\verb{are also stored alongside the variable.  But there is a third case: if}variable\code{is}"metadata"`,
+then \emph{no} file is saved; instead, the return value is a list containing
+information about the station, such as its code number, its official
+name, its datum, etc.}
 
 \item{agency}{a character value indicating the agency from which data will be
 sought. Use \verb{"CHS" for Canadian tide gauges (the default), or }"NOAA"` for
@@ -73,16 +75,22 @@ value is passed down to related functions, but with 1 subtracted
 for each pass.}
 }
 \value{
-\code{\link[=dod.tideGauge]{dod.tideGauge()}} returns the full pathname of the
-constructed file (in the CHS case) or the downloaded
-file (in the NOAA case). This is a comma-separated file, with
-first column named \code{"Time"}, and second column named
-\code{"Height"}. FIXME: does NOAA put both in same file? If so,
-we ought to name as such.
+\code{\link[=dod.tideGauge]{dod.tideGauge()}} returns a list, if \code{value} is \code{"metadata"}
+and \code{agency} is \code{"CHS"}; otherwise it returns a file name (with
+full path included).  For the CHS case this is a constructed filename,
+since the CHS server provides data, not files.  For the
+NOAA case, it is a downloaded file.  FIXME: discuss variable
+names here ... but first I have to decide whether CHS should mimic
+NOAA, since I find the NOAA names silly.
 }
 \description{
 \code{\link[=dod.tideGauge]{dod.tideGauge()}} downloads tide-gauge data from either
-Canadian or American tide gauges.
+Canadian or American tide gauges. FIXME: note that this function
+was original designed for NOAA data, but in September of 2023 it
+was modified to also handle a new format used by CHS.  The NOAA code may work,
+and it may fail.  Likely by October of 2023 the code will have settled down
+for both cases.  And that might involve some column renaming.  Long story
+short, this is a work-in-progress function.
 }
 \details{
 Downloads are done from for either the Canadian Hydrographic Service (CHS) or

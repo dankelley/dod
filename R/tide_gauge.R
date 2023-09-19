@@ -1,7 +1,12 @@
 #' Download tide-gauge data
 #'
 #' [dod.tideGauge()] downloads tide-gauge data from either
-#' Canadian or American tide gauges.
+#' Canadian or American tide gauges. FIXME: note that this function
+#' was original designed for NOAA data, but in September of 2023 it
+#' was modified to also handle a new format used by CHS.  The NOAA code may work,
+#' and it may fail.  Likely by October of 2023 the code will have settled down
+#' for both cases.  And that might involve some column renaming.  Long story
+#' short, this is a work-in-progress function.
 #'
 #' Downloads are done from for either the Canadian Hydrographic Service (CHS) or
 #' from the American National Oceanographic and Atmospheric
@@ -49,10 +54,13 @@
 #'
 #' @param variable a character value indicating the name of the variable to
 #' be downloaded.  This defaults to `"height"` for observed height (called `"wlo"`
-#' on the CHS server and `"water_level"` on the NOAA server).  The other
-#' choice is `"heightPredicted" (called `"wlp"` by CHS and `"predictions"`
-#' by NOAA). In either case, `time` and `QC` are also stored alongside
-#' the variable.
+#' on the CHS server and `"water_level"` on the NOAA server).  Another
+#' permitted choice is `"heightPredicted" (called `"wlp"` by CHS and `"predictions"`
+#' by NOAA). In either of these two cases, `Time` and `QC` are also stored alongside
+#' the variable.  But there is a third case: if `variable` is `"metadata"`,
+#' then *no* file is saved; instead, the return value is a list containing
+#' information about the station, such as its code number, its official
+#' name, its datum, etc.
 #'
 #' @param file a character value indicating the name to be used for the
 #' downloaded data.  If not provided, this is constructed as e.g.
@@ -70,12 +78,13 @@
 #' @importFrom utils read.csv write.csv
 ## @importFrom rjson fromJSON
 #'
-#' @return [dod.tideGauge()] returns the full pathname of the
-#' constructed file (in the CHS case) or the downloaded
-#' file (in the NOAA case). This is a comma-separated file, with
-#' first column named `"Time"`, and second column named
-#' `"Height"`. FIXME: does NOAA put both in same file? If so,
-#' we ought to name as such.
+#' @return [dod.tideGauge()] returns a list, if `value` is `"metadata"`
+#' and `agency` is `"CHS"`; otherwise it returns a file name (with
+#' full path included).  For the CHS case this is a constructed filename,
+#' since the CHS server provides data, not files.  For the 
+#' NOAA case, it is a downloaded file.  FIXME: discuss variable
+#' names here ... but first I have to decide whether CHS should mimic
+#' NOAA, since I find the NOAA names silly.
 #'
 #' @examples
 #'\dontrun{
@@ -104,7 +113,8 @@
 #'
 #' @export
 dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
-    start=NULL, end=NULL, resolution=NULL, file=NULL, destdir=".", age=0, debug=0)
+    start=NULL, end=NULL, resolution=NULL,
+    file=NULL, destdir=".", age=0, debug=0)
 {
     if (is.null(ID))
         stop("ID must be supplied")
@@ -116,8 +126,8 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         stop("'agency' must be either \"CHS\" or \"NOAA\"")
     if (length(variable) != 1L)
         stop("'variable' must be of length 1")
-    if (!variable %in% c("height", "heightPredicted"))
-        stop("variable must be \"height\" or \"heightPredicted\", but it is \"", variable, "\"")
+    if (!variable %in% c("height", "heightPredicted", "metadata"))
+        stop("variable must be \"height\", \"heightPredicted\" or \"metadata\", but it is \"", variable, "\"")
     if (is.null(start) || is.null(end)) {
         end <- as.POSIXct(Sys.time(), tz="UTC")
         start <- end - 7*86400
@@ -159,19 +169,24 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
     if (agency == "CHS") {
         if (!requireNamespace("rjson", quietly=TRUE))
             stop("must install.packages(\"rjson\") before using dod.tideGauge() with agency=\"CHS\"")
+        dodDebug(debug, "about to try to find code for ID=\"", ID, "\"\n", sep="")
+        # Find station ID.  This is a string like 5cebf1e23d0f4a073c4bbfac,
+        # which is a value matching officialName "Bedford Institute",
+        # or code "00491".  (Whether the ID will change over time for
+        # a given station is unknown to the author of this function,
+        # so no attempt is made to save known names.)
         url <- "https://api-iwls.dfo-mpo.gc.ca/api/v1/stations"
         s <- readLines(url, warn=FALSE)
         d <- rjson::fromJSON(s)
-        dodDebug(debug, "about to try to find code for ID=\"", ID, "\"\n", sep="")
         if (grepl("a-zA-Z", ID)) {
             dodDebug(debug, "looking up station by name", ID, "\n")
-            # officialName: chr "Bedford Institute"
+            # e.g. "Bedford Institute"
             w <- which(sapply(d, \(s) grepl(ID, s$officialName)))
             if (length(w) == 0L)
                 stop("cannot find API code for ID=\"", ID, "\" (interpreted as a name)")
         } else {
             dodDebug(debug, "looking up station by ID number", ID, "\n")
-            # code        : chr "00491"
+            # e.g. "00491"
             ID <- as.integer(ID)
             w <- which(sapply(d, \(s) identical(ID, as.integer(s$code))))
             if (length(w) == 0L)
@@ -180,7 +195,15 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         ds <- d[[w]]
         stationID <- ds$id
         dodDebug(debug, "calculated CHS station ID code to be \"", stationID, "\"\n", sep="")
-        # Rename variables
+        # return metadata, if requested
+        url <- "https://api-iwls.dfo-mpo.gc.ca/api/v1/stations"
+        if (identical(variable, "metadata")) {
+            url <- sprintf("https://api-iwls.dfo-mpo.gc.ca/api/v1/stations/%s/metadata", stationID)
+            s <- readLines(url, warn=FALSE)
+            dodDebug(debug, "returning metadata, not a file name\n")
+            return(rjson::fromJSON(s))
+        }
+        # OK, now we know the user wants data
         variableRemote <- variable
         variableRemote <- gsub("^height$", "wlo", variableRemote)
         variableRemote <- gsub("^heightPredicted$", "wlp", variableRemote)
@@ -196,12 +219,11 @@ dod.tideGauge <- function(ID=NULL, variable="height", agency="CHS",
         d <- rjson::fromJSON(s)
         time <- sapply(d, \(x) x$eventDate)
         time <- gsub("Z$", "", gsub("T", " ", time)) # for output
-        #qc <- sapply(d, \(x) x$qcFlagCode) # FIXME: unused
+        QC <- sapply(d, \(x) x$qcFlagCode)
         var  <- sapply(d, \(x) x$value)
-        res <- data.frame("Time"=time, "Height"=var)
-        dodDebug(debug, "about to save in file \"", file, "\"\n", sep="")
+        res <- data.frame("Time"=time, "Height"=var, "QC"=QC)
+        dodDebug(debug, "about to save data in \"", file, "\"\n", sep="")
         write.csv(res, file=file, row.names=FALSE)
-        dodDebug(debug, "saving data in file \"", file, "\"\n", sep="")
         return(file)
     } else if (agency == "NOAA") {
         #https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20230801&end_date=20230830&datum=MLLW&station=8727520&time_zone=GMT&units=metric&interval=&format=CSV
