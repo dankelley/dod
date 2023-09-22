@@ -12,7 +12,7 @@ This gets expanded to e.g. URL/b(ID)_ctd.txt or URL/b(ID)_ctd_QC.txt
 if \code{info} is FALSE, or to URL/b(ID)_info.txt otherwise.}
 
 \item{info}{a logical value.  If \code{info} is FALSE, which is the default, then
-\code{\link[=dod.ctd.bats]{dod.ctd.bats()}} downloads the actual CTD data.  Altenatively, it downloads
+\code{\link[=dod.ctd.bats]{dod.ctd.bats()}} downloads the actual CTD data.  Alternatively, it downloads
 a file holding information about sampling location, etc.}
 
 \item{file}{character value giving the name to be used for the downloaded
@@ -87,6 +87,7 @@ plot(ctd)
 \seealso{
 Other functions that download CTD data: 
 \code{\link{dod.ctd.bbmp}()},
-\code{\link{dod.ctd.gtspp}()}
+\code{\link{dod.ctd.gtspp}()},
+\code{\link{dod.ctd.itp}()}
 }
 \concept{functions that download CTD data}

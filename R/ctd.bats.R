@@ -13,7 +13,7 @@
 #' if `info` is FALSE, or to URL/b(ID)_info.txt otherwise.
 #'
 #' @param info a logical value.  If `info` is FALSE, which is the default, then
-#' [dod.ctd.bats()] downloads the actual CTD data.  Altenatively, it downloads
+#' [dod.ctd.bats()] downloads the actual CTD data.  Alternatively, it downloads
 #' a file holding information about sampling location, etc.
 #'
 #' @param file character value giving the name to be used for the downloaded
@@ -76,11 +76,11 @@ dod.ctd.bats <- function(ID, info=FALSE, file=NULL, destdir=".", age=0, debug=0)
         stop("ID must be supplied")
     owarn <- options("warn")$warn
     options(warn=-1)
-    ID <- as.numeric(ID)
+    IDorig <- ID
+    ID <- as.integer(ID)
     options(warn=owarn)
     if (is.na(ID))
-        stop("ID must be a numeric value, convertible to an integer")
-    ID <- as.integer(ID)
+        stop("ID=", IDorig, " is neither an integer nor a string denoting an integer")
     if (ID < 10000)
         stop("ID must exceed 10000, but it is ", ID)
     if (info) {

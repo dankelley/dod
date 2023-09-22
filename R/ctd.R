@@ -7,6 +7,7 @@
 #' |Bedford Basin Mooring Project                     |      `BBMP` |   [dod.ctd.bbmp()]|
 #' |Bermuda Atlantic Time Series                      |      `BATS` |   [dod.ctd.bats()]|
 #' |Global Temperature and Salinity Profile Programme |     `GTSPP` |  [dod.ctd.gtspp()]|
+#' |Ice-Tethered Profile                              |     `GTSPP` |    [dod.ctd.itp()]|
 #'
 #' @param program character value naming the program (one of listthem).
 #'
@@ -16,7 +17,7 @@
 #' @export
 dod.ctd <- function(program=NULL, ...)
 {
-    allowed <- c("BATS", "BBMP", "GTSPP")
+    allowed <- c("BATS", "BBMP", "GTSPP", "ITP")
     if (is.null(program))
         stop("must give 'program'; try \"",
              paste(allowed, collapse='" "'), "\"")
@@ -26,6 +27,8 @@ dod.ctd <- function(program=NULL, ...)
         dod.ctd.bbmp(...)
     else if (program == "GTSPP")
         dod.ctd.gtspp(...)
+    else if (program == "ITP")
+        dod.ctd.itp(...)
     else
         stop("'program' must be one of: \"",
              paste(allowed, collapse='" "'), "\"")

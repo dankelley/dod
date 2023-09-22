@@ -21,5 +21,6 @@ This function downloads CTD data from various programs.
    Bedford Basin Mooring Project \tab \code{BBMP} \tab \code{\link[=dod.ctd.bbmp]{dod.ctd.bbmp()}} \cr
    Bermuda Atlantic Time Series \tab \code{BATS} \tab \code{\link[=dod.ctd.bats]{dod.ctd.bats()}} \cr
    Global Temperature and Salinity Profile Programme \tab \code{GTSPP} \tab \code{\link[=dod.ctd.gtspp]{dod.ctd.gtspp()}} \cr
+   Ice-Tethered Profile \tab \code{GTSPP} \tab \code{\link[=dod.ctd.itp]{dod.ctd.itp()}} \cr
 }
 }

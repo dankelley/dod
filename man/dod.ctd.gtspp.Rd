@@ -131,6 +131,7 @@ process(dataFile)
 \seealso{
 Other functions that download CTD data: 
 \code{\link{dod.ctd.bats}()},
-\code{\link{dod.ctd.bbmp}()}
+\code{\link{dod.ctd.bbmp}()},
+\code{\link{dod.ctd.itp}()}
 }
 \concept{functions that download CTD data}

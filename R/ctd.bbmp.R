@@ -74,7 +74,7 @@ dod.ctd.bbmp <- function(year, ID=NULL, index=FALSE, file=NULL, destdir=".", age
         return(file)
     } else {
         if (is.null(ID))
-            stop("Must provide an ID from the index")
+            stop("ID must be supplied")
         if (is.null(file)) {
             file <- if (grepl("ODF", ID == TRUE)) gsub("\\.ODF", "",ID) else ID
         }
