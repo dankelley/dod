@@ -163,7 +163,7 @@ dod.amsr <- function(year=NULL, month, day, destdir=".",
     file <- gsub(".*/", "", url)
     dodDebug(debug, "url=\"", url, "\"\n", sep="")
     dodDebug(debug, "file=\"", file, "\"\n", sep="")
-    rval <- dod.download(url, destdir=destdir, file=file, age=-1, debug=debug-1, silent=debug==0)
+    rval <- dod.download(url, destdir=destdir, file=file, age=-1, debug=debug-1, silent=identical(debug, 0))
     dodDebug(debug, "} # dod.amsr\n", sep="")
     rval
 }

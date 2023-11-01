@@ -13,7 +13,7 @@ dod.topo(
   destdir = ".",
   destfile,
   server = "https://gis.ngdc.noaa.gov",
-  debug = getOption("dodDebug")
+  debug = getOption("dodDebug", 0L)
 )
 }
 \arguments{

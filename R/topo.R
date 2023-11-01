@@ -86,7 +86,7 @@
 #' @export
 dod.topo <- function(west, east, south, north, resolution=4,
     destdir=".", destfile, server="https://gis.ngdc.noaa.gov",
-    debug=getOption("dodDebug"))
+    debug=getOption("dodDebug", 0L))
 {
     dodDebug(debug, "dod.topo(west=", west,
         ", east=", east,
