@@ -4,10 +4,11 @@
 #'
 #' The `dod` package provides tools for downloading Advanced
 #' Microwave Scanning Radiometer (AMSR), buoy, coastline, CTD (BATS,
-#' BBMP, and GTSPP), meteorological, and topographic data.
-## @importFrom methods new
+#' BBMP, and GTSPP), meteorological, tidal, and topographic data.
+#'
 #' @name dod-package
 #' @docType package
-NULL
+#' @keywords internal
+"_PACKAGE"
 
 

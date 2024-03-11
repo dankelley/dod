@@ -2,10 +2,20 @@
 % Please edit documentation in R/AllClass.R
 \docType{package}
 \name{dod-package}
+\alias{dod}
 \alias{dod-package}
 \title{A package for downloading publically available data.}
 \description{
 The \code{dod} package provides tools for downloading Advanced
 Microwave Scanning Radiometer (AMSR), buoy, coastline, CTD (BATS,
-BBMP, and GTSPP), meteorological, and topographic data.
+BBMP, and GTSPP), meteorological, tidal, and topographic data.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://dankelley.github.io/dod/}
+  \item Report bugs at \url{https://github.com/dankelley/dod/issues}
+}
+
+}
+\keyword{internal}

@@ -1,3 +1,7 @@
+# dod 0.1.8
+
+* `dod.tideGauge()` accepts a number for `start`.
+
 # dod 0.1.7
 
 * `dod.ctd.itp()` added.

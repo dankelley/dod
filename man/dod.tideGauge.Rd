@@ -38,9 +38,11 @@ American tide gauges.}
 
 \item{start, end}{POSIXt times or character values that can be converted
 to such times (via \code{\link[=as.POSIXct]{as.POSIXct()}} with \code{tz="UTC"}) that indicate
-the time interval for the requested data.
-If either \code{start} or \code{end} is not supplied, then a default
-of the past week is used.}
+the time interval for the requested data.  If \code{end} is not specified,
+then the present time is used.  If \code{start} is not provided, then
+it is set to the present time minus 7 days.  If \code{start} is a
+numeric value, then it is interpreted as the number of days
+to go back in time from the \code{end} time.}
 
 \item{resolution}{character value indicating the resolution, only used
 if \code{agency} is \code{"CHS"}.  The choices are \verb{"ONE_MINUTE", }"THREE_MINUTES"\verb{(the default),}"FIVE_MINUTES"\verb{, }"FIFTEEN_MINUTES"\verb{, and }"SIXTY_MINUTES"\verb{.  The server website indicates that }"Not all resolution are available for every station and every time series."`
@@ -107,16 +109,16 @@ library(oce)
 ofile <- dod.tideGauge(491)
 pfile <- dod.tideGauge(491, "predictions")
 O <- read.csv(ofile)
-O$time <- as.POSIXct(O$Date.Time, tz="UTC")
+O$time <- as.POSIXct(O$Date.Time, tz = "UTC")
 P <- read.csv(pfile)
-P$time <- as.POSIXct(P$Date.Time, tz="UTC")
+P$time <- as.POSIXct(P$Date.Time, tz = "UTC")
 # Top panel: observation (black) and prediction (gray)
-par(mfrow=c(2, 1))
-oce.plot.ts(O$time, O$Water.Level, ylab="Water Level [m]")
-lines(P$time, P$Predictions, col="gray", type="l")
+par(mfrow = c(2, 1))
+oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]")
+lines(P$time, P$Predictions, col = "gray", type = "l")
 # Bottom panel: misfit. Note the interpolation to observation time.
 misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
-oce.plot.ts(O$time, misfit, ylab="Deviation [m]")
+oce.plot.ts(O$time, misfit, ylab = "Deviation [m]")
 }
 
 }
