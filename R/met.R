@@ -57,7 +57,7 @@
 #' # of 2003. This dataset is used for data(met) provided with oce.
 #' # Note that requests for data after 2012 month 10 yield all
 #' # missing values, for reasons unknown to the author.
-#' metFile <- dod.met(6358, 2003, 9, destdir = ".")
+#' metFile <- dod.met(43405, 2024, 3, destdir = ".")
 #' }
 #'
 #' @references
