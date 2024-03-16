@@ -6,9 +6,8 @@
 #' Microwave Scanning Radiometer (AMSR), buoy, coastline, CTD (BATS,
 #' BBMP, and GTSPP), meteorological, tidal, and topographic data.
 #'
-#' @name dod-package
+#' @name dod
 #' @docType package
 #' @keywords internal
 "_PACKAGE"
-
-
+NULL

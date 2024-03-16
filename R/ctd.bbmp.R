@@ -35,52 +35,55 @@
 #' the \sQuote{Examples} section for an example of a typical workflow.
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' # Download and study this year's first BBMP CTD file
 #' library(dod)
 #' # Download and read the index
-#' indexFile <- dod.ctd("BBMP", index=TRUE)
-#' index <- read.csv(indexFile, header=FALSE, col.names=c("file","time"), skip=3)
+#' indexFile <- dod.ctd("BBMP", index = TRUE)
+#' index <- read.csv(indexFile, header = FALSE, col.names = c("file", "time"), skip = 3)
 #' # Download the first file in the index
-#' ctdFile <- dod.ctd("BBMP", ID=index$file[1])
+#' ctdFile <- dod.ctd("BBMP", ID = index$file[1])
 #' # Use oce to read, summarize and plot the data.
 #' library(oce)
 #' ctd <- read.oce(ctdFile)
 #' summary(ctd)
 #' plot(ctd)
-#'}
+#' }
 #'
 #' @family functions that download CTD data
 #'
 #' @export
-dod.ctd.bbmp <- function(year, ID=NULL, index=FALSE, file=NULL, destdir=".", age=0, debug=0)
-{
+dod.ctd.bbmp <- function(year, ID = NULL, index = FALSE, file = NULL, destdir = ".", age = 0, debug = 0) {
     server <- "ftp://ftp.dfo-mpo.gc.ca/BIOWebMaster/BBMP/ODF"
-    if (missing(year))
-        year <- format(Sys.Date(),"%Y")
+    if (missing(year)) {
+        year <- format(Sys.Date(), "%Y")
+    }
     dodDebug(debug, "  dod.ctd.bbmp(year=", year,
         ", ID=", if (is.null(ID)) "NULL" else paste0("\"", ID, "\""),
         ", index=", index,
         ", file=\"", file, "\", destdir=\"", destdir, "\"",
-        ", age=", age, ", debug=", debug, ")\n  {\n",sep="")
+        ", age=", age, ", debug=", debug, ")\n  {\n",
+        sep = ""
+    )
     server <- paste0(server, "/", year)
     if (index) {
-        file  <- if (is.null(file)) paste0(year, "667ODFSUMMARY.tsv") else paste0(file, ".tsv")
-        url <- paste0(server, "/",  paste0(year, "667ODFSUMMARY.tsv"))
-        dod.download(url=url, file=file, destdir=destdir, age=age, debug=debug-1)
+        file <- if (is.null(file)) paste0(year, "667ODFSUMMARY.tsv") else paste0(file, ".tsv")
+        url <- paste0(server, "/", paste0(year, "667ODFSUMMARY.tsv"))
+        dod.download(url = url, file = file, destdir = destdir, age = age, debug = debug - 1)
         url <- paste0(server, "/", file)
-        file <- paste0(destdir,"/",file)
-        dodDebug(debug, "  } dod.ctd.bbmp()\n", sep="")
+        file <- paste0(destdir, "/", file)
+        dodDebug(debug, "  } dod.ctd.bbmp()\n", sep = "")
         return(file)
     } else {
-        if (is.null(ID))
+        if (is.null(ID)) {
             stop("ID must be supplied")
+        }
         if (is.null(file)) {
-            file <- if (grepl("ODF", ID == TRUE)) gsub("\\.ODF", "",ID) else ID
+            file <- if (grepl("ODF", ID == TRUE)) gsub("\\.ODF", "", ID) else ID
         }
         url <- paste0(server, "/", ID)
-        file <- dod.download(url=url, file=ifelse(grepl("ODF", file) == FALSE, paste0(file, ".ODF"), file), destdir=destdir, age=age, silent=TRUE, debug=debug-1)
-        dodDebug(debug, "  } dod.ctd.bbmp()\n", sep="")
+        file <- dod.download(url = url, file = ifelse(grepl("ODF", file) == FALSE, paste0(file, ".ODF"), file), destdir = destdir, age = age, silent = TRUE, debug = debug - 1)
+        dodDebug(debug, "  } dod.ctd.bbmp()\n", sep = "")
         return(file)
     }
 }

@@ -22,26 +22,35 @@
 #'
 #' @export
 
-#https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c44258_csv.zip
-#https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c44139_csv.zip
+# https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c44258_csv.zip
+# https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c44139_csv.zip
 
-dod.buoy <- function(program, ID=NULL, destdir=".", age=age, debug=0)
-{
-    if (program == "?")
+dod.buoy <- function(program, ID = NULL, destdir = ".", age = age, debug = 0) {
+    if (program == "?") {
         stop("Must provide a program argument, possibilities include: MEDS")
-    if (is.null(ID))
+    }
+    if (is.null(ID)) {
         stop("Must provide an ID argument")
+    }
     if (program == "MEDS") {
-        loc <- list("East Scotian Slope"="44137","Banquereau Bank"="44139", "Halifax Harbour"="44258","Halifax"="44172","Halifax DISCUS TriAx"= "44299","Tail of the Bank"= "44140","Laurentian Fan"="44141","Port Hope"="45135", "Prince Edward Point"= "45135","Minas Basin"= "MEDS027")
-        dodDebug(debug, "Initial ID=", ID,"\n")
-        if (ID %in% names(loc))
+        loc <- list(
+            "East Scotian Slope" = "44137",
+            "Banquereau Bank" = "44139", "Halifax Harbour" = "44258",
+            "Halifax" = "44172", "Halifax DISCUS TriAx" = "44299",
+            "Tail of the Bank" = "44140", "Laurentian Fan" = "44141",
+            "Port Hope" = "45135", "Prince Edward Point" = "45135",
+            "Minas Basin" = "MEDS027"
+        )
+        dodDebug(debug, "Initial ID=", ID, "\n")
+        if (ID %in% names(loc)) {
             ID <- loc[[ID]]
-        dodDebug(debug, "Final ID=", ID,"\n")
+        }
+        dodDebug(debug, "Final ID=", ID, "\n")
         server <- "https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData"
         url <- paste0(server, "/c", ID, "_csv.zip")
         zipfile <- paste0("c", ID, "_csv.zip")
         dodDebug(debug, url)
-        dod.download(url=url, file=zipfile, age=age, debug=debug-1)
+        dod.download(url = url, file = zipfile, age = age, debug = debug - 1)
         unzip(zipfile)
         unlink(zipfile)
         # NOTE: we should delete the zipfile too; see ?unlink

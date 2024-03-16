@@ -1,3 +1,8 @@
+# dod 0.1.9
+
+* `dod.met()` now defaults station to 43405, since on 2024-03-16 it was noticed
+  that the older default no longer held data.
+
 # dod 0.1.8
 
 * `dod.tideGauge()` accepts a number for `start`.

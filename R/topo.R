@@ -59,17 +59,19 @@
 #' @author Dan Kelley
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' library(oce)
-#' topoFile <- dod.topo(west=-66, east=-60, south=43, north=47,
-#'     resolution=1, destdir="~/data/topo")
+#' topoFile <- dod.topo(
+#'     west = -66, east = -60, south = 43, north = 47,
+#'     resolution = 1, destdir = "~/data/topo"
+#' )
 #' topo <- read.topo(topoFile)
-#' imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
-#' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(coastlineWorldFine, package="ocedata")
+#' imagep(topo, zlim = c(-400, 400), col = oceColorsTwo, drawTriangles = TRUE)
+#' if (requireNamespace("ocedata", quietly = TRUE)) {
+#'     data(coastlineWorldFine, package = "ocedata")
 #'     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 #' }
-#'}
+#' }
 #'
 #' @references
 #' * Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
@@ -84,10 +86,10 @@
 #' @author Dan Kelley
 #'
 #' @export
-dod.topo <- function(west, east, south, north, resolution=4,
-    destdir=".", destfile, server="https://gis.ngdc.noaa.gov",
-    debug=getOption("dodDebug", 0L))
-{
+dod.topo <- function(
+    west, east, south, north, resolution = 4,
+    destdir = ".", destfile, server = "https://gis.ngdc.noaa.gov",
+    debug = getOption("dodDebug", 0L)) {
     dodDebug(debug, "dod.topo(west=", west,
         ", east=", east,
         ", south=", south,
@@ -95,7 +97,8 @@ dod.topo <- function(west, east, south, north, resolution=4,
         ", resolution=", resolution,
         ", destdir='", destdir, "'",
         ", server='", server, "')\n",
-        sep="", style="bold", unindent=1)
+        sep = "", style = "bold", unindent = 1
+    )
     # Code derived from marmap:getNOAAbathy() {
     if (resolution < 0.5) {
         resolution <- 0.25
@@ -117,31 +120,37 @@ dod.topo <- function(west, east, south, north, resolution=4,
     west <- round(west - 0.005, 2)
     south <- round(south - 0.005, 2)
     north <- round(north + 0.005, 2)
-    if (west > 180)
+    if (west > 180) {
         west <- west - 360
-    if (east > 180)
+    }
+    if (east > 180) {
         east <- east - 360
-    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
-    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
-    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
-    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
-    resolutionName <- paste(resolution, "min", sep="")
-    if (missing(destfile))
-        destfile <- paste0(paste("topo", wName, eName, sName, nName, resolutionName, sep="_"), ".nc")
+    }
+    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep = "")
+    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep = "")
+    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep = "")
+    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep = "")
+    resolutionName <- paste(resolution, "min", sep = "")
+    if (missing(destfile)) {
+        destfile <- paste0(paste("topo", wName, eName, sName, nName, resolutionName, sep = "_"), ".nc")
+    }
     destination <- paste0(destdir, "/", destfile)
-    dodDebug(debug, "destination='", destination, "'\n", sep="")
+    dodDebug(debug, "destination='", destination, "'\n", sep = "")
     if (file.exists(destination)) {
-        dodDebug(debug, "using existing file \"", destination, "\"\n", sep="")
-        dodDebug(debug, "} # dod.topo\n", sep="", style="bold", unindent=1)
+        dodDebug(debug, "using existing file \"", destination, "\"\n", sep = "")
+        dodDebug(debug, "} # dod.topo\n", sep = "", style = "bold", unindent = 1)
         return(destination)
     }
     nlon <- as.integer((east - west) * 60.0 / resolution)
-    if (nlon < 1L)
-        stop("Cannot download topo file, since east-west (=", east-west, " deg) is less than resolution (=", resolution, " min)")
+    if (nlon < 1L) {
+        stop("Cannot download topo file, since east-west (=", east - west, " deg) is less than resolution (=", resolution, " min)")
+    }
     nlat <- as.integer((north - south) * 60.0 / resolution)
-    if (nlat < 1L)
-        stop("Cannot download topo file, since north-south(=", north-south, " deg) is less than resolution (=", resolution, " min)")
-    urlOLD <- paste0(server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
+    if (nlat < 1L) {
+        stop("Cannot download topo file, since north-south(=", north - south, " deg) is less than resolution (=", resolution, " min)")
+    }
+    urlOLD <- paste0(
+        server, "/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/exportImage",
         "?bbox=", west, ",", south, ",", east, ",", north,
         "&bboxSR=4326",
         "&size=", nlon, ",", nlat,
@@ -150,8 +159,9 @@ dod.topo <- function(west, east, south, north, resolution=4,
         "&pixelType=S16",
         "&interpolation=+RSP_NearestNeighbor",
         "&compression=LZW",
-        "&f=image")
-    dodDebug(debug, "OLD url: \"", urlOLD, "\"\n", sep="")
+        "&f=image"
+    )
+    dodDebug(debug, "OLD url: \"", urlOLD, "\"\n", sep = "")
     # Test on 2022-11-13 with NOAA interface (Halifax Harbour region)
     # https://gis.ngdc.noaa.gov
     # /arcgis/rest/services/
@@ -166,7 +176,8 @@ dod.topo <- function(west, east, south, north, resolution=4,
     # &compression=LZ77
     # &renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%27ETOPO_2022_v1_15s_bed_elev%27%22}
     # &f=image
-    url <- paste0(server, "/arcgis/rest/services/",
+    url <- paste0(
+        server, "/arcgis/rest/services/",
         "DEM_mosaics/DEM_all/ImageServer/exportImage",
         "?bbox=", west, ",", south, ",", east, ",", north,
         "&bboxSR=4326",
@@ -179,29 +190,31 @@ dod.topo <- function(west, east, south, north, resolution=4,
         "renderingRule={%22rasterFunction%22:%22none%22}&mosaicRule={%22where%22:%22Name=%",
         database,
         "%27%22}",
-        "&f=image")
-    dodDebug(debug, "querying \"", url, "\"\n", sep="")
-    if (!requireNamespace("terra", quietly=TRUE))
+        "&f=image"
+    )
+    dodDebug(debug, "querying \"", url, "\"\n", sep = "")
+    if (!requireNamespace("terra", quietly = TRUE)) {
         stop("must install.packages(\"terra\") before using dod.topo()")
-    if (!requireNamespace("ncdf4", quietly=TRUE))
+    }
+    if (!requireNamespace("ncdf4", quietly = TRUE)) {
         stop("must install.packages(\"ncdf4\") before using dod.topo()")
-    r <- terra::rast(x=url)
-    dodDebug(debug, "converting data\n", sep="")
-    longitude <- seq(terra::xmin(r), terra::xmax(r), length.out=ncol(r))
-    latitude <- seq(terra::ymin(r), terra::ymax(r), length.out=nrow(r))
-    z <- t(terra::as.matrix(terra::flip(r, direction="vertical"), wide=TRUE))
-    dodDebug(debug, "saving to \"", destination, "\"\n", sep="")
+    }
+    r <- terra::rast(x = url)
+    dodDebug(debug, "converting data\n", sep = "")
+    longitude <- seq(terra::xmin(r), terra::xmax(r), length.out = ncol(r))
+    latitude <- seq(terra::ymin(r), terra::ymax(r), length.out = nrow(r))
+    z <- t(terra::as.matrix(terra::flip(r, direction = "vertical"), wide = TRUE))
+    dodDebug(debug, "saving to \"", destination, "\"\n", sep = "")
     # create netcdf file
     # dimensions
-    #side <- ncdf4::ncdim_def("side", units="", vals=2.0)
+    # side <- ncdf4::ncdim_def("side", units="", vals=2.0)
     fillvalue <- 1e32
     lonDim <- ncdf4::ncdim_def("lon", "degrees_east", as.double(longitude))
     latDim <- ncdf4::ncdim_def("lat", "degrees_north", as.double(latitude))
-    Band1 <- ncdf4::ncvar_def("Band1", "m", list(lonDim, latDim), fillvalue, "elevation m", prec="double")
+    Band1 <- ncdf4::ncvar_def("Band1", "m", list(lonDim, latDim), fillvalue, "elevation m", prec = "double")
     nc <- ncdf4::nc_create(destination, list(Band1))
     ncdf4::ncvar_put(nc, "Band1", z)
     ncdf4::nc_close(nc)
-    dodDebug(debug, "} # dod.topo()\n", sep="", style="bold", unindent=1)
+    dodDebug(debug, "} # dod.topo()\n", sep = "", style = "bold", unindent = 1)
     destination
 }
-

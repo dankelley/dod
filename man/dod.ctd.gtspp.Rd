@@ -88,8 +88,7 @@ library(ncdf4)
 
 # First, define a function to read, summarize and plot CTD
 # data stored in a netcdf file.
-process <- function(datafile)
-{
+process <- function(datafile) {
     nc <- nc_open(datafile)
     S <- ncvar_get(nc, "salinity")
     T <- ncvar_get(nc, "temperature")
@@ -97,33 +96,35 @@ process <- function(datafile)
     lon <- ncvar_get(nc, "longitude")
     lat <- ncvar_get(nc, "latitude")
     p <- swPressure(z, lat)
-    ctd <- as.ctd(S, T, p, longitude=lon, latitude=lat)
+    ctd <- as.ctd(S, T, p, longitude = lon, latitude = lat)
     summary(ctd)
     plot(ctd)
 }
 
 # Example A: get a data file from a known URL.
-url <- paste0("https://www.ncei.noaa.gov/data/oceans/",
-    "gtspp/bestcopy/atlantic/2022/01/gtspp_47477452_te_111.nc")
-dataFileA <- dod.ctd.gtspp(nc=url)
+url <- paste0(
+    "https://www.ncei.noaa.gov/data/oceans/",
+    "gtspp/bestcopy/atlantic/2022/01/gtspp_47477452_te_111.nc"
+)
+dataFileA <- dod.ctd.gtspp(nc = url)
 # above is equivalent to dod.ctd("at", 2022, 01, nc="gtspp_47477452_te_111.nc")
 process(dataFileA)
 
 # Example B: get an index, find a file of interest, and then get it
 # Get an index file for Atlantic Ocean observations in January 2022.
-indexFile <- dod.ctd.gtspp(basin="at", year=2022, month=1, index=TRUE)
-col.names <- strsplit(gsub("#", "", readLines(indexFile, n=1L)), ",")[[1]]
-index <- read.csv(indexFile, skip=1L, col.names=col.names, header=FALSE)
+indexFile <- dod.ctd.gtspp(basin = "at", year = 2022, month = 1, index = TRUE)
+col.names <- strsplit(gsub("#", "", readLines(indexFile, n = 1L)), ",")[[1]]
+index <- read.csv(indexFile, skip = 1L, col.names = col.names, header = FALSE)
 # Plot sampling locations near Halifax, Nova Scotia
-data(coastlineWorldFine, package="ocedata")
+data(coastlineWorldFine, package = "ocedata")
 hlon <- -63.5728
 hlat <- 44.6476
-plot(coastlineWorldFine, clongitude=hlon, clatitude=hlat, span=2000)
-points(index$longitude, index$latitude, col=4)
+plot(coastlineWorldFine, clongitude = hlon, clatitude = hlat, span = 2000)
+points(index$longitude, index$latitude, col = 4)
 # Focus on the point nearest Halifax
 dist <- geodDist(index$longitude, index$latitude, hlon, hlat)
 focus <- index[which.min(dist), ]
-dataFile <- dod.ctd.gtspp(nc=focus$data_URL)
+dataFile <- dod.ctd.gtspp(nc = focus$data_URL)
 process(dataFile)
 }
 

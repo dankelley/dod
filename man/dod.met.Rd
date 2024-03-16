@@ -19,8 +19,10 @@ dod.met(
 }
 \arguments{
 \item{id}{A number giving the "Station ID" of the station of interest. If not
-provided, \code{id} defaults to 6358, for Halifax International Airport. See
-\dQuote{Details}.}
+provided, \code{id} defaults to 43405, for Halifax Dockyard. (Previously,
+the default was 6358, for Halifax International Airport, but in March
+2024 it was noticed that 6358 held no data.)
+See \dQuote{Details}.}
 
 \item{year}{A number giving the year of interest. Ignored unless \code{deltat}
 is \code{"hour"}. If \code{year} is not given, it defaults to the present year.}
@@ -84,7 +86,7 @@ library(dod)
 # of 2003. This dataset is used for data(met) provided with oce.
 # Note that requests for data after 2012 month 10 yield all
 # missing values, for reasons unknown to the author.
-metFile <- dod.met(6358, 2003, 9, destdir=".")
+metFile <- dod.met(6358, 2003, 9, destdir = ".")
 }
 
 }

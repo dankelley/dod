@@ -9,8 +9,8 @@
 #' this exceeds zero, then `...` is passed to [cat()], for printing.
 #'
 #' @export
-dodDebug <- function(debug=0, ...)
-{
-    if (debug > 0)
+dodDebug <- function(debug = 0, ...) {
+    if (debug > 0) {
         cat(...)
+    }
 }

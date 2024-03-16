@@ -57,7 +57,7 @@ library(oce)
 # User must create directory ~/data/coastline first.
 # As of September 2016, the downloaded file, named
 # "ne_50m_coastline.zip", occupies 443K bytes.
-filename <- dod.coastline(destdir="~/data/coastline")
+filename <- dod.coastline(destdir = "~/data/coastline")
 coastline <- read.coastline(filename)
 plot(coastline)
 }

@@ -34,15 +34,15 @@
 #' @seealso The work is done with [utils::download.file()].
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' library(oce)
 #' # User must create directory ~/data/coastline first.
 #' # As of September 2016, the downloaded file, named
 #' # "ne_50m_coastline.zip", occupies 443K bytes.
-#' filename <- dod.coastline(destdir="~/data/coastline")
+#' filename <- dod.coastline(destdir = "~/data/coastline")
 #' coastline <- read.coastline(filename)
 #' plot(coastline)
-#'}
+#' }
 #'
 #' @references
 #' 1. The NaturalEarth server is at `https://www.naturalearthdata.com`
@@ -53,28 +53,30 @@
 #' @export
 #'
 #' @author Dan Kelley
-dod.coastline <- function(resolution, item="coastline", destdir=".", destfile, server="naturalearth", debug=0)
-{
-    if (missing(resolution))
+dod.coastline <- function(resolution, item = "coastline", destdir = ".", destfile, server = "naturalearth", debug = 0) {
+    if (missing(resolution)) {
         resolution <- "50m"
+    }
     resolutionChoices <- c("10m", "50m", "110m")
-    if (!(resolution %in% resolutionChoices))
-        stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
+    if (!(resolution %in% resolutionChoices)) {
+        stop("'resolution' must be one of: '", paste(resolutionChoices, collapse = "' '"), "'")
+    }
     if (server == "naturalearth") {
         urlBase <- "https://www.naturalearthdata.com/downloads"
     } else {
         stop("the only server that works is naturalearth")
     }
-    filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
-    if (missing(destfile))
+    filename <- paste("ne_", resolution, "_", item, ".zip", sep = "")
+    if (missing(destfile)) {
         destfile <- filename
-    url <- paste(urlBase, "/", resolution, "/physical/", filename, sep="")
-    destination <- paste(destdir, destfile, sep="/")
-    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+    }
+    url <- paste(urlBase, "/", resolution, "/physical/", filename, sep = "")
+    destination <- paste(destdir, destfile, sep = "/")
+    if (1 == length(list.files(path = destdir, pattern = paste("^", destfile, "$", sep = "")))) {
         dodDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
     } else {
         download.file(url, destination)
-        dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
+        dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep = "")
     }
     # The following is a sample URL, from which I reverse-engineered the URL construction.
     #    https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip

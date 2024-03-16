@@ -39,33 +39,38 @@
 #' @export
 #'
 #' @author Dan Kelley
-dod.ctd.itp <- function(ID, info=FALSE, file=NULL, destdir=".", age=0, debug=0)
-{
+dod.ctd.itp <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, debug = 0) {
     # For ITP 135, info is at
     # https://www2.whoi.edu/site/itp/data/active-systems/itp-135/
     # and data is at
     # https://scienceweb.whoi.edu/itp/data/itp135grddata.zip
-    if (missing(ID))
+    if (missing(ID)) {
         stop("ID must be supplied")
+    }
     owarn <- options("warn")$warn
-    options(warn=-1)
+    options(warn = -1)
     IDorig <- ID
     ID <- as.integer(ID)
-    options(warn=owarn)
-    if (is.na(ID))
+    options(warn = owarn)
+    if (is.na(ID)) {
         stop("ID=", IDorig, " is neither an integer nor a string denoting an integer")
+    }
     infoURL <- sprintf("https://www2.whoi.edu/site/itp/data/active-systems/itp-%s", ID)
-    if (info)
+    if (info) {
         return(infoURL)
+    }
     dataURL <- sprintf("https://scienceweb.whoi.edu/itp/data/itp%sgrddata.zip", ID)
-    dodDebug(debug, "infoURL=\"", infoURL, "\"\n", sep="")
-    dodDebug(debug, "dataURL=\"", dataURL, "\"\n", sep="")
-    if (is.null(file))
+    dodDebug(debug, "infoURL=\"", infoURL, "\"\n", sep = "")
+    dodDebug(debug, "dataURL=\"", dataURL, "\"\n", sep = "")
+    if (is.null(file)) {
         file <- gsub(".*/", "", dataURL)
+    }
     # Try e.g. b50056_ctd.txt and if that fails, try b50056_ctd_QC.txt
-    filename <- try(dod.download(url=dataURL, destdir=destdir, file=file, age=age, debug=debug-1),
-        silent=TRUE)
-    if (inherits(filename, "try-error"))
+    filename <- try(dod.download(url = dataURL, destdir = destdir, file = file, age = age, debug = debug - 1),
+        silent = TRUE
+    )
+    if (inherits(filename, "try-error")) {
         stop("Unable to download \"", dataURL, "\" to \"", filename, "\"")
+    }
     return(filename)
 }

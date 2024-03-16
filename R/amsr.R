@@ -63,41 +63,44 @@
 #'     library(dod)
 #'     library(oce)
 #'     library(ncdf4)
-#'     file <- dod.amsr(destdir="~/data/amsr")
+#'     file <- dod.amsr(destdir = "~/data/amsr")
 #'     nc <- nc_open(file)
 #'     lon <- ncvar_get(nc, "lon")
 #'     lat <- ncvar_get(nc, "lat")
 #'     SST <- ncvar_get(nc, "SST")
 #'     U <- ncvar_get(nc, "wind_speed_AW")
-#'     par(mfrow=c(2, 1))
-#'     imagep(lon, lat, SST, asp=1, col=oceColorsTurbo, xaxs="i")
+#'     par(mfrow = c(2, 1))
+#'     imagep(lon, lat, SST, asp = 1, col = oceColorsTurbo, xaxs = "i")
 #'     mtext("SST [degC]")
-#'     imagep(lon, lat, U, asp=1, zlim=c(0,15), col=oceColorsTurbo, xaxs="i")
+#'     imagep(lon, lat, U, asp = 1, zlim = c(0, 15), col = oceColorsTurbo, xaxs = "i")
 #'     mtext("Wind [m/s]")
 #'     nc_close(nc)
 #' }
-#'}
+#' }
 #'
 #' @export
 #'
 #' @author Dan Kelley
-dod.amsr <- function(year=NULL, month, day, destdir=".",
-    server="https://data.remss.com/amsr2/ocean/L3/v08.2", type="3day",
-    debug=0)
-{
-    dodDebug(debug, "dod.amsr(type=\"", type, "\", ...) {\n", sep="")
-    if (!type %in% c("3day", "daily", "weekly", "monthly"))
+dod.amsr <- function(
+    year = NULL, month, day, destdir = ".",
+    server = "https://data.remss.com/amsr2/ocean/L3/v08.2", type = "3day",
+    debug = 0) {
+    dodDebug(debug, "dod.amsr(type=\"", type, "\", ...) {\n", sep = "")
+    if (!type %in% c("3day", "daily", "weekly", "monthly")) {
         stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
+    }
     # If year, month, day not given, default to 3 days ago.
     today <- as.POSIXlt(Sys.Date())
     usingDefaultTime <- is.null(year)
     if (usingDefaultTime) {
         dodDebug(debug, "year is NULL, so a default time will be used\n")
     } else {
-        if (missing(month))
+        if (missing(month)) {
             stop("month must be provided, if year is provided")
-        if (type %in% c("3day", "daily") && missing(day))
+        }
+        if (type %in% c("3day", "daily") && missing(day)) {
             stop("day must be provided for type of '3day' or 'daily'")
+        }
         # convert to integers (needed for formatting URLs, below)
         year <- as.integer(year)
         month <- as.integer(month)
@@ -112,19 +115,28 @@ dod.amsr <- function(year=NULL, month, day, destdir=".",
             year <- 1900L + focus$year
             month <- 1L + focus$mon
             day <- focus$mday
-            dodDebug(debug, "defaulting to year=", year, ", month=", month, " and day=", day, "\n", sep="")
+            dodDebug(debug, "defaulting to year=", year, ", month=", month, " and day=", day, "\n", sep = "")
         } else {
-            dodDebug(debug, "user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep="")
+            dodDebug(debug, "user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep = "")
         }
-        url <- sprintf("%s/%s/%d/RSS_AMSR2_ocean_L3_%s_%04d-%02d-%02d_v08.2.nc",
-            server, type, year, type, year, month, day)
+        url <- sprintf(
+            "%s/%s/%d/RSS_AMSR2_ocean_L3_%s_%04d-%02d-%02d_v08.2.nc",
+            server, type, year, type, year, month, day
+        )
     } else if (identical(type, "weekly")) {
         if (usingDefaultTime) {
             # use the Saturday previous to the most recent Saturday
             today <- Sys.Date()
             dayName <- weekdays(today)
             offset <- switch(dayName,
-                "Saturday"=0, "Sunday"=1, "Monday"=2, "Tuesday"=3, "Wednesday"=4, "Thursday"=5, "Friday"=6)
+                "Saturday" = 0,
+                "Sunday" = 1,
+                "Monday" = 2,
+                "Tuesday" = 3,
+                "Wednesday" = 4,
+                "Thursday" = 5,
+                "Friday" = 6
+            )
             ymd <- format(today - offset - 7L)
             dodDebug(debug, "defaulting to ymd=\"", ymd, "\"\n")
         } else {
@@ -134,8 +146,10 @@ dod.amsr <- function(year=NULL, month, day, destdir=".",
         # https://data.remss.com/amsr2/ocean/L3/v08.2/weekly/RSS_AMSR2_ocean_L3_weekly_2023-07-15_v08.2.nc
         # ^                                           ^                            ^    ^
         # server                                      type                       type   ymd
-        url <- sprintf("%s/%s/RSS_AMSR2_ocean_L3_%s_%s_v08.2.nc",
-            server, type, type, ymd)
+        url <- sprintf(
+            "%s/%s/RSS_AMSR2_ocean_L3_%s_%s_v08.2.nc",
+            server, type, type, ymd
+        )
     } else if (identical(type, "monthly")) {
         # https://data.remss.com/amsr2/ocean/L3/v08.2/monthly/RSS_AMSR2_ocean_L3_monthly_2023-05_v08.2.nc
         # ^                                           ^                            ^    ^    ^
@@ -150,20 +164,22 @@ dod.amsr <- function(year=NULL, month, day, destdir=".",
             } else {
                 month <- month - 2L
             }
-            dodDebug(debug, "defaulting to year=", year, ", month=", month, "\n", sep="")
+            dodDebug(debug, "defaulting to year=", year, ", month=", month, "\n", sep = "")
         } else {
-            dodDebug(debug, "user-supplied year=", year, ", month=", month, "\n", sep="")
+            dodDebug(debug, "user-supplied year=", year, ", month=", month, "\n", sep = "")
         }
-        url <- sprintf("%s/%s/RSS_AMSR2_ocean_L3_%s_%04d-%02d_v08.2.nc",
-            server, type, type, year, month)
+        url <- sprintf(
+            "%s/%s/RSS_AMSR2_ocean_L3_%s_%04d-%02d_v08.2.nc",
+            server, type, type, year, month
+        )
     } else {
         # check again (but should not be able to get here)
         stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
     }
     file <- gsub(".*/", "", url)
-    dodDebug(debug, "url=\"", url, "\"\n", sep="")
-    dodDebug(debug, "file=\"", file, "\"\n", sep="")
-    rval <- dod.download(url, destdir=destdir, file=file, age=-1, debug=debug-1, silent=identical(debug, 0))
-    dodDebug(debug, "} # dod.amsr\n", sep="")
+    dodDebug(debug, "url=\"", url, "\"\n", sep = "")
+    dodDebug(debug, "file=\"", file, "\"\n", sep = "")
+    rval <- dod.download(url, destdir = destdir, file = file, age = -1, debug = debug - 1, silent = identical(debug, 0))
+    dodDebug(debug, "} # dod.amsr\n", sep = "")
     rval
 }

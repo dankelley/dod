@@ -64,10 +64,10 @@ the name of a file of interest; see \sQuote{Examples}.
 # Download and study this year's first BBMP CTD file
 library(dod)
 # Download and read the index
-indexFile <- dod.ctd("BBMP", index=TRUE)
-index <- read.csv(indexFile, header=FALSE, col.names=c("file","time"), skip=3)
+indexFile <- dod.ctd("BBMP", index = TRUE)
+index <- read.csv(indexFile, header = FALSE, col.names = c("file", "time"), skip = 3)
 # Download the first file in the index
-ctdFile <- dod.ctd("BBMP", ID=index$file[1])
+ctdFile <- dod.ctd("BBMP", ID = index$file[1])
 # Use oce to read, summarize and plot the data.
 library(oce)
 ctd <- read.oce(ctdFile)

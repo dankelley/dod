@@ -14,8 +14,10 @@
 #' although doing so leaves many important metadata blank.
 #'
 #' @param id A number giving the "Station ID" of the station of interest. If not
-#' provided, `id` defaults to 6358, for Halifax International Airport. See
-#' \dQuote{Details}.
+#' provided, `id` defaults to 43405, for Halifax Dockyard. (Previously,
+#' the default was 6358, for Halifax International Airport, but in March
+#' 2024 it was noticed that 6358 held no data.)
+#' See \dQuote{Details}.
 #'
 #' @param year A number giving the year of interest. Ignored unless `deltat`
 #' is `"hour"`. If `year` is not given, it defaults to the present year.
@@ -49,14 +51,14 @@
 #' @author Dan Kelley
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' library(dod)
 #' # Download data for Halifax International Airport, in September
 #' # of 2003. This dataset is used for data(met) provided with oce.
 #' # Note that requests for data after 2012 month 10 yield all
 #' # missing values, for reasons unknown to the author.
-#' metFile <- dod.met(6358, 2003, 9, destdir=".")
-#'}
+#' metFile <- dod.met(6358, 2003, 9, destdir = ".")
+#' }
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
@@ -73,28 +75,33 @@
 #' @importFrom utils capture.output
 #'
 #' @author Dan Kelley
-dod.met <- function(id, year, month, deltat, type="xml",
-    destdir=".", destfile, age=0, quiet=FALSE, debug=0)
-{
-    if (missing(id))
-        id <- 6358
+dod.met <- function(
+    id, year, month, deltat, type = "xml",
+    destdir = ".", destfile, age = 0, quiet = FALSE, debug = 0) {
+    if (missing(id)) {
+        id <- 43405 # was 6358 until 2024-03-16
+    }
     id <- as.integer(id)
-    if (missing(deltat))
+    if (missing(deltat)) {
         deltat <- "hour"
+    }
     deltatChoices <- c("hour", "month") # FIXME: add "day"
     deltatIndex <- pmatch(deltat, deltatChoices)
-    if (!(type %in% c("csv", "xml")))
+    if (!(type %in% c("csv", "xml"))) {
         stop("type '", type, "' not permitted; try 'csv' or 'xml'")
-    if (is.na(deltatIndex))
+    }
+    if (is.na(deltatIndex)) {
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
+    }
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
-        today <- as.POSIXlt(Sys.time(), tz="UTC")
-        if (missing(year))
+        today <- as.POSIXlt(Sys.time(), tz = "UTC")
+        if (missing(year)) {
             year <- today$year + 1900
+        }
         if (missing(month)) {
-            month <- today$mon + 1         # so 1=jan etc
-            month <- month - 1             # we want *previous* month, which should have data
+            month <- today$mon + 1 # so 1=jan etc
+            month <- month - 1 # we want *previous* month, which should have data
             if (month == 1) {
                 year <- year - 1
                 month <- 12
@@ -107,32 +114,39 @@ dod.met <- function(id, year, month, deltat, type="xml",
             "&stationID=", id,
             "&Year=", year,
             "&Month=", month,
-            "&timeframe=1&submit=Download+Data", sep="")
-        if (missing(destfile))
+            "&timeframe=1&submit=Download+Data",
+            sep = ""
+        )
+        if (missing(destfile)) {
             destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
+        }
     } else if (deltat == "month") {
         # Next line reverse engineered from monthly data at Resolute. I don't imagine we
         # need Year and Month and Day.
         url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?stationID=",
-            id, "&format=", type, "&timeframe=3&submit=Download+Data", sep="")
-        #id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
+            id, "&format=", type, "&timeframe=3&submit=Download+Data",
+            sep = ""
+        )
+        # id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
         if (missing(destfile)) {
             destfile <- sprintf("met_%d_monthly.%s", id, type)
         }
     } else {
         stop("deltat must be \"hour\" or \"month\"")
     }
-    destination <- paste(destdir, destfile, sep="/")
+    destination <- paste(destdir, destfile, sep = "/")
     dodDebug(debug, "url:", url, "\n")
-    utils::capture.output({download.file(url, destination, age=age, quiet=TRUE)})
-    dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
+    utils::capture.output({
+        download.file(url, destination, age = age, quiet = TRUE)
+    })
+    dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep = "")
     # NOTE: if the format=csv part of the URL is changed to format=txt we get
     # the metadata file. But dealing with that is a bit of coding, both at the
     # download stage and at the read.met() stage, and I don't think this is
     # worthwhile.  The better scheme may be for users to move to the XML
     # format, instead of sticking with the CSV format.
     destination
-}
+} # dod.met
 
 #' Download sounding data
 #'
@@ -164,33 +178,36 @@ dod.met <- function(id, year, month, deltat, type="xml",
 #' @return The local name of the downloaded file.
 #'
 #' @examples
-#'\dontrun{
-#'# Download
+#' \dontrun{
+#' # Download
 #' tempdir <- tempfile()
 #' dir.create(tempdir)
 #' station <- "73110"
 #' year <- "2023"
 #' month <- "01"
 #' day <- "08"
-#' file <- dod.met.sounding(station, year=year, month=month, day=day, destdir=tempdir)
+#' file <- dod.met.sounding(station, year = year, month = month, day = day, destdir = tempdir)
 #' # Read data, extracting the table crudely.
 #' lines <- readLines(file)
 #' start <- grep("<PRE>", lines)[1]
 #' end <- grep("</PRE>", lines)[1]
-#' table <- lines[seq(start+5, end-1)]
-#' col.names <- strsplit(gsub("^ [ ]*", "", lines[start+2]), "[ ]+")[[1]]
+#' table <- lines[seq(start + 5, end - 1)]
+#' col.names <- strsplit(gsub("^ [ ]*", "", lines[start + 2]), "[ ]+")[[1]]
 #' # Must read in fixed-width format because missing data are blanked out
-#' data <- read.fwf(file=textConnection(table),
-#'    widths=rep(7, 11), col.names=col.names)
+#' data <- read.fwf(
+#'     file = textConnection(table),
+#'     widths = rep(7, 11), col.names = col.names
+#' )
 #' # Plot mixing ratio variation with height
-#' plot(data$MIXR, data$HGHT, type="l", cex=0.5, pch=20, col=4,
-#'     xlab="Mixing Ratio", ylab="Height [m]")
-#' unlink(tempdir, recursive=TRUE)
-#'}
+#' plot(data$MIXR, data$HGHT,
+#'     type = "l", cex = 0.5, pch = 20, col = 4,
+#'     xlab = "Mixing Ratio", ylab = "Height [m]"
+#' )
+#' unlink(tempdir, recursive = TRUE)
+#' }
 #'
 #' @export
-dod.met.sounding <- function(station="73110", year, month, day, region="naconf", destdir=".", age=0, debug=0)
-{
+dod.met.sounding <- function(station = "73110", year, month, day, region = "naconf", destdir = ".", age = 0, debug = 0) {
     # https://weather.uwyo.edu/upperair/sounding.html
     # url <- "https://weather.uwyo.edu/cgi-bin/sounding?region=naconf&TYPE=TEXT%3ALIST&YEAR=2023&MONTH=01&FROM=0812&TO=0812&STNM=73110"
     ymd <- strsplit(format(Sys.Date()), "-")[[1]]
@@ -200,12 +217,13 @@ dod.met.sounding <- function(station="73110", year, month, day, region="naconf",
     from <- paste0(day, "12")
     to <- from
     base <- "https://weather.uwyo.edu/cgi-bin/sounding"
-    url <- sprintf("%s?region=%s&TYPE=TEXT%%3ALIST&YEAR=%s&MONTH=%s&FROM=%s&TO=%s&STNM=%s",
-        base, region, year, month, from, to, station)
-    dodDebug(debug, "url=\"", url, "\"\n", sep="")
+    url <- sprintf(
+        "%s?region=%s&TYPE=TEXT%%3ALIST&YEAR=%s&MONTH=%s&FROM=%s&TO=%s&STNM=%s",
+        base, region, year, month, from, to, station
+    )
+    dodDebug(debug, "url=\"", url, "\"\n", sep = "")
     file <- paste0("/sounding", "_", station, "_", year, "_", month, ".dat")
-    dodDebug(debug, "file=\"", destdir, "/", file , "\"\n", sep="")
+    dodDebug(debug, "file=\"", destdir, "/", file, "\"\n", sep = "")
     cat("https://climate.weather.gc.ca/climate_data/hourly_data_e.html?timeframe=1&Year=2023&Month=9&Day=16&hlyRange=2019-03-19%7C2023-09-16&dlyRange=2019-03-19%7C2023-09-15&mlyRange=%7C&StationID=53938&Prov=NS&urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=1840&EndYear=2023&selRowPerPage=25&Line=8&searchMethod=contains&txtStationName=halifax\n")
-    browser()
-    dod.download(url, destdir=destdir, file=file, age=age, debug=debug-1)
-}
+    dod.download(url, destdir = destdir, file = file, age = age, debug = debug - 1)
+} # dod.met.sounding

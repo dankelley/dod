@@ -85,12 +85,14 @@ hints from \code{marmap::getNOAAbathy()}.
 \examples{
 \dontrun{
 library(oce)
-topoFile <- dod.topo(west=-66, east=-60, south=43, north=47,
-    resolution=1, destdir="~/data/topo")
+topoFile <- dod.topo(
+    west = -66, east = -60, south = 43, north = 47,
+    resolution = 1, destdir = "~/data/topo"
+)
 topo <- read.topo(topoFile)
-imagep(topo, zlim=c(-400, 400), col=oceColorsTwo, drawTriangles=TRUE)
-if (requireNamespace("ocedata", quietly=TRUE)) {
-    data(coastlineWorldFine, package="ocedata")
+imagep(topo, zlim = c(-400, 400), col = oceColorsTwo, drawTriangles = TRUE)
+if (requireNamespace("ocedata", quietly = TRUE)) {
+    data(coastlineWorldFine, package = "ocedata")
     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 }
 }

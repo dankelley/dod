@@ -15,21 +15,26 @@
 #' [dod.ctd.gtspp()].
 #'
 #' @export
-dod.ctd <- function(program=NULL, ...)
-{
+dod.ctd <- function(program = NULL, ...) {
     allowed <- c("BATS", "BBMP", "GTSPP", "ITP")
-    if (is.null(program))
-        stop("must give 'program'; try \"",
-             paste(allowed, collapse='" "'), "\"")
-    if (program == "BATS")
+    if (is.null(program)) {
+        stop(
+            "must give 'program'; try \"",
+            paste(allowed, collapse = '" "'), "\""
+        )
+    }
+    if (program == "BATS") {
         dod.ctd.bats(...)
-    else if (program == "BBMP")
+    } else if (program == "BBMP") {
         dod.ctd.bbmp(...)
-    else if (program == "GTSPP")
+    } else if (program == "GTSPP") {
         dod.ctd.gtspp(...)
-    else if (program == "ITP")
+    } else if (program == "ITP") {
         dod.ctd.itp(...)
-    else
-        stop("'program' must be one of: \"",
-             paste(allowed, collapse='" "'), "\"")
+    } else {
+        stop(
+            "'program' must be one of: \"",
+            paste(allowed, collapse = '" "'), "\""
+        )
+    }
 }

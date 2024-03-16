@@ -25,44 +25,52 @@
 #' @importFrom utils download.file
 #'
 #' @export
-dod.download <- function(url=NULL, file=NULL, destdir=".", age=0, silent=TRUE, debug=0)
-{
-    if (is.null(url))
+dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, silent = TRUE, debug = 0) {
+    if (is.null(url)) {
         stop("url must not be NULL")
-    if (!dir.exists(destdir))
+    }
+    if (!dir.exists(destdir)) {
         stop("destdir \"", destdir, "\" does not exist; please create it first.")
+    }
     dodDebug(debug, "    dod.download(",
         "url=\"", url, "\", ",
         "file=\"", file, "\", ",
         "destdir=\"", destdir, "\", ",
-        "age=", age, ", silent=", silent, ", debug=", debug, ")\n    {\n", sep="")
+        "age=", age, ", silent=", silent, ", debug=", debug, ")\n    {\n",
+        sep = ""
+    )
     filepath <- file.path(destdir, file)
     # For negative age, set timer to 1000 years
-    if (age < 0)
+    if (age < 0) {
         age <- 1000 * 365
+    }
     if (file.exists(filepath)) {
         mtime <- file.info(filepath)$mtime
-        fileAge <- (as.numeric(Sys.time()) - as.numeric(mtime))/86400
-        fileAgeMsg <- if (fileAge < 1)
-            sprintf("%.2f hours", fileAge*24)
-        else
+        fileAge <- (as.numeric(Sys.time()) - as.numeric(mtime)) / 86400
+        fileAgeMsg <- if (fileAge < 1) {
+            sprintf("%.2f hours", fileAge * 24)
+        } else {
             sprintf("%.2f days", fileAge)
+        }
         if (fileAge < age) {
             dodDebug(debug, "        an existing file is ", fileAgeMsg,
-                " old, so it will not be downloaded\n    } # dod.download()\n", sep="")
+                " old, so it will not be downloaded\n    } # dod.download()\n",
+                sep = ""
+            )
             return(filepath)
         } else {
-            dodDebug(debug, "      an existing file is ", fileAgeMsg, " old, so must download a newer version\n", sep="")
+            dodDebug(debug, "      an existing file is ", fileAgeMsg, " old, so must download a newer version\n", sep = "")
         }
     } else {
         dodDebug(debug, "      new file, so must download\n")
     }
     owarn <- options("warn")$warn
-    options(warn=-1)
-    t <- try(download.file(url=url, destfile=filepath, quiet=silent), silent=silent)
-    options(warn=owarn)
-    if (inherits(t, "try-error"))
+    options(warn = -1)
+    t <- try(download.file(url = url, destfile = filepath, quiet = silent), silent = silent)
+    options(warn = owarn)
+    if (inherits(t, "try-error")) {
         stop("An error occured when trying to download \"", url, "\"")
+    }
     dodDebug(debug, "    } # dod.download()\n")
     filepath
 }
