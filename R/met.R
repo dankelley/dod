@@ -51,14 +51,22 @@
 #' @author Dan Kelley
 #'
 #' @examples
-#' \dontrun{
+#' # Meteorological data for Halifax, Nova Scotia.
+#' # Note that a temporary directory is used, in case
+#' # the package is later submitted to CRAN, which does not
+#' # permit downloads to the working directory.
 #' library(dod)
-#' # Download data for Halifax International Airport, in September
-#' # of 2003. This dataset is used for data(met) provided with oce.
-#' # Note that requests for data after 2012 month 10 yield all
-#' # missing values, for reasons unknown to the author.
-#' metFile <- dod.met(43405, 2024, 3, destdir = ".")
+#' tmpdir <- tempfile() # temporary directory, removed at the end
+#' dir.create(tmpdir)
+#' metFile <- dod.met(43405, destdir = tmpdir)
+#' if (requireNamespace("oce", quietly = TRUE)) {
+#'     library(oce)
+#'     met <- read.met(metFile)
+#'     t <- met[["time"]]
+#'     p <- met[["pressure"]]
+#'     oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
 #' }
+#' unlink(tmpdir, recursive = TRUE) # remove temporary directory
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
@@ -101,7 +109,7 @@ dod.met <- function(
         }
         if (missing(month)) {
             month <- today$mon + 1 # so 1=jan etc
-            month <- month - 1 # we want *previous* month, which should have data
+            #ERROR month <- month - 1 # we want *previous* month, which should have data
             if (month == 1) {
                 year <- year - 1
                 month <- 12

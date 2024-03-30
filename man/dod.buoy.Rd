@@ -38,10 +38,13 @@ This function downloads buoy data from various programs
 including...
 }
 \examples{
-# Significant wave height measured by a buoy in Halifax Harbour
+# Show recent variation of significant wave height in Halifax
+# Harbour.
+# Note that a temporary directory is used, in case
+# the package is later submitted to CRAN, which does not
+# permit downloads to the working directory.
 library(dod)
-tmpdir <- tempfile()
-print(tmpdir)
+tmpdir <- tempfile() # temporary directory, removed at the end
 dir.create(tmpdir)
 file <- dod.buoy("smartatlantic", "h1", destdir = tmpdir)
 col.names <- strsplit(readLines(file, 1), ",")[[1]]
@@ -50,7 +53,7 @@ d$t <- as.POSIXct(d$time, tz = "UTC", format = "\%Y-\%m-\%dT\%H:\%M:\%SZ")
 plot(d$t, d$wave_ht_sig, type = "l",
     xlab = "", ylab = "Sig. Wave Ht. [m]"
 )
-unlink(tmpdir, recursive = TRUE)
+unlink(tmpdir, recursive = TRUE) # remove temporary directory
 
 }
 \author{

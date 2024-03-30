@@ -22,10 +22,13 @@
 #' return a data frame.  Otherwise, return the name of the downloaded file.
 #'
 #' @examples
-#' # Significant wave height measured by a buoy in Halifax Harbour
+#' # Show recent variation of significant wave height in Halifax
+#' # Harbour.
+#' # Note that a temporary directory is used, in case
+#' # the package is later submitted to CRAN, which does not
+#' # permit downloads to the working directory.
 #' library(dod)
-#' tmpdir <- tempfile()
-#' print(tmpdir)
+#' tmpdir <- tempfile() # temporary directory, removed at the end
 #' dir.create(tmpdir)
 #' file <- dod.buoy("smartatlantic", "h1", destdir = tmpdir)
 #' col.names <- strsplit(readLines(file, 1), ",")[[1]]
@@ -34,7 +37,7 @@
 #' plot(d$t, d$wave_ht_sig, type = "l",
 #'     xlab = "", ylab = "Sig. Wave Ht. [m]"
 #' )
-#' unlink(tmpdir, recursive = TRUE)
+#' unlink(tmpdir, recursive = TRUE) # remove temporary directory
 #'
 #' @export
 #'
@@ -73,9 +76,10 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = age, debug = 0) {
         unzip(zipfile)
         unlink(zipfile)
         # NOTE: we should delete the zipfile too; see ?unlink
-        return(paste0("C", ID, ".CSV"))
+        rval <- paste0("C", ID, ".CSV")
+        dodDebug(debug, "downloaded \"", rval, "\"\n", sep = "")
+        return(rval)
     } else if (program == "smartatlantic") {
-        # https://www.smartatlantic.ca/erddap/tabledap/SmartAtlantic_XEOS_h1_buoy.nc?station_name%2Ctime%2Clatitude%2Clongitude%2Cprecise_lat%2Cprecise_lon%2Cbattery_level%2Ctemperature%2Cwave_ht_sig%2Cwave_period_max%2Cwave_ht_max%2Cwave_dir_avg%2Cwave_spread_avg%2Csea_surface_wave_mean_period%2Csample_quality&time%3E=2024-03-22T00%3A00%3A00Z&time%3C=2024-03-29T22%3A18%3A00Z
         dodDebug(debug, "handling program \"smartlatlantic\"\n")
         if (grepl("h1", ID)) {
             dodDebug(debug, "handling \"h1_buoy\"\n")
@@ -95,20 +99,18 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = age, debug = 0) {
                 "wave_dir_avg,",
                 "wave_spread_avg,",
                 "sea_surface_wave_mean_period,",
-                "sample_quality",
-                "&time>=",
-                "2024-03-22T00:00:00Z",
-                "&time<=",
-                "2024-03-29T22:18:00Z"
+                "sample_quality"
+                #"&time>=2024-03-22T00:00:00Z",
+                #"&time<=2024-03-29T22:18:00Z"
             )
             filename <- paste0(destdir, "/", file)
+            # The next two lines showed that the curl:: method is 20%
+            # faster in elapsed time, although 2.5X faster in user time;
+            # Frankly, either would be fine, because elapsed time is
+            # what the user sees.
+            #<SPEED TEST> print(system.time(curl::curl_download(url, filename)))
+            #<SPEED TEST> print(system.time(download.file(url, filename)))
             curl::curl_download(url, filename)
-            #<?> filename <- try(dod.download(url = url, destdir = destdir, file = file, age = age, debug = debug - 1),
-            #<?>     silent = debug == 0
-            #<?> )
-            #<?> if (inherits(filename, "try-error")) {
-            #<?>     stop("Unable to download \"", url, "\" as file \"", file, "\"")
-            #<?> }
             dodDebug(debug, "downloaded \"", filename, "\"\n", sep = "")
             return(filename)
         } else {

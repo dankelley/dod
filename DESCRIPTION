@@ -9,7 +9,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/dod/
 Depends: R (>= 4.1.0), curl
-Suggests: knitr, ncdf4, rjson, rmarkdown, terra, testthat
+Suggests: knitr, oce, ncdf4, rjson, rmarkdown, terra, testthat
 RoxygenNote: 7.3.1
 BugReports: https://github.com/dankelley/dod/issues
 Roxygen: list(markdown = TRUE)
