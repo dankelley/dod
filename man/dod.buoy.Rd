@@ -8,10 +8,10 @@ dod.buoy(program, ID = NULL, destdir = ".", age = age, debug = 0)
 }
 \arguments{
 \item{program}{argument specifying the desired oceanographic
-program to download buoy data from. Options include \code{MEDS}, etc.}
+program to download buoy data from. If this is not supplied,
+\code{dod.buoy()} will print a list of possibilities.}
 
-\item{ID}{For \code{MEDS} this argument is either a location name
-or ID number.}
+\item{ID}{a character value indicating the ID of the instrument.}
 
 \item{destdir}{a character value indicating the directory
 in which to store downloaded files.}
@@ -36,4 +36,23 @@ return a data frame.  Otherwise, return the name of the downloaded file.
 \description{
 This function downloads buoy data from various programs
 including...
+}
+\examples{
+# Significant wave height measured by a buoy in Halifax Harbour
+library(dod)
+tmpdir <- tempfile()
+print(tmpdir)
+dir.create(tmpdir)
+file <- dod.buoy("smartatlantic", "h1", destdir = tmpdir)
+col.names <- strsplit(readLines(file, 1), ",")[[1]]
+d <- read.csv(file, skip = 2, col.names = col.names)
+d$t <- as.POSIXct(d$time, tz = "UTC", format = "\%Y-\%m-\%dT\%H:\%M:\%SZ")
+plot(d$t, d$wave_ht_sig, type = "l",
+    xlab = "", ylab = "Sig. Wave Ht. [m]"
+)
+unlink(tmpdir, recursive = TRUE)
+
+}
+\author{
+Dan Kelley
 }

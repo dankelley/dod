@@ -1,19 +1,23 @@
+# dod 0.1.10
+
+* Change `dod.buoy()` to handle the `h1` buoy of the `smartatlantic` program.
+
 # dod 0.1.9
 
-* `dod.met()` now defaults station to 43405, since on 2024-03-16 it was noticed
-  that the older default no longer held data.
+* Change `dod.met()` to default station to 43405, since on 2024-03-16 it was
+  noticed that the older default no longer held data.
 
 # dod 0.1.8
 
-* `dod.tideGauge()` accepts a number for `start`.
+* Change `dod.tideGauge()` to accept a number for `start`.
 
 # dod 0.1.7
 
-* `dod.ctd.itp()` added.
+* Add `dod.ctd.itp()`.
 
 # dod 0.1.6
 
-* `dod.tideGauge()` can now handle both CHS and NOAA downloads.
+* Change `dod.tideGauge()` to handle both CHS and NOAA downloads.
 * All links to the oce package are removed, to avoid circular dependencies.
 
 # dod 0.1.5
@@ -22,7 +26,7 @@
 
 # dod 0.1.4
 
-* move project to github.com/dankelley/dod
+* Move project to github.com/dankelley/dod
 * `dod.amsr()` improvements.
 
 # dod 0.1.3
@@ -34,11 +38,11 @@
 
 # dod 0.1.2
 
-* add `age` argument to functions that download.
+* Add `age` argument to functions that download.
 
 # dod 0.1.1
 
-* add `dod.met.sounding()`
+* Add `dod.met.sounding()`.
 
 # dod 0.1.0
 

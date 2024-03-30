@@ -1,16 +1,17 @@
 Package: dod
 Type: Package
 Title: Download Oceanographic Data
-Version: 0.1.9
+Version: 0.1.10
 Author: Dan Kelley, Annie Howard, and Jaimie Harbin
 Maintainer: Dan Kelley <dan.kelley@dal.c>
 Description: The package is used to download various types of oceanographic data including ctd, topography, advanced microwave scanning radiometer, and meteorological data.
 License: GPL (>= 2)
 Encoding: UTF-8
+URL: https://dankelley.github.io/dod/
+Depends: R (>= 4.1.0), curl
 Suggests: knitr, ncdf4, rjson, rmarkdown, terra, testthat
 RoxygenNote: 7.3.1
 BugReports: https://github.com/dankelley/dod/issues
 Roxygen: list(markdown = TRUE)
 BuildVignettes: true
 VignetteBuilder: knitr
-URL: https://dankelley.github.io/dod/
