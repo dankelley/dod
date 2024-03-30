@@ -59,7 +59,8 @@
 #' tmpdir <- tempfile() # temporary directory, removed at the end
 #' dir.create(tmpdir)
 #' metFile <- dod.met(43405, destdir = tmpdir)
-#' if (requireNamespace("oce", quietly = TRUE)) {
+#' if (requireNamespace("oce", quietly = TRUE) &&
+#'     requireNamespace("XML", quietly = TRUE)) {
 #'     library(oce)
 #'     met <- read.met(metFile)
 #'     t <- met[["time"]]
