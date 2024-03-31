@@ -1,4 +1,4 @@
-#' Download buoy data
+' Download buoy data
 #'
 #' This function downloads buoy data from various programs
 #' including, as listed in \sQuote{Details}.
@@ -113,12 +113,13 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = 1, debug = 0) {
         return(rval)
     } else if (program == "smartatlantic") {
         IDabbrev <- list(
-            "h1" = "SmartAtlantic_XEOS_h1_buoy",
-            "hkb" = "SmartAtlantic_XEOS_hkb_buoy",
-            "halifax" = "SMA_halifax",
-            "saint_john" = "SMA_saint_john",
-            "saint_johns" = "SMA_saint_johns"
+            "h1" = "SmartAtlantic_XEOS_h1_buoy/smb_h1_data.csv",
+            "hkb" = "SmartAtlantic_XEOS_hkb_buoy/smb_hkb_data.csv",
+            "halifax" = "SMA_halifax/smb_halifax.csv",
+            "saint_john" = "SMA_saint_john/smb_saint_john.csv",
+            "saint_johns" = "SMA_st_johns/smb_st_johns.csv"
         )
+        #https://www.smartatlantic.ca/erddap/files/SMA_st_johns/smb_st_johns.csv
         IDallowed <- names(IDabbrev)
         if (!ID %in% IDallowed) {
             stop(
@@ -128,75 +129,9 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = 1, debug = 0) {
         }
         # Access file directly (will this always work, though?)
         base <- "https://www.smartatlantic.ca/erddap/files/"
-        if (ID == "h1") {
-            #https://www.smartatlantic.ca/erddap/files/SmartAtlantic_XEOS_h1_buoy/smb_h1_data.csv
-            #dodDebug(debug, "handling \"", ID, "\" as a direct download\n", sep = "")
-            file <- "smb_h1_data.csv"
-            url <- paste0(base, "SmartAtlantic_XEOS_h1_buoy/", file)
-            return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
-        }
-        if (ID == "halifax") {
-            #https://www.smartatlantic.ca/erddap/files/SMA_halifax/smb_halifax.csv
-            #dodDebug(debug, "handling \"", ID, "\" as a direct download\n", sep = "")
-            file <- "smb_halifax.csv"
-            url <- paste0(base, "SMA_halifax/", file)
-            return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
-        }
-        if (ID == "hkb") {
-            # https://www.smartatlantic.ca/erddap/files/SmartAtlantic_XEOS_hkb_buoy/smb_hkb_data.csv
-            #dodDebug(debug, "handling \"", ID, "\" as a direct download\n", sep = "")
-            file <- "smb_hkb_data.csv"
-            url <- paste0(base, "SmartAtlantic_XEOS_hkb_buoy/", file)
-            return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
-        }
-        if (ID == "saint_john") {
-            #dodDebug(debug, "handling \"", ID, "\" as a direct download\n", sep = "")
-            file <- "smb_saint_john.csv"
-            url <- paste0(base, "SMA_saint_john/", file)
-            return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
-        }
-        if (ID == "saint_johns") {
-            #https://www.smartatlantic.ca/erddap/files/SMA_st_johns/smb_st_johns.csv
-            #dodDebug(debug, "handling \"", ID, "\" as a direct download\n", sep = "")
-            file <- "smb_st_johns.csv"
-            url <- paste0(base, "SMA_st_johns/", file)
-            return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
-        }
-        stop("Unknown ID \"", ID, "\" (programming error: please reort this)")
-        #<old> IDfull <- IDabbrev[ID]
-        #<old> dodDebug(debug, "handling \"", ID, "\", i.e. \"", IDfull, "\"\n")
-        #<old> file <- paste0(IDfull, ".csv")
-        #<old> url <- paste0(
-        #<old>     "https://www.smartatlantic.ca/erddap/tabledap/",
-        #<old>     file,
-        #<old>     "?",
-        #<old>     "time,",
-        #<old>     "latitude,",
-        #<old>     "longitude,",
-        #<old>     "temperature,",
-        #<old>     "wave_ht_sig,",
-        #<old>     "wave_period_max,",
-        #<old>     "wave_ht_max,",
-        #<old>     "wave_dir_avg,",
-        #<old>     "wave_spread_avg,",
-        #<old>     "sea_surface_wave_mean_period,",
-        #<old>     "sample_quality"
-        #<old>     # "&time>=2024-03-22T00:00:00Z",
-        #<old>     # "&time<=2024-03-29T22:18:00Z"
-        #<old> )
-        #<old> filename <- paste0(destdir, "/", file)
-        #<old> # The next two lines showed that the curl:: method is 20%
-        #<old> # faster in elapsed time, although 2.5X faster in user time;
-        #<old> # Frankly, either would be fine, because elapsed time is
-        #<old> # what the user sees. I will stick with download.file()
-        #<old> # because it does not force a dependence on another
-        #<old> # library.
-        #<old> #<SPEED TEST> print(system.time(curl::curl_download(url, filename)))
-        #<old> #<SPEED TEST> print(system.time(download.file(url, filename)))
-        #<old> # curl::curl_download(url, filename)
-        #<old> download.file(url, filename)
-        #<old> dodDebug(debug, "downloaded \"", filename, "\"\n", sep = "")
-        #<old> return(filename)
+        url <- paste0(base, IDabbrev[ID])
+        file <- gsub(".*/", "", url)
+        return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
     } else {
         stop("unrecognized program=\"", program, "\"; try one of: \"", paste(programAllowed, collapse = "\" \""), "\"")
     }

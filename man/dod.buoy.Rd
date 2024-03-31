@@ -2,7 +2,8 @@
 % Please edit documentation in R/buoy.R
 \name{dod.buoy}
 \alias{dod.buoy}
-\title{Download buoy data}
+\title{This function downloads buoy data from various programs
+including, as listed in \sQuote{Details}.}
 \usage{
 dod.buoy(program, ID = NULL, destdir = ".", age = 1, debug = 0)
 }
@@ -35,11 +36,9 @@ return a data frame.  Otherwise, return the name of the
 downloaded file.
 }
 \description{
-This function downloads buoy data from various programs
-including, as listed in \sQuote{Details}.
+If \code{program} is `"MEDS"', then the choices for ID are as follows.
 }
 \details{
-If \code{program} is `"MEDS"', then the choices for ID are as follows.
 \itemize{
 \item \code{"Banquereau Bank"}
 \item \code{"East Scotian Slope"}
