@@ -47,12 +47,12 @@ such a file.  The latter case is recognized by \code{nc} starting with \code{"ht
 Note that \code{index} is ignored if \code{nc} is provided.  See \dQuote{Examples}.}
 
 \item{age}{a numerical value indicating a time interval, in days.
-If the file to be downloaded from the server already exists locally,
-and was created less than \code{age} days in the past, it will not be
-downloaded again.  Setting \code{age=0} (which is the default)
-forces a download, so that existing files will always be updated.
-By contrast, setting \code{age} to a negative number prevents the
-updating of files that already exist locally.}
+If the file to be downloaded from the server already exists
+locally, and was created less than \code{age} days in the past, it will
+not be downloaded again.  Setting \code{age=0} forces a download, so
+that existing files will always be updated. By contrast, setting
+\code{age} to a negative number prevents the updating of files that
+already exist locally, regardless of their age.}
 
 \item{debug}{an integer value indicating the level of debugging. If
 this exceeds 0, then some debugging messages will be printed. This

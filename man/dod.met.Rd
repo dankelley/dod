@@ -45,12 +45,12 @@ in which to store downloaded files.}
 this function creates a reasonable name.}
 
 \item{age}{a numerical value indicating a time interval, in days.
-If the file to be downloaded from the server already exists locally,
-and was created less than \code{age} days in the past, it will not be
-downloaded again.  Setting \code{age=0} (which is the default)
-forces a download, so that existing files will always be updated.
-By contrast, setting \code{age} to a negative number prevents the
-updating of files that already exist locally.}
+If the file to be downloaded from the server already exists
+locally, and was created less than \code{age} days in the past, it will
+not be downloaded again.  Setting \code{age=0} forces a download, so
+that existing files will always be updated. By contrast, setting
+\code{age} to a negative number prevents the updating of files that
+already exist locally, regardless of their age.}
 
 \item{quiet}{Logical value passed to \code{\link[=download.file]{download.file()}}; a \code{TRUE} value
 silences output.}

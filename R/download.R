@@ -47,10 +47,14 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, silent
     if (file.exists(filepath)) {
         mtime <- file.info(filepath)$mtime
         fileAge <- (as.numeric(Sys.time()) - as.numeric(mtime)) / 86400
-        fileAgeMsg <- if (fileAge < 1) {
-            sprintf("%.2f hours", fileAge * 24)
+        fileAgeMsg <- if (fileAge < 1 / 24) {
+            sprintf("%.1f minutes", fileAge * 24 * 60)
+        } else if (fileAge < 1) {
+            sprintf("%.1f hours", fileAge * 24)
+        } else if (fileAge < 3 * 28) {
+            sprintf("%.1f days", fileAge)
         } else {
-            sprintf("%.2f days", fileAge)
+            sprintf("%.1f months", fileAge / 28)
         }
         if (fileAge < age) {
             dodDebug(debug, "        an existing file is ", fileAgeMsg,

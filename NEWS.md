@@ -1,6 +1,6 @@
 # dod 0.1.10
 
-* Change `dod.buoy()` to handle the `h1` buoy of the `smartatlantic` program.
+* Change `dod.buoy()` to handle several buoys of the `smartatlantic` program.
 
 # dod 0.1.9
 

@@ -4,25 +4,25 @@
 \alias{dod.buoy}
 \title{Download buoy data}
 \usage{
-dod.buoy(program, ID = NULL, destdir = ".", age = age, debug = 0)
+dod.buoy(program, ID = NULL, destdir = ".", age = 1, debug = 0)
 }
 \arguments{
 \item{program}{argument specifying the desired oceanographic
-program to download buoy data from. If this is not supplied,
-\code{dod.buoy()} will print a list of possibilities.}
+program to download buoy data from. This must be either
+\code{"MEDS"} or \code{"smartatlantic"}.}
 
-\item{ID}{a character value indicating the ID of the instrument.}
+\item{ID}{a character value indicating the ID of the instrument (see \sQuote{Details})}
 
 \item{destdir}{a character value indicating the directory
 in which to store downloaded files.}
 
 \item{age}{a numerical value indicating a time interval, in days.
-If the file to be downloaded from the server already exists locally,
-and was created less than \code{age} days in the past, it will not be
-downloaded again.  Setting \code{age=0} (which is the default)
-forces a download, so that existing files will always be updated.
-By contrast, setting \code{age} to a negative number prevents the
-updating of files that already exist locally.}
+If the file to be downloaded from the server already exists
+locally, and was created less than \code{age} days in the past, it will
+not be downloaded again.  Setting \code{age=0} forces a download, so
+that existing files will always be updated. By contrast, setting
+\code{age} to a negative number prevents the updating of files that
+already exist locally, regardless of their age.}
 
 \item{debug}{an integer value indicating the level of debugging. If
 this exceeds 0, then some debugging messages will be printed. This
@@ -31,15 +31,45 @@ for each pass.}
 }
 \value{
 If \code{index} is TRUE, and \code{program} is \code{"BBMP"} or \code{"BATS"},
-return a data frame.  Otherwise, return the name of the downloaded file.
+return a data frame.  Otherwise, return the name of the
+downloaded file.
 }
 \description{
 This function downloads buoy data from various programs
-including...
+including, as listed in \sQuote{Details}.
+}
+\details{
+If \code{program} is `"MEDS"', then the choices for ID are as follows.
+\itemize{
+\item \code{"Banquereau Bank"}
+\item \code{"East Scotian Slope"}
+\item \code{"Halifax"}
+\item \code{"Halifax DISCUS TriAx"}
+\item \code{"Halifax Harbour"}
+\item \code{"Laurentian Fan"}
+\item \code{"Minas Basin"}
+\item \code{"Port Hope"}
+\item \code{"Prince Edward Point"}
+\item \code{"Tail of the Bank"}
+}
+
+If \code{program} is `"smartatlantic"', then the choices, all for
+buoys in the Atlantic Provinces, are as follows.
+\itemize{
+\item \code{"h1"} for a buoy near Duncan Reef, Nova Scotia
+(see \url{https://www.smartatlantic.ca/station_alt.html?id=halifax_h1})
+\item \code{"halifax"} for a buoy in Herring Cove, Nova Scotia
+(see \url{https://www.smartatlantic.ca/station_alt.html?id=halifax})
+\item \code{"hkb"} for a buoy near Meagher's Beach, Nova Scotia
+(see \url{https://www.smartatlantic.ca/station_alt.html?id=halifax_hk4})
+\item \code{"saint_john"} for a buoy in the Bay of Fundy, near St John, New Brunswick
+(see \url{https://www.smartatlantic.ca/station_alt.html?id=saintjohn})
+\item \code{"saint_johns"} for a buoy near St John's Harbour, Newfoundland
+(see \url{https://www.smartatlantic.ca/station_alt.html?id=stjohns})
+}
 }
 \examples{
-# Show recent variation of significant wave height in Halifax
-# Harbour.
+# Show significant wave height in Halifax Harbour over past 28 days.
 # Note that a temporary directory is used, in case
 # the package is later submitted to CRAN, which does not
 # permit downloads to the working directory.
@@ -50,7 +80,9 @@ file <- dod.buoy("smartatlantic", "h1", destdir = tmpdir)
 col.names <- strsplit(readLines(file, 1), ",")[[1]]
 d <- read.csv(file, skip = 2, col.names = col.names)
 d$t <- as.POSIXct(d$time, tz = "UTC", format = "\%Y-\%m-\%dT\%H:\%M:\%SZ")
-plot(d$t, d$wave_ht_sig, type = "l",
+look <- d$t > (max(d$t, na.rm = TRUE) - 28 * 86400)
+plot(d$t[look], d$wave_ht_sig[look],
+    type = "l", xaxs = "i",
     xlab = "", ylab = "Sig. Wave Ht. [m]"
 )
 unlink(tmpdir, recursive = TRUE) # remove temporary directory

@@ -1,12 +1,12 @@
 ^.lintr$
 ^.*\.xml$
 ^R/.lintr$
+^.*\.csv$
 ^.*\.dat$
 ^.*\.gz$
 ^.*\.swo$
 ^.*\.nc$
 ^.*\.ODF$
-^.*\.csv$
 ^.*\.tsv$
 ^.*\.txt$
 ^.*\.zip$
