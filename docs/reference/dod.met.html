@@ -75,9 +75,7 @@ that web server.  For that reason, it is brittle.</p>
 <span>  <span class="va">deltat</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"xml"</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="st">"."</span>,</span>
-<span>  <span class="va">destfile</span>,</span>
-<span>  age <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  age <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -119,11 +117,6 @@ If <code>deltat</code> is not given, it defaults to <code>"hour"</code>.</p></dd
 in which to store downloaded files.</p></dd>
 
 
-<dt>destfile</dt>
-<dd><p>optional name of destination file. If not provided,
-this function creates a reasonable name.</p></dd>
-
-
 <dt>age</dt>
 <dd><p>a numerical value indicating a time interval, in days.
 If the file to be downloaded from the server already exists
@@ -132,11 +125,6 @@ not be downloaded again.  Setting <code>age=0</code> forces a download, so
 that existing files will always be updated. By contrast, setting
 <code>age</code> to a negative number prevents the updating of files that
 already exist locally, regardless of their age.</p></dd>
-
-
-<dt>quiet</dt>
-<dd><p>Logical value passed to <code><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file()</a></code>; a <code>TRUE</code> value
-silences output.</p></dd>
 
 
 <dt>debug</dt>

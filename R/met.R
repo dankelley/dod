@@ -35,13 +35,7 @@
 #'
 #' @template destdirTemplate
 #'
-#' @param destfile optional name of destination file. If not provided,
-#' this function creates a reasonable name.
-#'
 #' @template ageTemplate
-#'
-#' @param quiet Logical value passed to [download.file()]; a `TRUE` value
-#' silences output.
 #'
 #' @template debugTemplate
 #'
@@ -84,9 +78,7 @@
 #' @importFrom utils capture.output
 #'
 #' @author Dan Kelley
-dod.met <- function(
-    id, year, month, deltat, type = "xml",
-    destdir = ".", destfile, age = 0, quiet = FALSE, debug = 0) {
+dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 1, debug = 0) {
     if (missing(id)) {
         id <- 43405 # was 6358 until 2024-03-16
     }
@@ -110,7 +102,7 @@ dod.met <- function(
         }
         if (missing(month)) {
             month <- today$mon + 1 # so 1=jan etc
-            #ERROR month <- month - 1 # we want *previous* month, which should have data
+            # ERROR month <- month - 1 # we want *previous* month, which should have data
             if (month == 1) {
                 year <- year - 1
                 month <- 12
@@ -126,9 +118,7 @@ dod.met <- function(
             "&timeframe=1&submit=Download+Data",
             sep = ""
         )
-        if (missing(destfile)) {
-            destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
-        }
+        file <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
     } else if (deltat == "month") {
         # Next line reverse engineered from monthly data at Resolute. I don't imagine we
         # need Year and Month and Day.
@@ -137,24 +127,12 @@ dod.met <- function(
             sep = ""
         )
         # id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
-        if (missing(destfile)) {
-            destfile <- sprintf("met_%d_monthly.%s", id, type)
-        }
+        file <- sprintf("met_%d_monthly.%s", id, type)
     } else {
         stop("deltat must be \"hour\" or \"month\"")
     }
-    destination <- paste(destdir, destfile, sep = "/")
     dodDebug(debug, "url:", url, "\n")
-    utils::capture.output({
-        download.file(url, destination, age = age, quiet = TRUE)
-    })
-    dodDebug(debug, "Downloaded file stored as '", destination, "'\n", sep = "")
-    # NOTE: if the format=csv part of the URL is changed to format=txt we get
-    # the metadata file. But dealing with that is a bit of coding, both at the
-    # download stage and at the read.met() stage, and I don't think this is
-    # worthwhile.  The better scheme may be for users to move to the XML
-    # format, instead of sticking with the CSV format.
-    destination
+    return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
 } # dod.met
 
 #' Download sounding data
@@ -233,6 +211,12 @@ dod.met.sounding <- function(station = "73110", year, month, day, region = "naco
     dodDebug(debug, "url=\"", url, "\"\n", sep = "")
     file <- paste0("/sounding", "_", station, "_", year, "_", month, ".dat")
     dodDebug(debug, "file=\"", destdir, "/", file, "\"\n", sep = "")
-    cat("https://climate.weather.gc.ca/climate_data/hourly_data_e.html?timeframe=1&Year=2023&Month=9&Day=16&hlyRange=2019-03-19%7C2023-09-16&dlyRange=2019-03-19%7C2023-09-15&mlyRange=%7C&StationID=53938&Prov=NS&urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=1840&EndYear=2023&selRowPerPage=25&Line=8&searchMethod=contains&txtStationName=halifax\n")
+    cat(paste0(
+        "https://climate.weather.gc.ca/climate_data/hourly_data_e.html?",
+        "timeframe=1&Year=2023&Month=9&Day=16&hlyRange=2019-03-19%7C2023-09-16&",
+        "dlyRange=2019-03-19%7C2023-09-15&mlyRange=%7C&StationID=53938&Prov=NS&",
+        "urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=1840&",
+        "EndYear=2023&selRowPerPage=25&Line=8&searchMethod=contains&txtStationName=halifax\n"
+    ))
     dod.download(url, destdir = destdir, file = file, age = age, debug = debug - 1)
 } # dod.met.sounding
