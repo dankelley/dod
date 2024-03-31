@@ -15,7 +15,7 @@
 #'
 #' @template debugTemplate
 #'
-#' @importFrom curl curl_download
+## @importFrom curl curl_download
 #' @importFrom utils unzip
 #'
 #' @return If `index` is TRUE, and `program` is `"BBMP"` or `"BATS"`,
@@ -107,10 +107,13 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = age, debug = 0) {
             # The next two lines showed that the curl:: method is 20%
             # faster in elapsed time, although 2.5X faster in user time;
             # Frankly, either would be fine, because elapsed time is
-            # what the user sees.
+            # what the user sees. I will stick with download.file()
+            # because it does not force a dependence on another
+            # library.
             #<SPEED TEST> print(system.time(curl::curl_download(url, filename)))
             #<SPEED TEST> print(system.time(download.file(url, filename)))
-            curl::curl_download(url, filename)
+            #curl::curl_download(url, filename)
+            download.file(url, filename)
             dodDebug(debug, "downloaded \"", filename, "\"\n", sep = "")
             return(filename)
         } else {
