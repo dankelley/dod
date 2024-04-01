@@ -20,3 +20,4 @@
 ^pkgdown$
 ^man-roxygen$
 sandbox
+^README\.Rmd$

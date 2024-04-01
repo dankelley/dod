@@ -90,14 +90,14 @@ dod.topo <- function(
     west, east, south, north, resolution = 4,
     destdir = ".", destfile, server = "https://gis.ngdc.noaa.gov",
     debug = getOption("dodDebug", 0L)) {
-    dodDebug(debug, "dod.topo(west=", west,
+    dodDebug(
+        debug, "dod.topo(west=", west,
         ", east=", east,
         ", south=", south,
         ", north=", north,
         ", resolution=", resolution,
         ", destdir='", destdir, "'",
-        ", server='", server, "')\n",
-        sep = "", style = "bold", unindent = 1
+        ", server='", server, "') ...\n"
     )
     # Code derived from marmap:getNOAAbathy() {
     if (resolution < 0.5) {
@@ -215,6 +215,6 @@ dod.topo <- function(
     nc <- ncdf4::nc_create(destination, list(Band1))
     ncdf4::ncvar_put(nc, "Band1", z)
     ncdf4::nc_close(nc)
-    dodDebug(debug, "} # dod.topo()\n", sep = "", style = "bold", unindent = 1)
+    dodDebug(debug, "... dod.topo()\n")
     destination
 }

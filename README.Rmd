@@ -1,0 +1,63 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.path = "man/figures/README-",
+    out.width = "100%"
+)
+```
+
+# dod
+
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/dod)](https://CRAN.R-project.org/package=dod)
+[![R-CMD-check](https://github.com/dankelley/dod/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dankelley/dod/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+The goal of dod is to make it easier to download various types of oceanographic data from common sources such as BATS, NAOO, MEDS, BBMP. Some similar functions exist in the oce package, but the intention is to retire them as dod matures, because building oce is difficult for some users, and CRAN policies dictate against frequent updates.
+
+## Installation
+
+You can install the development version of dod from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("dankelley/dod")
+```
+
+## Example
+
+The following example shows how to (1) download an index of ctd data files resulting from observations made as part of the BBMP program in the present year and then (2) use functions in the oce package to read and plot the last observations in the dataset.
+
+```{r example}
+library(dod)
+# 1. Get index
+library(dod)
+year <- format(Sys.Date(), "%Y")
+indexFile <- dod.ctd("BBMP", year, index = TRUE)
+index <- read.csv(indexFile, header = TRUE, skip = 2)
+# see first few lines to discover column names
+head(index, 3)
+# 2. Get the most recent file and plot the data
+item <- tail(index, 1)$FILE
+file <- dod.ctd("BBMP", year, item)
+library(oce)
+d <- read.ctd(file)
+# 3. Standard CTD plot
+plot(d)
+# 4. Check also biochemistry variables
+par(mfrow = c(2, 2))
+plotProfile(d, "SA")
+plotProfile(d, "CT")
+plotProfile(d, "oxygen")
+plotProfile(d, "fluorescence")
+```
+
+PS. This `README.md` file was created on `r Sys.Date()` by rendering the
+`README.Rmd` file with `devtools::build_readme()`.

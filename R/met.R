@@ -79,12 +79,15 @@
 #'
 #' @author Dan Kelley
 dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 1, debug = 0) {
+    dodDebug(debug, "dod.met() ...\n")
     if (missing(id)) {
         id <- 43405 # was 6358 until 2024-03-16
+        dodDebug(debug, "    defaulting id to", id, "\n")
     }
     id <- as.integer(id)
     if (missing(deltat)) {
         deltat <- "hour"
+        dodDebug(debug, "    defaulting deltat to", deltat, "\n")
     }
     deltatChoices <- c("hour", "month") # FIXME: add "day"
     deltatIndex <- pmatch(deltat, deltatChoices)
@@ -94,21 +97,47 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     if (is.na(deltatIndex)) {
         stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
     }
+    today <- as.POSIXlt(Sys.time(), tz = "UTC")
+    thisMonth <- today$mon + 1 # it has Jan=0
+    thisDay <- today$mday # day of month
+    thisYear <- today$year + 1900
+    if (missing(year)) {
+        year <- thisYear
+    }
+    if (missing(month)) {
+        month <- thisMonth
+    }
+    if (thisDay == 1) { # data don't appear until first day is complete
+        month <- month - 1
+        if (month < 0) {
+            year <- year - 1
+            month <- 12
+        }
+    }
+    dodDebug(debug, "using year=", year, " month=", month, "\n", sep = "")
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
-        today <- as.POSIXlt(Sys.time(), tz = "UTC")
-        if (missing(year)) {
-            year <- today$year + 1900
-        }
-        if (missing(month)) {
-            month <- today$mon + 1 # so 1=jan etc
-            # ERROR month <- month - 1 # we want *previous* month, which should have data
-            if (month == 1) {
-                year <- year - 1
-                month <- 12
-            }
-        }
-        # Next line is an example that worked as of Feb 2, 2017
+        #<2024-04-01> today <- as.POSIXlt(Sys.time(), tz = "UTC")
+        #<2024-04-01> mday <- today$mday
+        #<2024-04-01> if (mday == 1) {
+        #<2024-04-01>     month <- today$mon - 1
+        #<2024-04-01> }
+        #<2024-04-01> if (missing(year)) {
+        #<2024-04-01>     year <- today$year + 1900
+        #<2024-04-01> }
+        #<2024-04-01> if (missing(month)) {
+        #<2024-04-01>     month <- today$mon + 1 # so 1=jan etc
+        #<2024-04-01>     # ERROR month <- month - 1 # we want *previous* month, which should have data
+        #<2024-04-01>     if (month == 1) {
+        #<2024-04-01>         year <- year - 1
+        #<2024-04-01>         month <- 12
+        #<2024-04-01>     }
+        #<2024-04-01>     cat("next is today\n")
+        #<2024-04-01>     dodDebug(debug, "  today$mday=", today$mday, "\n", sep = "")
+        #<2024-04-01>     dodDebug(debug, "  defaulting to month=", month, " and year=", year, "\n", sep = "")
+        #<2024-04-01> }
+        # Next line is an example that worked on 2017-02-02
+        # Still works on 2024-04-01
         # http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
         url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
             "format=", type,
@@ -131,7 +160,6 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     } else {
         stop("deltat must be \"hour\" or \"month\"")
     }
-    dodDebug(debug, "url:", url, "\n")
     return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
 } # dod.met
 

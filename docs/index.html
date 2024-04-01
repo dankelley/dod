@@ -78,25 +78,45 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of dod from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages("devtools")</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/dod"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"dankelley/dod"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>The following example shows how to (1) download an index of ctd data files resulting from observations made as part of the BBMP program in the year 2022 and then (2) use functions in the oce package to read and plot the first file in that index.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># 1. Get index</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(dod)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>indexFile <span class="ot">&lt;-</span> <span class="fu">dod.ctd</span>(<span class="st">"BBMP"</span>, <span class="dv">2022</span>, <span class="at">index=</span><span class="cn">TRUE</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>index <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(indexFile, <span class="at">header=</span><span class="cn">TRUE</span>, <span class="at">skip=</span><span class="dv">2</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>item <span class="ot">&lt;-</span> index[<span class="dv">1</span>, <span class="st">"FILE"</span>]</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># 2. Get the first file, and plot it</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>file <span class="ot">&lt;-</span> <span class="fu">dod.ctd</span>(<span class="st">"BBMP"</span>, <span class="dv">2022</span>, item)</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">read.ctd</span>(file) <span class="sc">|&gt;</span> <span class="fu">plot</span>()</span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README-example-1.png" alt="Sample CTD plot."><div class="figcaption">Sample CTD plot.</div>
-</div>
+<p>The following example shows how to (1) download an index of ctd data files resulting from observations made as part of the BBMP program in the present year and then (2) use functions in the oce package to read and plot the last observations in the dataset.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/" class="external-link">dod</a></span><span class="op">)</span></span>
+<span><span class="co"># 1. Get index</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/" class="external-link">dod</a></span><span class="op">)</span></span>
+<span><span class="va">year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%Y"</span><span class="op">)</span></span>
+<span><span class="va">indexFile</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dod.ctd.html">dod.ctd</a></span><span class="op">(</span><span class="st">"BBMP"</span>, <span class="va">year</span>, index <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">indexFile</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, skip <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co"># see first few lines to discover column names</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">index</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            FILE     START_DATE_TIME</span></span>
+<span><span class="co">#&gt; 1 D24667001.ODF 2024-01-03 13:01:41</span></span>
+<span><span class="co">#&gt; 2 D24667002.ODF 2024-01-09 13:10:48</span></span>
+<span><span class="co">#&gt; 3 D24667003.ODF 2024-01-17 12:55:39</span></span>
+<span><span class="co"># 2. Get the most recent file and plot the data</span></span>
+<span><span class="va">item</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">index</span>, <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">FILE</span></span>
+<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dod.ctd.html">dod.ctd</a></span><span class="op">(</span><span class="st">"BBMP"</span>, <span class="va">year</span>, <span class="va">item</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: gsw</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dankelley.github.io/oce/reference/read.ctd.html" class="external-link">read.ctd</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
+<span><span class="co"># 3. Standard CTD plot</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-example-1.png" width="100%"></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 4. Check also biochemistry variables</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"SA"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"CT"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"oxygen"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"fluorescence"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-example-2.png" width="100%"></p>
+<p>PS. This <code>README.md</code> file was created on 2024-04-01 by rendering the <code>README.Rmd</code> file with <code><a href="https://devtools.r-lib.org/reference/build_rmd.html" class="external-link">devtools::build_readme()</a></code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
