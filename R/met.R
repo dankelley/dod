@@ -24,7 +24,9 @@
 #'
 #' @param month A number giving the month of interest. Ignored unless `deltat`
 #' is `"hour"`. If `month` is not given, it defaults to the present
-#' month.
+#' month.  As a special case, if neither `year` nor `month` is given,
+#' and it is the first day of the month, [dod.met()] goes back one month,
+#' to avoid returning a file with no data.
 #'
 #' @param deltat Optional character string indicating the time step of the
 #' desired dataset. This may be `"hour"` or `"month"`.
@@ -89,6 +91,8 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
         deltat <- "hour"
         dodDebug(debug, "    defaulting deltat to", deltat, "\n")
     }
+    yearGiven <- !missing(year)
+    monthGiven <- !missing(month)
     deltatChoices <- c("hour", "month") # FIXME: add "day"
     deltatIndex <- pmatch(deltat, deltatChoices)
     if (!(type %in% c("csv", "xml"))) {
@@ -101,20 +105,23 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     thisMonth <- today$mon + 1 # it has Jan=0
     thisDay <- today$mday # day of month
     thisYear <- today$year + 1900
-    if (missing(year)) {
+    if (!yearGiven) {
         year <- thisYear
     }
-    if (missing(month)) {
+    if (!monthGiven) {
         month <- thisMonth
     }
-    if (thisDay == 1) { # data don't appear until first day is complete
+    # go back 1 month if defaulting to current month on day 1,
+    # when the data will be missing.
+    if (thisDay == 1 && !yearGiven && !monthGiven) {
         month <- month - 1
+        # Handle month wrapping
         if (month < 0) {
             year <- year - 1
             month <- 12
         }
     }
-    dodDebug(debug, "using year=", year, " month=", month, "\n", sep = "")
+    dodDebug(debug, "    using year=", year, " month=", month, "\n", sep = "")
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
         #<2024-04-01> today <- as.POSIXlt(Sys.time(), tz = "UTC")

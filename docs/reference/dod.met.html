@@ -98,7 +98,9 @@ is <code>"hour"</code>. If <code>year</code> is not given, it defaults to the pr
 <dt>month</dt>
 <dd><p>A number giving the month of interest. Ignored unless <code>deltat</code>
 is <code>"hour"</code>. If <code>month</code> is not given, it defaults to the present
-month.</p></dd>
+month.  As a special case, if neither <code>year</code> nor <code>month</code> is given,
+and it is the first day of the month, <code>dod.met()</code> goes back one month,
+to avoid returning a file with no data.</p></dd>
 
 
 <dt>deltat</dt>

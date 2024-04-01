@@ -27,7 +27,9 @@ is \code{"hour"}. If \code{year} is not given, it defaults to the present year.}
 
 \item{month}{A number giving the month of interest. Ignored unless \code{deltat}
 is \code{"hour"}. If \code{month} is not given, it defaults to the present
-month.}
+month.  As a special case, if neither \code{year} nor \code{month} is given,
+and it is the first day of the month, \code{\link[=dod.met]{dod.met()}} goes back one month,
+to avoid returning a file with no data.}
 
 \item{deltat}{Optional character string indicating the time step of the
 desired dataset. This may be \code{"hour"} or \code{"month"}.
