@@ -11,7 +11,7 @@ status](https://www.r-pkg.org/badges/version/dod)](https://CRAN.R-project.org/pa
 <!-- badges: end -->
 
 The goal of dod is to make it easier to download various types of
-oceanographic data from common sources such as BATS, NAOO, MEDS, BBMP.
+oceanographic data from common sources such as BATS, NOAA, MEDS, BBMP.
 Some similar functions exist in the oce package, but the intention is to
 retire them as dod matures, because building oce is difficult for some
 users, and CRAN policies dictate against frequent updates.
@@ -69,5 +69,5 @@ plotProfile(d, "fluorescence")
 
 <img src="man/figures/README-example-2.png" width="100%" />
 
-PS. This `README.md` file was created on 2024-04-01 by rendering the
+PS. This `README.md` file was created on 2024-04-02 by rendering the
 `README.Rmd` file with `devtools::build_readme()`.
