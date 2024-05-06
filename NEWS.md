@@ -1,3 +1,8 @@
+# dod 0.1.11
+
+* Add `dod.met.index()`.
+
+
 # dod 0.1.10
 
 * Change `dod.buoy()` to handle several buoys of the `smartatlantic` program.

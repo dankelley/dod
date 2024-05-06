@@ -1,7 +1,7 @@
 Package: dod
 Type: Package
 Title: Download Oceanographic Data
-Version: 0.1.10
+Version: 0.1.11
 Author: Dan Kelley, Annie Howard, and Jaimie Harbin
 Maintainer: Dan Kelley <dan.kelley@dal.c>
 Description: The package is used to download various types of oceanographic data including ctd, topography, advanced microwave scanning radiometer, and meteorological data.

@@ -255,3 +255,62 @@ dod.met.sounding <- function(station = "73110", year, month, day, region = "naco
     ))
     dod.download(url, destdir = destdir, file = file, age = age, debug = debug - 1)
 } # dod.met.sounding
+
+#' Get Index of Canadian Meteorological Stations
+#'
+#' Look up information on a Canadian meteorological station, by
+#' a fuzzy search on information stored on a gc.ca website. The main
+#' use is to find a station ID, to be used with [dod.met()].
+#'
+#' The source file is at the web location named by the `url`
+#' parameter. (Please contact the author, if the default value fails.
+#' It was known to work in May of 2024, but this agency might change
+#' the file location or format at any time.) The results are a data
+#' frame with information that ought to be easy to interpret.  For use
+#' with [dod.met()], the ID field that is of use is named
+#' `"Climate.ID"`.  See \dQuote{Examples} for what might be of
+#' interest for hourly data.
+#'
+#' @param name character value use in a name search. The search is
+#' done using [agrep()] with the supplied `max.distance` value
+#' and with `ignore.case` set to TRUE.
+#'
+#' @param max.distance numerical value passed to [agrep()] in
+#' the station-name search.
+#'
+#' @param url the URL of the source file.  The default value was
+#' tested on May 6, 2024, but this agency may change the file
+#' location, or the format, without notice.
+#'
+#' @param debug numerical value indicating the level of debugging. If
+#' this is 0, the work is done silently. For higher values, some
+#' information will be printed as the work is done.
+#'
+#' @examples
+#' # Get information on the hourly meteorological datasets available
+#' # for Halifax. Use `names(i)` to discover the other column names
+#' # that might be of interest.
+#' library(dod)
+#' i <- dod.met.index("halifax")
+#' i[, c("Station.Name", "Climate.ID", "HLY.First.Year", "HLY.Last.Year")]
+#'
+#' @export
+#'
+#' @author Dan Kelley
+dod.met.index <- function(name, max.distance = 0.1,
+                          url = "https://dd.weather.gc.ca/climate/observations/climate_station_list.csv",
+                          debug = 0) {
+    dodDebug(debug, "dod.met.index() {\n")
+    file <- tempfile()
+    dodDebug(debug, "  downloading to temporary file ", file, "\n")
+    download.file(url, file)
+    d <- read.csv(file)
+    dodDebug(debug, "  downladed file has ", nrow(d), " lines\n")
+    w <- agrep(name, d$Station.Name, max.distance = max.distance, ignore.case = TRUE)
+    dodDebug(debug, "  Found ", length(w), " matches\n")
+    d <- d[w, ]
+    dodDebug(debug, "  removing temporary file ", file, "\n")
+    file.remove(file)
+    dodDebug(debug, "} # dod.met.index()\n")
+    d
+}
