@@ -20,13 +20,16 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Purpose
+# Purpose
 
-This package was created as a tool to improve access to various types of oceanographic data from open sources.
+This package was created as a tool to improve access to various types of
+oceanographic data from open sources.
 
-## Oceanographic Data Options
+# Oceanographic Data Options
 
-The following table shows the types of data the package currently downloads and the functions used to do so:
+The following table shows the types of data the package currently downloads and
+the functions used to do so:
+
 
 |       Data Type                      |       Function |
 |                                -----:|          -----:|
@@ -39,14 +42,10 @@ The following table shows the types of data the package currently downloads and 
 
 Expansion of these options is welcomed.
 
-## Development
+# Development
 
-Contributions to the `dod` package are encouraged. The basic structure of each function involves finding a data source online to use as a `server` containing many files and constructing a `url` from which the function can download specific data.
-
-**eg** For BATS, the server and url are identified with:
-
-	server <- "http://batsftp.bios.edu/BATS/ctd/ASCII/"
-	url <- paste0(server, "b",ID, "_info.txt")
-	
-
+Contributions to the `dod` package are encouraged. The basic structure of each
+function involves finding a data source online to use as a `server` containing
+many files and constructing a `url` from which the function can download
+specific data.
 

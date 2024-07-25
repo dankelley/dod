@@ -20,7 +20,11 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/dankelley/dod/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dankelley/dod/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of dod is to make it easier to download various types of oceanographic data from common sources such as BATS, NOAA, MEDS, BBMP. Some similar functions exist in the oce package, but the intention is to retire them as dod matures, because building oce is difficult for some users, and CRAN policies dictate against frequent updates.
+The goal of dod is to make it easier to download various types of oceanographic
+data from common sources such as BATS, NOAA, MEDS, BBMP. Some similar functions
+exist in the oce package, but the intention is to retire them as dod matures,
+because building oce is difficult for some users, and CRAN policies dictate
+against frequent updates.
 
 ## Installation
 
@@ -33,20 +37,20 @@ devtools::install_github("dankelley/dod")
 
 ## Example
 
-The following example shows how to (1) download an index of ctd data files resulting from observations made as part of the BBMP program in the present year and then (2) use functions in the oce package to read and plot the last observations in the dataset.
+The following example shows how to (1) download an index of CTD data files
+resulting from observations made as part of the BBMP program in the present
+year and then (2) use functions in the oce package to read and plot the last
+CTD profile in the dataset.
 
 ```{r example}
 library(dod)
-# 1. Get index
-library(dod)
 year <- format(Sys.Date(), "%Y")
-indexFile <- dod.ctd("BBMP", year, index = TRUE)
-index <- read.csv(indexFile, header = TRUE, skip = 2)
-# see first few lines to discover column names
-head(index, 3)
-# 2. Get the most recent file and plot the data
-item <- tail(index, 1)$FILE
-file <- dod.ctd("BBMP", year, item)
+indexFile <- dod.ctd("BBMP", index = TRUE)
+index <- read.csv(indexFile, skip = 2)
+# 1. Discover column names
+names(index)
+# 2. Download CTD file
+file <- dod.ctd("BBMP", ID = tail(index, 1)$FILE)
 library(oce)
 d <- read.ctd(file)
 # 3. Standard CTD plot

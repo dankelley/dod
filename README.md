@@ -28,27 +28,21 @@ devtools::install_github("dankelley/dod")
 
 ## Example
 
-The following example shows how to (1) download an index of ctd data
+The following example shows how to (1) download an index of CTD data
 files resulting from observations made as part of the BBMP program in
 the present year and then (2) use functions in the oce package to read
-and plot the last observations in the dataset.
+and plot the last CTD profile in the dataset.
 
 ``` r
 library(dod)
-# 1. Get index
-library(dod)
 year <- format(Sys.Date(), "%Y")
-indexFile <- dod.ctd("BBMP", year, index = TRUE)
-index <- read.csv(indexFile, header = TRUE, skip = 2)
-# see first few lines to discover column names
-head(index, 3)
-#>            FILE     START_DATE_TIME
-#> 1 D24667001.ODF 2024-01-03 13:01:41
-#> 2 D24667002.ODF 2024-01-09 13:10:48
-#> 3 D24667003.ODF 2024-01-17 12:55:39
-# 2. Get the most recent file and plot the data
-item <- tail(index, 1)$FILE
-file <- dod.ctd("BBMP", year, item)
+indexFile <- dod.ctd("BBMP", index = TRUE)
+index <- read.csv(indexFile, skip = 2)
+# 1. Discover column names
+names(index)
+#> [1] "FILE"            "START_DATE_TIME"
+# 2. Download CTD file
+file <- dod.ctd("BBMP", ID = tail(index, 1)$FILE)
 library(oce)
 #> Loading required package: gsw
 d <- read.ctd(file)
@@ -69,5 +63,5 @@ plotProfile(d, "fluorescence")
 
 <img src="man/figures/README-example-2.png" width="100%" />
 
-PS. This `README.md` file was created on 2024-04-02 by rendering the
+PS. This `README.md` file was created on 2024-07-25 by rendering the
 `README.Rmd` file with `devtools::build_readme()`.

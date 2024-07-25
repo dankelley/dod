@@ -69,9 +69,11 @@ dod.ctd.bbmp <- function(year, ID = NULL, index = FALSE, file = NULL, destdir = 
     if (index) {
         file <- if (is.null(file)) paste0(year, "667ODFSUMMARY.tsv") else paste0(file, ".tsv")
         url <- paste0(server, "/", paste0(year, "667ODFSUMMARY.tsv"))
+        dodDebug(debug, "  will download index from ", url, "\n", sep="")
         dod.download(url = url, file = file, destdir = destdir, age = age, debug = debug - 1)
         url <- paste0(server, "/", file)
         file <- paste0(destdir, "/", file)
+        dodDebug(debug, "  downloaded index to local file \"", file, "\"\n", sep="")
         dodDebug(debug, "  } dod.ctd.bbmp()\n", sep = "")
         return(file)
     } else {
