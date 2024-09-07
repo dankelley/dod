@@ -23,7 +23,7 @@
 #' @importFrom utils download.file
 #'
 #' @export
-dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet = TRUE, debug = 0) {
+dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
     if (is.null(url)) {
         stop("url must not be NULL")
     }
@@ -34,7 +34,7 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
         "url=\"", url, "\", ",
         "file=\"", file, "\", ",
         "destdir=\"", destdir, "\", ",
-        "age=", age, ", quiet=", quiet, ", debug=", debug, ")\n    {\n",
+        "age=", age, ", quiet=", quiet, ", debug=", debug, ")\n",
         sep = ""
     )
     filepath <- file.path(destdir, file)
@@ -56,7 +56,7 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
         }
         if (fileAge < age) {
             dodDebug(debug, "        an existing file is ", fileAgeMsg,
-                " old, so it will not be downloaded\n    } # dod.download()\n",
+                " old, so it will not be downloaded\n",
                 sep = ""
             )
             return(filepath)
@@ -76,6 +76,5 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
     if (inherits(t, "try-error")) {
         stop("An error occured when trying to download \"", url, "\"")
     }
-    dodDebug(debug, "    } # dod.download()\n")
     filepath
 }

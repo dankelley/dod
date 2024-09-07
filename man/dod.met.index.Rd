@@ -8,6 +8,7 @@ dod.met.index(
   name,
   max.distance = 0.1,
   url = "https://dd.weather.gc.ca/climate/observations/climate_station_list.csv",
+  quiet = FALSE,
   debug = 0
 )
 }
@@ -20,12 +21,21 @@ and with \code{ignore.case} set to TRUE.}
 the station-name search.}
 
 \item{url}{the URL of the source file.  The default value was
-tested on May 6, 2024, but this agency may change the file
-location, or the format, without notice.}
+tested on May 6, 2024, but this agency tends to change the file
+location (and data format) without notice, so if you find
+an error in downloading, please report it as an issue on the
+project github site.}
 
-\item{debug}{numerical value indicating the level of debugging. If
-this is 0, the work is done silently. For higher values, some
-information will be printed as the work is done.}
+\item{quiet}{a logical value, passed to \code{\link[curl:curl_download]{curl::curl_download()}}, which does
+the downloading.  If this is TRUE (the default), then the work is done
+quietly. Until version version 0.1.12, this parameter was called \code{silent},
+but it was renamed to match the corresponding argument in
+\code{\link[curl:curl_download]{curl::curl_download()}}, which may be more familiar to users.}
+
+\item{debug}{an integer value indicating the level of debugging. If
+this exceeds 0, then some debugging messages will be printed. This
+value is passed down to related functions, but with 1 subtracted
+for each pass.}
 }
 \description{
 Look up information on a Canadian meteorological station, by
@@ -43,12 +53,18 @@ with \code{\link[=dod.met]{dod.met()}}, the ID field that is of use is named
 interest for hourly data.
 }
 \examples{
-# Get information on the hourly meteorological datasets available
-# for Halifax. Use `names(i)` to discover the other column names
-# that might be of interest.
-library(dod)
-i <- dod.met.index("halifax")
-i[, c("Station.Name", "Climate.ID", "HLY.First.Year", "HLY.Last.Year")]
+# This code works locally, but pkgdown::build_site() balks on it.
+if (FALSE) {
+    # Get information on meteorological datasets for Halifax, N.S.
+    library(dod)
+    i <- dod.met.index("halifax", debug = 1)
+    names(i) # see what's in these files
+    i[, c("Province", "Station.Name", "Climate.ID")]
+    # focus on the ones in Nova Scotia
+    NS <- grep("nova", i$Province, ignore.case = TRUE)
+    i <- i[NS, ]
+    i[, c("Province", "Station.Name", "Climate.ID")]
+}
 
 }
 \author{

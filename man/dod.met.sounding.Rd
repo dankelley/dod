@@ -58,8 +58,7 @@ Department of Atmospheric science website at
 \examples{
 \dontrun{
 # Download
-tempdir <- tempfile()
-dir.create(tempdir)
+destdir <- tempdir("met")
 station <- "73110"
 year <- "2023"
 month <- "01"
@@ -81,7 +80,7 @@ plot(data$MIXR, data$HGHT,
     type = "l", cex = 0.5, pch = 20, col = 4,
     xlab = "Mixing Ratio", ylab = "Height [m]"
 )
-unlink(tempdir, recursive = TRUE)
+unlink(destdir, recursive = TRUE)
 }
 
 }

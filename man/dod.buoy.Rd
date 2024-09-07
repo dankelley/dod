@@ -68,23 +68,25 @@ buoys in the Atlantic Provinces, are as follows.
 }
 }
 \examples{
-# Show significant wave height in Halifax Harbour over past 28 days.
-# Note that a temporary directory is used, in case
-# the package is later submitted to CRAN, which does not
-# permit downloads to the working directory.
-library(dod)
-tmpdir <- tempfile() # temporary directory, removed at the end
-dir.create(tmpdir)
-file <- dod.buoy("smartatlantic", "h1", destdir = tmpdir)
-col.names <- strsplit(readLines(file, 1), ",")[[1]]
-d <- read.csv(file, skip = 2, col.names = col.names)
-d$t <- as.POSIXct(d$time, tz = "UTC", format = "\%Y-\%m-\%dT\%H:\%M:\%SZ")
-look <- d$t > (max(d$t, na.rm = TRUE) - 28 * 86400)
-plot(d$t[look], d$wave_ht_sig[look],
-    type = "l", xaxs = "i",
-    xlab = "", ylab = "Sig. Wave Ht. [m]"
-)
-unlink(tmpdir, recursive = TRUE) # remove temporary directory
+# This code works locally, but pkgdown::build_site() balks on it.
+if (FALSE) {
+    # Show significant wave height in Halifax Harbour over past 28 days.
+    # Note that a temporary directory is used, in case
+    # the package is later submitted to CRAN, which does not
+    # permit downloads to the working directory.
+    library(dod)
+    destdir <- tempdir("buoy")
+    file <- dod.buoy("smartatlantic", "h1", destdir = destdir)
+    col.names <- strsplit(readLines(file, 1), ",")[[1]]
+    d <- read.csv(file, skip = 2, col.names = col.names)
+    d$t <- as.POSIXct(d$time, tz = "UTC", format = "\%Y-\%m-\%dT\%H:\%M:\%SZ")
+    look <- d$t > (max(d$t, na.rm = TRUE) - 28 * 86400)
+    plot(d$t[look], d$wave_ht_sig[look],
+        type = "l", xaxs = "i",
+        xlab = "", ylab = "Sig. Wave Ht. [m]"
+    )
+    unlink(destdir, recursive = TRUE)
+}
 
 }
 \author{

@@ -11,7 +11,7 @@ somewhat challenging to use; see &amp;#8216;Details&amp;#8217;."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,7 @@ somewhat challenging to use; see &amp;#8216;Details&amp;#8217;."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Download CTD data from the GTSPP server</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dankelley/dod/blob/HEAD/R/ctd.gtspp.R" class="external-link"><code>R/ctd.gtspp.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dankelley/dod/blob/HEAD/R/ctd_gtspp.R" class="external-link"><code>R/ctd_gtspp.R</code></a></small>
       <div class="d-none name"><code>dod.ctd.gtspp.Rd</code></div>
     </div>
 
@@ -60,6 +60,7 @@ somewhat challenging to use; see ‘Details’.</p>
 <span>  index <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  nc <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  age <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -121,6 +122,14 @@ that existing files will always be updated. By contrast, setting
 already exist locally, regardless of their age.</p></dd>
 
 
+<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
+<dd><p>a logical value, passed to <code><a href="https://rdrr.io/pkg/curl/man/curl_download.html" class="external-link">curl::curl_download()</a></code>, which does
+the downloading.  If this is TRUE (the default), then the work is done
+quietly. Until version version 0.1.12, this parameter was called <code>silent</code>,
+but it was renamed to match the corresponding argument in
+<code><a href="https://rdrr.io/pkg/curl/man/curl_download.html" class="external-link">curl::curl_download()</a></code>, which may be more familiar to users.</p></dd>
+
+
 <dt id="arg-debug">debug<a class="anchor" aria-label="anchor" href="#arg-debug"></a></dt>
 <dd><p>an integer value indicating the level of debugging. If
 this exceeds 0, then some debugging messages will be printed. This
@@ -156,7 +165,7 @@ time by over an order of magnitude.</p>
 <span class="r-in"><span><span class="co"># re-downloading the index perhaps only once a week to gain access to the most</span></span></span>
 <span class="r-in"><span><span class="co"># recent data.</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/" class="external-link">dod</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/">dod</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/ocedata/" class="external-link">ocedata</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cirrus.ucsd.edu/~pierce/ncdf/" class="external-link">ncdf4</a></span><span class="op">)</span></span></span>

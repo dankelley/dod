@@ -74,23 +74,25 @@ converted to the \code{met} class with \code{as.met()} in the \code{oce} package
 although doing so leaves many important metadata blank.
 }
 \examples{
-# Meteorological data for Halifax, Nova Scotia.
-# Note that a temporary directory is used, in case
-# the package is later submitted to CRAN, which does not
-# permit downloads to the working directory.
-library(dod)
-tmpdir <- tempfile() # temporary directory, removed at the end
-dir.create(tmpdir)
-metFile <- dod.met(43405, destdir = tmpdir)
-if (requireNamespace("oce", quietly = TRUE) &&
-    requireNamespace("XML", quietly = TRUE)) {
-    library(oce)
-    met <- read.met(metFile)
-    t <- met[["time"]]
-    p <- met[["pressure"]]
-    oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
+# This code works locally, but pkgdown::build_site() balks on it.
+if (FALSE) {
+    # Meteorological data for Halifax, Nova Scotia.
+    # Note that a temporary directory is used, in case
+    # the package is later submitted to CRAN, which does not
+    # permit downloads to the working directory.
+    library(dod)
+    destdir <- tempdir("met")
+    metFile <- dod.met(43405, destdir = destdir)
+    if (requireNamespace("oce", quietly = TRUE) &&
+        requireNamespace("XML", quietly = TRUE)) {
+        library(oce)
+        met <- read.met(metFile)
+        t <- met[["time"]]
+        p <- met[["pressure"]]
+        oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
+    }
+    unlink(destdir, recursive = TRUE)
 }
-unlink(tmpdir, recursive = TRUE) # remove temporary directory
 
 }
 \references{

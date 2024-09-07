@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,12 +46,11 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dod.amsr</span><span class="op">(</span></span>
-<span>  year <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">month</span>,</span>
-<span>  <span class="va">day</span>,</span>
+<span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">4L</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>  server <span class="op">=</span> <span class="st">"https://data.remss.com/amsr2/ocean/L3/v08.2"</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"3day"</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -60,22 +59,18 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-year-month-day">year, month, day<a class="anchor" aria-label="anchor" href="#arg-year-month-day"></a></dt>
-<dd><p>integer values indicating the desired observation time.
-Set <code>year</code> to NULL (the default) to default to the most recent data; otherwise
-specify all three of these values if <code>type</code> is <code>"3day"</code>, <code>"daily"</code> or <code>"weekly"</code>,
-or just the first two of them if <code>type</code> is <code>"monthly"</code>.  If these
-things are provided, then they just match exactly the values in the sought-after
-file on the remote server.  If <code>year</code> is NULL, then <code>dod.amsr()</code> constructs
-a URL that ought to be the most recent available file: 3 days prior
-to the present date (if <code>type</code> is <code>"3day"</code> or <code>"daily"</code>), the Saturday
-two weeks prior to the present date (if <code>type</code> is <code>"weekly"</code>), or
-two months in the past (if <code>type</code> is <code>"monthly"</code>).</p></dd>
+<dl><dt id="arg-date">date<a class="anchor" aria-label="anchor" href="#arg-date"></a></dt>
+<dd><p>either a Date object or a character or time object that
+can be converted to such an object with <code><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date()</a></code>.  The default
+is four days prior to the present date, which is usually the latest
+view that can be obtained, if <code>type</code> is <code>"3day"</code>, as is its default.</p></dd>
 
 
 <dt id="arg-destdir">destdir<a class="anchor" aria-label="anchor" href="#arg-destdir"></a></dt>
-<dd><p>character giving destination directory (defaults to <code>"."</code>, the present
-directory).  The directory must exist.  (The author uses <code>"~/data/amsr"</code>.)</p></dd>
+<dd><p>character giving destination directory (defaults to <code>"."</code>,
+the present directory).  The directory must exist. The author usually
+sets this to <code>"~/data/amsr"</code>, so that the file will be in a central
+location.</p></dd>
 
 
 <dt id="arg-server">server<a class="anchor" aria-label="anchor" href="#arg-server"></a></dt>
@@ -95,9 +90,19 @@ third dimension representing ascending and descending traces, but in all the
 other cases, the arrays are 2D.</p></dd>
 
 
+<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
+<dd><p>a logical value, passed to <code><a href="https://rdrr.io/pkg/curl/man/curl_download.html" class="external-link">curl::curl_download()</a></code>, which does
+the downloading.  If this is TRUE (the default), then the work is done
+quietly. Until version version 0.1.12, this parameter was called <code>silent</code>,
+but it was renamed to match the corresponding argument in
+<code><a href="https://rdrr.io/pkg/curl/man/curl_download.html" class="external-link">curl::curl_download()</a></code>, which may be more familiar to users.</p></dd>
+
+
 <dt id="arg-debug">debug<a class="anchor" aria-label="anchor" href="#arg-debug"></a></dt>
-<dd><p>integer giving debugging level (defaults to 0, to make the function work
-without much output).</p></dd>
+<dd><p>an integer value indicating the level of debugging. If
+this exceeds 0, then some debugging messages will be printed. This
+value is passed down to related functions, but with 1 subtracted
+for each pass.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -111,24 +116,23 @@ of the downloaded file.</p>
 is unaware of any documentation that specifies the directory structure on
 the server, and so the construction is based on examining the server
 with a web browser.  Obviously, this is a fragile approach that will
-lead to failed downloads if the remote directory structure changes.  Indeed,
-<code>dod.amsr()</code> was completely rewritten in July 2023, because a previous version
-was seen to fail on that date.  Users are asked to report any failed downloads
-they encounter.  Careful inspection of the documentation for <code>year</code>, <code>month</code>
-and <code>day</code> is, of course, the first step in debugging errors.</p>
+lead to failed downloads if the remote directory structure changes.</p>
     </div>
     <div class="section level2">
-    <h2 id="historical-note">Historical note<a class="anchor" aria-label="anchor" href="#historical-note"></a></h2>
+    <h2 id="historical-notes">Historical notes<a class="anchor" aria-label="anchor" href="#historical-notes"></a></h2>
 
 
-<p>Until July 2023, <code>dod.amsr()</code> worked by calling <code><a href="https://dankelley.github.io/oce/reference/download.amsr.html" class="external-link">download.amsr()</a></code>
-from the <code>oce</code> package.
-However, at that time, the author noticed changes in both
-the directory structure of the remote server, and the format of the
-data files. The new directory structure was addressed by a complete
-rewrite of the code within <code>dod</code>, and a severing of the connection
-to the <code>oce</code> function.</p>
-    </div>
+<ul><li><p>Until September 2024 <code>dod.amsr()</code> required 3 parameters to specify
+a time (<code>year</code>, <code>month</code> and <code>day</code>). This was difficult to
+use and also led to messy coding, so these 3 parameters were replaced
+with <code>date</code>.</p></li>
+<li><p>Until July 2023, <code>dod.amsr()</code> worked by calling <code><a href="https://dankelley.github.io/oce/reference/download.amsr.html" class="external-link">oce::download.amsr()</a></code>.
+However, at that time, the author noticed changes in both the directory
+structure of the remote server, and the format of the data files.
+The new directory structure was addressed by a complete rewrite
+of the code within <code>dod</code>, and a severing of the connection to the
+<code>oce</code> function.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Dan Kelley</p>
@@ -136,26 +140,20 @@ to the <code>oce</code> function.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This example is not run because it downloads a 12Mb file.</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="st">"~/data/amsr"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/" class="external-link">dod</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cirrus.ucsd.edu/~pierce/ncdf/" class="external-link">ncdf4</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">file</span> <span class="op">&lt;-</span> <span class="fu">dod.amsr</span><span class="op">(</span>destdir <span class="op">=</span> <span class="st">"~/data/amsr"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">nc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ncdf4/man/nc_open.html" class="external-link">nc_open</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">lon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ncdf4/man/ncvar_get.html" class="external-link">ncvar_get</a></span><span class="op">(</span><span class="va">nc</span>, <span class="st">"lon"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">lat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ncdf4/man/ncvar_get.html" class="external-link">ncvar_get</a></span><span class="op">(</span><span class="va">nc</span>, <span class="st">"lat"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">SST</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ncdf4/man/ncvar_get.html" class="external-link">ncvar_get</a></span><span class="op">(</span><span class="va">nc</span>, <span class="st">"SST"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ncdf4/man/ncvar_get.html" class="external-link">ncvar_get</a></span><span class="op">(</span><span class="va">nc</span>, <span class="st">"wind_speed_AW"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://dankelley.github.io/oce/reference/imagep.html" class="external-link">imagep</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">SST</span>, asp <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="va">oceColorsTurbo</span>, xaxs <span class="op">=</span> <span class="st">"i"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"SST [degC]"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://dankelley.github.io/oce/reference/imagep.html" class="external-link">imagep</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, <span class="va">U</span>, asp <span class="op">=</span> <span class="fl">1</span>, zlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">oceColorsTurbo</span>, xaxs <span class="op">=</span> <span class="st">"i"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Wind [m/s]"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/ncdf4/man/nc_close.html" class="external-link">nc_close</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This code works locally, but pkgdown::build_site() balks on it.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://dankelley.github.io/oce/" class="external-link">"oce"</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co"># Get temporary space (to obey CRAN rules)</span></span></span>
+<span class="r-in"><span>    <span class="va">destdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="st">"amsr"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">file</span> <span class="op">&lt;-</span> <span class="fu">dod.amsr</span><span class="op">(</span>destdir <span class="op">=</span> <span class="va">destdir</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dankelley.github.io/oce/reference/read.amsr.html" class="external-link">read.amsr</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">natl</span> <span class="op">&lt;-</span> <span class="va">a</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="op">-</span><span class="fl">90</span> <span class="op">&lt;</span> <span class="va">longitude</span> <span class="op">&amp;</span> <span class="va">longitude</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="fl">20</span> <span class="op">&lt;</span> <span class="va">latitude</span> <span class="op">&amp;</span> <span class="va">latitude</span> <span class="op">&lt;</span> <span class="fl">70</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">natl</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co"># Clean up space</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">destdir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

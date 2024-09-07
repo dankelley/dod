@@ -5,9 +5,7 @@
 \title{Download Advanced Microwave Scanning Radiometer data}
 \usage{
 dod.amsr(
-  year = Sys.Date() - 4,
-  month,
-  day,
+  date = Sys.Date() - 4L,
   destdir = ".",
   server = "https://data.remss.com/amsr2/ocean/L3/v08.2",
   type = "3day",
@@ -16,19 +14,15 @@ dod.amsr(
 )
 }
 \arguments{
-\item{year, month, day}{integer values indicating the desired observation time.
-If \code{year} is a Date object then \code{month} and \code{day} are ignored, because they will be
-inferred automatically. (The default is to set \code{year} to \code{\link[=Sys.Date]{Sys.Date()}}-4,
-meaning 4 days in the past, so that a 3day type will work.)
-Otherwise, the appropriate \code{year}, \code{month} and \code{day}
-parameters depend on the \code{type}.  All three must be given (as integers)
-if \code{type} is \code{"3day"}, \code{"daily"} or \code{"weekly"}.  But only the first two are
-to be given if \code{type} is \code{"monthly"}.  Note that the server changes
-without notice, and so \code{dod.amsr()} needs modification from time to time,
-usually in the meanings of these three parameters, and of \code{type}.}
+\item{date}{either a Date object or a character or time object that
+can be converted to such an object with \code{\link[=as.Date]{as.Date()}}.  The default
+is four days prior to the present date, which is usually the latest
+view that can be obtained, if \code{type} is \code{"3day"}, as is its default.}
 
-\item{destdir}{character giving destination directory (defaults to \code{"."}, the present
-directory).  The directory must exist.  (The author uses \code{"~/data/amsr"}.)}
+\item{destdir}{character giving destination directory (defaults to \code{"."},
+the present directory).  The directory must exist. The author usually
+sets this to \code{"~/data/amsr"}, so that the file will be in a central
+location.}
 
 \item{server}{character value indicating the base server location. The
 default value ought to be used unless the data provider changes their
@@ -44,9 +38,10 @@ third dimension representing ascending and descending traces, but in all the
 other cases, the arrays are 2D.}
 
 \item{quiet}{a logical value, passed to \code{\link[curl:curl_download]{curl::curl_download()}}, which does
-the downloading.  If this is TRUE, then the work is done quietly. Until
-version version 0.1.12, this was called \code{silent}, but it was renamed to
-match the corresponding argument in \code{\link[curl:curl_download]{curl::curl_download()}}.}
+the downloading.  If this is TRUE (the default), then the work is done
+quietly. Until version version 0.1.12, this parameter was called \code{silent},
+but it was renamed to match the corresponding argument in
+\code{\link[curl:curl_download]{curl::curl_download()}}, which may be more familiar to users.}
 
 \item{debug}{an integer value indicating the level of debugging. If
 this exceeds 0, then some debugging messages will be printed. This
@@ -65,43 +60,38 @@ This works by constructing URLs based on the arguments provided.  The author
 is unaware of any documentation that specifies the directory structure on
 the server, and so the construction is based on examining the server
 with a web browser.  Obviously, this is a fragile approach that will
-lead to failed downloads if the remote directory structure changes.  Indeed,
-\code{\link[=dod.amsr]{dod.amsr()}} was completely rewritten in July 2023, because a previous version
-was seen to fail on that date.  Users are asked to report any failed downloads
-they encounter.  Careful inspection of the documentation for \code{year}, \code{month}
-and \code{day} is, of course, the first step in debugging errors.
+lead to failed downloads if the remote directory structure changes.
 }
-\section{Historical note}{
+\section{Historical notes}{
 
-Until July 2023, \code{\link[=dod.amsr]{dod.amsr()}} worked by calling \code{download.amsr()}
-from the \code{oce} package.
-However, at that time, the author noticed changes in both
-the directory structure of the remote server, and the format of the
-data files. The new directory structure was addressed by a complete
-rewrite of the code within \code{dod}, and a severing of the connection
-to the \code{oce} function.
+\itemize{
+\item Until September 2024 \code{\link[=dod.amsr]{dod.amsr()}} required 3 parameters to specify
+a time (\code{year}, \code{month} and \code{day}). This was difficult to
+use and also led to messy coding, so these 3 parameters were replaced
+with \code{date}.
+\item Until July 2023, \code{\link[=dod.amsr]{dod.amsr()}} worked by calling \code{\link[oce:download.amsr]{oce::download.amsr()}}.
+However, at that time, the author noticed changes in both the directory
+structure of the remote server, and the format of the data files.
+The new directory structure was addressed by a complete rewrite
+of the code within \code{dod}, and a severing of the connection to the
+\code{oce} function.
+}
 }
 
 \examples{
-# This example is not run because it downloads a 12Mb file.
-\dontrun{
-if (dir.exists("~/data/amsr")) {
-    library(dod)
-    library(oce)
-    library(ncdf4)
-    file <- dod.amsr(destdir = "~/data/amsr")
-    nc <- nc_open(file)
-    lon <- ncvar_get(nc, "lon")
-    lat <- ncvar_get(nc, "lat")
-    SST <- ncvar_get(nc, "SST")
-    U <- ncvar_get(nc, "wind_speed_AW")
-    par(mfrow = c(2, 1))
-    imagep(lon, lat, SST, asp = 1, col = oceColorsTurbo, xaxs = "i")
-    mtext("SST [degC]")
-    imagep(lon, lat, U, asp = 1, zlim = c(0, 15), col = oceColorsTurbo, xaxs = "i")
-    mtext("Wind [m/s]")
-    nc_close(nc)
-}
+# This code works locally, but pkgdown::build_site() balks on it.
+if (FALSE) {
+    library("oce")
+    # Get temporary space (to obey CRAN rules)
+    destdir <- tempdir("amsr")
+    file <- dod.amsr(destdir = destdir)
+    a <- read.amsr(file)
+    natl <- a |>
+        subset(-90 < longitude & longitude < 0) |>
+        subset(20 < latitude & latitude < 70)
+    plot(natl)
+    # Clean up space
+    unlink(destdir, recursive = TRUE)
 }
 
 }

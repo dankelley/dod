@@ -11,7 +11,7 @@ use is to find a station ID, to be used with dod.met()."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,7 @@ use is to find a station ID, to be used with <code><a href="dod.met.html">dod.me
 <span>  <span class="va">name</span>,</span>
 <span>  max.distance <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  url <span class="op">=</span> <span class="st">"https://dd.weather.gc.ca/climate/observations/climate_station_list.csv"</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -76,14 +77,25 @@ the station-name search.</p></dd>
 
 <dt id="arg-url">url<a class="anchor" aria-label="anchor" href="#arg-url"></a></dt>
 <dd><p>the URL of the source file.  The default value was
-tested on May 6, 2024, but this agency may change the file
-location, or the format, without notice.</p></dd>
+tested on May 6, 2024, but this agency tends to change the file
+location (and data format) without notice, so if you find
+an error in downloading, please report it as an issue on the
+project github site.</p></dd>
+
+
+<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
+<dd><p>a logical value, passed to <code><a href="https://rdrr.io/pkg/curl/man/curl_download.html" class="external-link">curl::curl_download()</a></code>, which does
+the downloading.  If this is TRUE (the default), then the work is done
+quietly. Until version version 0.1.12, this parameter was called <code>silent</code>,
+but it was renamed to match the corresponding argument in
+<code><a href="https://rdrr.io/pkg/curl/man/curl_download.html" class="external-link">curl::curl_download()</a></code>, which may be more familiar to users.</p></dd>
 
 
 <dt id="arg-debug">debug<a class="anchor" aria-label="anchor" href="#arg-debug"></a></dt>
-<dd><p>numerical value indicating the level of debugging. If
-this is 0, the work is done silently. For higher values, some
-information will be printed as the work is done.</p></dd>
+<dd><p>an integer value indicating the level of debugging. If
+this exceeds 0, then some debugging messages will be printed. This
+value is passed down to related functions, but with 1 subtracted
+for each pass.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -104,23 +116,18 @@ interest for hourly data.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get information on the hourly meteorological datasets available</span></span></span>
-<span class="r-in"><span><span class="co"># for Halifax. Use `names(i)` to discover the other column names</span></span></span>
-<span class="r-in"><span><span class="co"># that might be of interest.</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/" class="external-link">dod</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fu">dod.met.index</span><span class="op">(</span><span class="st">"halifax"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">i</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Station.Name"</span>, <span class="st">"Climate.ID"</span>, <span class="st">"HLY.First.Year"</span>, <span class="st">"HLY.Last.Year"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Station.Name Climate.ID HLY.First.Year HLY.Last.Year</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 328    BABINE LAKE HALIFAX BAY    1070572             NA            NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3004                   HALIFAX    8202200           1953          1963</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3005                   HALIFAX    8202198             NA            NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3006           HALIFAX CITADEL    8202220             NA            NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3007          HALIFAX DOCKYARD    8202240           2004          2024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3008          HALIFAX KOOTENAY    8202252           2004          2024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3009 HALIFAX STANFIELD INT'L A    8202250           1961          2012</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3010 HALIFAX STANFIELD INT'L A    8202251           2012          2024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3011 HALIFAX STANFIELD INT'L A    8202249           2019          2024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3012      HALIFAX WINDSOR PARK    8202255           2004          2024</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This code works locally, but pkgdown::build_site() balks on it.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="co"># Get information on meteorological datasets for Halifax, N.S.</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/">dod</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu">dod.met.index</span><span class="op">(</span><span class="st">"halifax"</span>, debug <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="co"># see what's in these files</span></span></span>
+<span class="r-in"><span>    <span class="va">i</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Province"</span>, <span class="st">"Station.Name"</span>, <span class="st">"Climate.ID"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>    <span class="co"># focus on the ones in Nova Scotia</span></span></span>
+<span class="r-in"><span>    <span class="va">NS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"nova"</span>, <span class="va">i</span><span class="op">$</span><span class="va">Province</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">i</span><span class="op">[</span><span class="va">NS</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span>    <span class="va">i</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Province"</span>, <span class="st">"Station.Name"</span>, <span class="st">"Climate.ID"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

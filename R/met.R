@@ -47,23 +47,25 @@
 #' @author Dan Kelley
 #'
 #' @examples
-#' # Meteorological data for Halifax, Nova Scotia.
-#' # Note that a temporary directory is used, in case
-#' # the package is later submitted to CRAN, which does not
-#' # permit downloads to the working directory.
-#' library(dod)
-#' tmpdir <- tempfile() # temporary directory, removed at the end
-#' dir.create(tmpdir)
-#' metFile <- dod.met(43405, destdir = tmpdir)
-#' if (requireNamespace("oce", quietly = TRUE) &&
-#'     requireNamespace("XML", quietly = TRUE)) {
-#'     library(oce)
-#'     met <- read.met(metFile)
-#'     t <- met[["time"]]
-#'     p <- met[["pressure"]]
-#'     oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
+#' # This code works locally, but pkgdown::build_site() balks on it.
+#' if (FALSE) {
+#'     # Meteorological data for Halifax, Nova Scotia.
+#'     # Note that a temporary directory is used, in case
+#'     # the package is later submitted to CRAN, which does not
+#'     # permit downloads to the working directory.
+#'     library(dod)
+#'     destdir <- tempdir("met")
+#'     metFile <- dod.met(43405, destdir = destdir)
+#'     if (requireNamespace("oce", quietly = TRUE) &&
+#'         requireNamespace("XML", quietly = TRUE)) {
+#'         library(oce)
+#'         met <- read.met(metFile)
+#'         t <- met[["time"]]
+#'         p <- met[["pressure"]]
+#'         oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
+#'     }
+#'     unlink(destdir, recursive = TRUE)
 #' }
-#' unlink(tmpdir, recursive = TRUE) # remove temporary directory
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
@@ -202,8 +204,7 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
 #' @examples
 #' \dontrun{
 #' # Download
-#' tempdir <- tempfile()
-#' dir.create(tempdir)
+#' destdir <- tempdir("met")
 #' station <- "73110"
 #' year <- "2023"
 #' month <- "01"
@@ -225,7 +226,7 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
 #'     type = "l", cex = 0.5, pch = 20, col = 4,
 #'     xlab = "Mixing Ratio", ylab = "Height [m]"
 #' )
-#' unlink(tempdir, recursive = TRUE)
+#' unlink(destdir, recursive = TRUE)
 #' }
 #'
 #' @export
@@ -279,38 +280,48 @@ dod.met.sounding <- function(station = "73110", year, month, day, region = "naco
 #' the station-name search.
 #'
 #' @param url the URL of the source file.  The default value was
-#' tested on May 6, 2024, but this agency may change the file
-#' location, or the format, without notice.
+#' tested on May 6, 2024, but this agency tends to change the file
+#' location (and data format) without notice, so if you find
+#' an error in downloading, please report it as an issue on the
+#' project github site.
 #'
-#' @param debug numerical value indicating the level of debugging. If
-#' this is 0, the work is done silently. For higher values, some
-#' information will be printed as the work is done.
+#' @template quietTemplate
+#'
+#' @template debugTemplate
 #'
 #' @examples
-#' # Get information on the hourly meteorological datasets available
-#' # for Halifax. Use `names(i)` to discover the other column names
-#' # that might be of interest.
-#' library(dod)
-#' i <- dod.met.index("halifax")
-#' i[, c("Station.Name", "Climate.ID", "HLY.First.Year", "HLY.Last.Year")]
+#' # This code works locally, but pkgdown::build_site() balks on it.
+#' if (FALSE) {
+#'     # Get information on meteorological datasets for Halifax, N.S.
+#'     library(dod)
+#'     i <- dod.met.index("halifax", debug = 1)
+#'     names(i) # see what's in these files
+#'     i[, c("Province", "Station.Name", "Climate.ID")]
+#'     # focus on the ones in Nova Scotia
+#'     NS <- grep("nova", i$Province, ignore.case = TRUE)
+#'     i <- i[NS, ]
+#'     i[, c("Province", "Station.Name", "Climate.ID")]
+#' }
 #'
 #' @export
 #'
 #' @author Dan Kelley
-dod.met.index <- function(name, max.distance = 0.1,
+dod.met.index <- function(name,
+                          max.distance = 0.1,
                           url = "https://dd.weather.gc.ca/climate/observations/climate_station_list.csv",
+                          quiet = FALSE,
                           debug = 0) {
-    dodDebug(debug, "dod.met.index() {\n")
-    file <- tempfile()
-    dodDebug(debug, "  downloading to temporary file ", file, "\n")
-    download.file(url, file)
-    d <- read.csv(file)
-    dodDebug(debug, "  downladed file has ", nrow(d), " lines\n")
+    dodDebug(debug, "dod.met.index() START\n")
+    dodDebug(debug, "    url=\"", url, "\"\n", sep = "")
+    destfile <- tempfile("met", fileext = ".csv")
+    dodDebug(debug, "    destfile=\"", destfile, "\"\n", sep = "")
+    download.file(url = url, destfile = destfile, quiet = quiet)
+    d <- read.csv(destfile)
     w <- agrep(name, d$Station.Name, max.distance = max.distance, ignore.case = TRUE)
-    dodDebug(debug, "  Found ", length(w), " matches\n")
+    dodDebug(debug, "    found", length(w), "matches out of", nrow(d), "lines\n")
     d <- d[w, ]
-    dodDebug(debug, "  removing temporary file ", file, "\n")
-    file.remove(file)
-    dodDebug(debug, "} # dod.met.index()\n")
+    dodDebug(debug, "    removing temporary file\n")
+    file.remove(destfile)
+    dodDebug(debug, "    END dod.met.index()\n")
     d
 }
