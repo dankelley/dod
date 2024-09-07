@@ -80,7 +80,7 @@ of the code within \code{dod}, and a severing of the connection to the
 
 \examples{
 # This code works locally, but pkgdown::build_site() balks on it.
-if (FALSE) {
+if (!FALSE) {
     library("oce")
     # Get temporary space (to obey CRAN rules)
     destdir <- tempdir("amsr")

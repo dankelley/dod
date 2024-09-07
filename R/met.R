@@ -48,22 +48,24 @@
 #'
 #' @examples
 #' # This code works locally, but pkgdown::build_site() balks on it.
-#' if (FALSE) {
+#' if (!FALSE) {
 #'     # Meteorological data for Halifax, Nova Scotia.
 #'     # Note that a temporary directory is used, in case
 #'     # the package is later submitted to CRAN, which does not
 #'     # permit downloads to the working directory.
 #'     library(dod)
 #'     destdir <- tempdir("met")
-#'     metFile <- dod.met(43405, destdir = destdir)
-#'     if (requireNamespace("oce", quietly = TRUE) &&
-#'         requireNamespace("XML", quietly = TRUE)) {
-#'         library(oce)
-#'         met <- read.met(metFile)
-#'         t <- met[["time"]]
-#'         p <- met[["pressure"]]
-#'         oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
-#'     }
+#'     print(destdir)
+#'     metFile <- dod.met(43405, destdir = destdir, debug = 1)
+#'     print(metFile)
+#'     ##     if (requireNamespace("oce", quietly = TRUE) &&
+#'     ##         requireNamespace("XML", quietly = TRUE)) {
+#'     ##         library(oce)
+#'     ##         met <- read.met(metFile)
+#'     ##         t <- met[["time"]]
+#'     ##         p <- met[["pressure"]]
+#'     ##         oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
+#'     ##     }
 #'     unlink(destdir, recursive = TRUE)
 #' }
 #'
@@ -156,7 +158,10 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
             "&timeframe=1&submit=Download+Data",
             sep = ""
         )
-        file <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
+        file <- sprintf(
+            "met_%d_hourly_%04d_%02d_%02d.%s",
+            id, year, month, 1, type
+        )
     } else if (deltat == "month") {
         # Next line reverse engineered from monthly data at Resolute. I don't imagine we
         # need Year and Month and Day.
@@ -169,7 +174,10 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     } else {
         stop("deltat must be \"hour\" or \"month\"")
     }
-    return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
+    return(dod.download(
+        url = url, file = file, age = age,
+        destdir = destdir, debug = debug - 1
+    ))
 } # dod.met
 
 #' Download sounding data
@@ -290,11 +298,12 @@ dod.met.sounding <- function(station = "73110", year, month, day, region = "naco
 #' @template debugTemplate
 #'
 #' @examples
-#' # This code works locally, but pkgdown::build_site() balks on it.
+#' # This block works interactively, but not when checked
+#' # or run by pkgdown::build_site(). I am unsure why.
 #' if (FALSE) {
-#'     # Get information on meteorological datasets for Halifax, N.S.
+#'     # Get index of meteorological data for Halifax, N.S.
 #'     library(dod)
-#'     i <- dod.met.index("halifax", debug = 1)
+#'     i <- dod.met.index("halifax")
 #'     names(i) # see what's in these files
 #'     i[, c("Province", "Station.Name", "Climate.ID")]
 #'     # focus on the ones in Nova Scotia
@@ -312,16 +321,26 @@ dod.met.index <- function(name,
                           quiet = FALSE,
                           debug = 0) {
     dodDebug(debug, "dod.met.index() START\n")
+    dodDebug(debug, "    max.distance=", max.distance, "\n", sep = "")
     dodDebug(debug, "    url=\"", url, "\"\n", sep = "")
     destfile <- tempfile("met", fileext = ".csv")
     dodDebug(debug, "    destfile=\"", destfile, "\"\n", sep = "")
-    download.file(url = url, destfile = destfile, quiet = quiet)
+    t <- try(
+        # download.file(url = url, destfile = destfile, quiet = quiet, mode = "wb")
+        curl::curl_download(url = url, destfile = destfile, quiet = quiet, mode = "wb"),
+        silent = quiet
+    )
+    if (inherits(t, "try-error")) {
+        stop("could not download ", url)
+    }
+    dodDebug(debug, "    about to read downloaded file\n")
     d <- read.csv(destfile)
+    dodDebug(debug, "    read", nrow(d), "lines\n")
     w <- agrep(name, d$Station.Name, max.distance = max.distance, ignore.case = TRUE)
-    dodDebug(debug, "    found", length(w), "matches out of", nrow(d), "lines\n")
+    dodDebug(debug, "    found", length(w), "matches for \"", name, "\" with max.distance=", max.distance, "\n")
     d <- d[w, ]
     dodDebug(debug, "    removing temporary file\n")
     file.remove(destfile)
-    dodDebug(debug, "    END dod.met.index()\n")
+    dodDebug(debug, "END dod.met.index()\n")
     d
 }

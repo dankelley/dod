@@ -28,7 +28,7 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
         stop("url must not be NULL")
     }
     if (!dir.exists(destdir)) {
-        stop("destdir \"", destdir, "\" does not exist; please create it first.")
+        stop("destdir \"", destdir, "\" not found; please create it first")
     }
     dodDebug(debug, "    dod.download(",
         "url=\"", url, "\", ",
@@ -38,6 +38,7 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
         sep = ""
     )
     filepath <- file.path(destdir, file)
+    dodDebug(debug, "    using filepath = \"", filepath, "\"\n", sep = "")
     # For negative age, set timer to 1000 years
     if (age < 0) {
         age <- 1000 * 365
@@ -69,7 +70,11 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
     owarn <- options("warn")$warn
     options(warn = -1)
     # t <- try(download.file(url = url, destfile = filepath, quiet = silent), silent = silent)
-    t <- try(curl::curl_download(url = url, destfile = filepath, quiet = quiet, mode = "wb"),
+    t <- try(
+        curl::curl_download(
+            url = url, destfile = filepath,
+            quiet = quiet, mode = "wb"
+        ),
         silent = quiet
     )
     options(warn = owarn)
