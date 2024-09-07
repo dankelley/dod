@@ -1,8 +1,11 @@
 # dod 0.1.12
 
+* Change `dod.amsr()` to default to 4 days into the past, because in early
+  morning, the 3-day default would fail because files were not yet ready on the
+  server.  Also, change the first parameter so it can be a Date or time object,
+  or a string that can be converted to the former.
 * Switch from `download.file()` to `RCurl::download_file()`, because the former
   was seen to cause problems on Windows machines.
-
 * Rename `silent` argument to `quiet`, to match the name used in
   `RCurl::download_file()`.
 

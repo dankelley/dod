@@ -5,7 +5,7 @@
 \title{Download Advanced Microwave Scanning Radiometer data}
 \usage{
 dod.amsr(
-  year = NULL,
+  year = Sys.Date() - 4,
   month,
   day,
   destdir = ".",
@@ -17,15 +17,15 @@ dod.amsr(
 }
 \arguments{
 \item{year, month, day}{integer values indicating the desired observation time.
-Set \code{year} to NULL (the default) to default to the most recent data; otherwise
-specify all three of these values if \code{type} is \code{"3day"}, \code{"daily"} or \code{"weekly"},
-or just the first two of them if \code{type} is \code{"monthly"}.  If these
-things are provided, then they just match exactly the values in the sought-after
-file on the remote server.  If \code{year} is NULL, then \code{\link[=dod.amsr]{dod.amsr()}} constructs
-a URL that ought to be the most recent available file: 3 days prior
-to the present date (if \code{type} is \code{"3day"} or \code{"daily"}), the Saturday
-two weeks prior to the present date (if \code{type} is \code{"weekly"}), or
-two months in the past (if \code{type} is \code{"monthly"}).}
+If \code{year} is a Date object then \code{month} and \code{day} are ignored, because they will be
+inferred automatically. (The default is to set \code{year} to \code{\link[=Sys.Date]{Sys.Date()}}-4,
+meaning 4 days in the past, so that a 3day type will work.)
+Otherwise, the appropriate \code{year}, \code{month} and \code{day}
+parameters depend on the \code{type}.  All three must be given (as integers)
+if \code{type} is \code{"3day"}, \code{"daily"} or \code{"weekly"}.  But only the first two are
+to be given if \code{type} is \code{"monthly"}.  Note that the server changes
+without notice, and so \code{dod.amsr()} needs modification from time to time,
+usually in the meanings of these three parameters, and of \code{type}.}
 
 \item{destdir}{character giving destination directory (defaults to \code{"."}, the present
 directory).  The directory must exist.  (The author uses \code{"~/data/amsr"}.)}
