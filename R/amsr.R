@@ -41,8 +41,9 @@
 #' third dimension representing ascending and descending traces, but in all the
 #' other cases, the arrays are 2D.
 #'
-#' @param debug integer giving debugging level (defaults to 0, to make the function work
-#' without much output).
+#' @template quietTemplate
+#'
+#' @template debugTemplate
 #'
 #' @return `dod.amsr` returns a character value holding the full pathname
 #' of the downloaded file.
@@ -83,7 +84,9 @@
 #' @author Dan Kelley
 dod.amsr <- function(
     year = NULL, month, day, destdir = ".",
-    server = "https://data.remss.com/amsr2/ocean/L3/v08.2", type = "3day",
+    server = "https://data.remss.com/amsr2/ocean/L3/v08.2",
+    type = "3day",
+    quiet = FALSE,
     debug = 0) {
     dodDebug(debug, "dod.amsr(type=\"", type, "\", ...) {\n", sep = "")
     if (!type %in% c("3day", "daily", "weekly", "monthly")) {
@@ -179,7 +182,7 @@ dod.amsr <- function(
     file <- gsub(".*/", "", url)
     dodDebug(debug, "url=\"", url, "\"\n", sep = "")
     dodDebug(debug, "file=\"", file, "\"\n", sep = "")
-    rval <- dod.download(url, destdir = destdir, file = file, age = -1, debug = debug - 1, silent = identical(debug, 0))
-    dodDebug(debug, "} # dod.amsr\n", sep = "")
+    rval <- dod.download(url, destdir = destdir, file = file, age = -1, debug = debug - 1, quiet = quiet)
+    dodDebug(debug, "", sep = "")
     rval
 }

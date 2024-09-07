@@ -26,6 +26,8 @@
 #'
 #' @template ageTemplate
 #'
+#' @template quietTemplate
+#'
 #' @template debugTemplate
 #'
 #' @importFrom utils read.csv
@@ -39,7 +41,7 @@
 #' @export
 #'
 #' @author Dan Kelley
-dod.ctd.itp <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, debug = 0) {
+dod.ctd.itp <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
     # For ITP 135, info is at
     # https://www2.whoi.edu/site/itp/data/active-systems/itp-135/
     # and data is at
@@ -66,8 +68,8 @@ dod.ctd.itp <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, d
         file <- gsub(".*/", "", dataURL)
     }
     # Try e.g. b50056_ctd.txt and if that fails, try b50056_ctd_QC.txt
-    filename <- try(dod.download(url = dataURL, destdir = destdir, file = file, age = age, debug = debug - 1),
-        silent = TRUE
+    filename <- try(dod.download(url = dataURL, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1),
+        silent = quiet
     )
     if (inherits(filename, "try-error")) {
         stop("Unable to download \"", dataURL, "\" to \"", filename, "\"")

@@ -13,9 +13,7 @@
 #'
 #' @template ageTemplate
 #'
-#' @param silent logical value passed to [download.file()], which
-#' does the downloading.  The default, TRUE, indicates not to show
-#' a progress indicator.
+#' @template quietTemplate
 #'
 #' @template debugTemplate
 #'
@@ -25,7 +23,7 @@
 #' @importFrom utils download.file
 #'
 #' @export
-dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, silent = TRUE, debug = 0) {
+dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet = TRUE, debug = 0) {
     if (is.null(url)) {
         stop("url must not be NULL")
     }
@@ -36,7 +34,7 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, silent
         "url=\"", url, "\", ",
         "file=\"", file, "\", ",
         "destdir=\"", destdir, "\", ",
-        "age=", age, ", silent=", silent, ", debug=", debug, ")\n    {\n",
+        "age=", age, ", quiet=", quiet, ", debug=", debug, ")\n    {\n",
         sep = ""
     )
     filepath <- file.path(destdir, file)
@@ -70,7 +68,10 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, silent
     }
     owarn <- options("warn")$warn
     options(warn = -1)
-    t <- try(download.file(url = url, destfile = filepath, quiet = silent), silent = silent)
+    # t <- try(download.file(url = url, destfile = filepath, quiet = silent), silent = silent)
+    t <- try(curl::curl_download(url = url, destfile = filepath, quiet = quiet, mode = "wb"),
+        silent = quiet
+    )
     options(warn = owarn)
     if (inherits(t, "try-error")) {
         stop("An error occured when trying to download \"", url, "\"")

@@ -9,7 +9,7 @@ dod.download(
   file = NULL,
   destdir = ".",
   age = 0,
-  silent = TRUE,
+  quiet = TRUE,
   debug = 0
 )
 }
@@ -31,9 +31,10 @@ that existing files will always be updated. By contrast, setting
 \code{age} to a negative number prevents the updating of files that
 already exist locally, regardless of their age.}
 
-\item{silent}{logical value passed to \code{\link[=download.file]{download.file()}}, which
-does the downloading.  The default, TRUE, indicates not to show
-a progress indicator.}
+\item{quiet}{a logical value, passed to \code{\link[curl:curl_download]{curl::curl_download()}}, which does
+the downloading.  If this is TRUE, then the work is done quietly. Until
+version version 0.1.12, this was called \code{silent}, but it was renamed to
+match the corresponding argument in \code{\link[curl:curl_download]{curl::curl_download()}}.}
 
 \item{debug}{an integer value indicating the level of debugging. If
 this exceeds 0, then some debugging messages will be printed. This

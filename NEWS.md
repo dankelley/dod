@@ -1,7 +1,14 @@
+# dod 0.1.12
+
+* Switch from `download.file()` to `RCurl::download_file()`, because the former
+  was seen to cause problems on Windows machines.
+
+* Rename `silent` argument to `quiet`, to match the name used in
+  `RCurl::download_file()`.
+
 # dod 0.1.11
 
 * Add `dod.met.index()`.
-
 
 # dod 0.1.10
 
@@ -39,7 +46,7 @@
 * `dod.amsr()` is now local, as opposed to a call to `oce::download.amsr()`.
   It is also changed in major ways, because the data provider has altered
   both the directory structure and the data format.  For more, see
-  https://github.com/dankelley/oce/issues/2124.
+  <https://github.com/dankelley/oce/issues/2124>.
 
 # dod 0.1.2
 
@@ -52,4 +59,3 @@
 # dod 0.1.0
 
 * Initial version
-

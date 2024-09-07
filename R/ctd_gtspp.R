@@ -39,6 +39,8 @@
 #'
 #' @template ageTemplate
 #'
+#' @template quietTemplate
+#'
 #' @template debugTemplate
 #'
 #' @return [dod.ctd.gtspp()] returns the local name of the downloaded file.
@@ -104,7 +106,7 @@
 #' }
 #'
 #' @export
-dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index = FALSE, nc = NULL, age = 0, debug = 0) {
+dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index = FALSE, nc = NULL, age = 0, quiet = FALSE, debug = 0) {
     ncIsURL <- !is.null(nc) && identical(substr(nc, 1, 4), "http")
     if (ncIsURL) {
         index <- FALSE
@@ -150,7 +152,7 @@ dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index 
         }
         file <- paste0(destdir, "/", file)
         dodDebug(debug, "file = \"", file, "\"\n", sep = "")
-        return(dod.download(url = server, file = file, destdir = destdir, silent = TRUE, age = age, debug = debug - 1))
+        return(dod.download(url = server, file = file, destdir = destdir, quiet = quiet, age = age, debug = debug - 1))
     } else { # get a data file
         # E.G. https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/2022/11/gtspp_48577347_ba_111.nc
         if (is.null(nc)) {
@@ -170,6 +172,6 @@ dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index 
                 file <- nc
             }
         }
-        return(dod.download(url = server, file = file, destdir = destdir, silent = TRUE, age = age, debug = debug - 1))
+        return(dod.download(url = server, file = file, destdir = destdir, quiet = quiet, age = age, debug = debug - 1))
     }
 }

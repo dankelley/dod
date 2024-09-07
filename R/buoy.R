@@ -1,5 +1,5 @@
-' Download buoy data
-#'
+" Download buoy data
+#"
 #' This function downloads buoy data from various programs
 #' including, as listed in \sQuote{Details}.
 #'
@@ -119,7 +119,7 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = 1, debug = 0) {
             "saint_john" = "SMA_saint_john/smb_saint_john.csv",
             "saint_johns" = "SMA_st_johns/smb_st_johns.csv"
         )
-        #https://www.smartatlantic.ca/erddap/files/SMA_st_johns/smb_st_johns.csv
+        # https://www.smartatlantic.ca/erddap/files/SMA_st_johns/smb_st_johns.csv
         IDallowed <- names(IDabbrev)
         if (!ID %in% IDallowed) {
             stop(

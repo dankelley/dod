@@ -11,6 +11,7 @@ dod.amsr(
   destdir = ".",
   server = "https://data.remss.com/amsr2/ocean/L3/v08.2",
   type = "3day",
+  quiet = FALSE,
   debug = 0
 )
 }
@@ -42,8 +43,15 @@ covering a month.  In the \code{"daily"} case, the data arrays are 3D, with the
 third dimension representing ascending and descending traces, but in all the
 other cases, the arrays are 2D.}
 
-\item{debug}{integer giving debugging level (defaults to 0, to make the function work
-without much output).}
+\item{quiet}{a logical value, passed to \code{\link[curl:curl_download]{curl::curl_download()}}, which does
+the downloading.  If this is TRUE, then the work is done quietly. Until
+version version 0.1.12, this was called \code{silent}, but it was renamed to
+match the corresponding argument in \code{\link[curl:curl_download]{curl::curl_download()}}.}
+
+\item{debug}{an integer value indicating the level of debugging. If
+this exceeds 0, then some debugging messages will be printed. This
+value is passed down to related functions, but with 1 subtracted
+for each pass.}
 }
 \value{
 \code{dod.amsr} returns a character value holding the full pathname

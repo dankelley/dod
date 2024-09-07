@@ -24,6 +24,8 @@
 #'
 #' @template ageTemplate
 #'
+#' @template quietTemplate
+#'
 #' @template debugTemplate
 #'
 #' @importFrom utils read.csv
@@ -75,7 +77,7 @@
 #' @family functions that download CTD data
 #'
 #' @export
-dod.ctd.bats <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, debug = 0) {
+dod.ctd.bats <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
     server <- "http://batsftp.bios.edu/BATS/ctd/ASCII/"
     if (missing(ID)) {
         stop("ID must be supplied")
@@ -104,13 +106,13 @@ dod.ctd.bats <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, 
         }
         url <- paste0(server, "b", ID, "_ctd.txt")
         # Try e.g. b50056_ctd.txt and if that fails, try b50056_ctd_QC.txt
-        filename <- try(dod.download(url = url, destdir = destdir, file = file, age = age, debug = debug - 1),
-            silent = TRUE
+        filename <- try(dod.download(url = url, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1),
+            silent = quiet
         )
         if (inherits(filename, "try-error")) {
             url2 <- gsub(".txt", "_QC.txt", url)
-            filename <- try(dod.download(url = url2, destdir = destdir, file = file, age = age, debug = debug - 1),
-                silent = TRUE
+            filename <- try(dod.download(url = url2, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1),
+                silent = quiet
             )
             if (inherits(filename, "try-error")) {
                 stop("Unable to download \"", url, "\" or \"", url2, "\" to \"", filename, "\"")
