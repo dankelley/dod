@@ -75,7 +75,7 @@
 #' @template debugTemplate
 #'
 #' @importFrom utils read.csv write.csv
-#' @importfrom jsonlite fromJSON
+## @importFrom jsonlite fromJSON
 #'
 #' @return [dod.tideGauge()] returns a list, if `value` is `"metadata"`
 #' and `agency` is `"CHS"`; otherwise it returns a file name (with
