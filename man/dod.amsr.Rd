@@ -83,7 +83,7 @@ of the code within \code{dod}, and a severing of the connection to the
 if (!FALSE) {
     library("oce")
     # Get temporary space (to obey CRAN rules)
-    destdir <- tempdir("amsr")
+    destdir <- tempdir()
     file <- dod.amsr(destdir = destdir)
     a <- read.amsr(file)
     natl <- a |>
