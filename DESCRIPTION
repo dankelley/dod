@@ -8,7 +8,7 @@ Description: The package is used to download various types of oceanographic data
 License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/dod/
-Depends: R (>= 4.4.0)
+Depends: R (>= 4.1.0)
 Suggests: curl, knitr, oce, ncdf4, rjson, rmarkdown, terra, testthat, XML
 RoxygenNote: 7.3.2
 BugReports: https://github.com/dankelley/dod/issues
