@@ -181,8 +181,8 @@ dod.tideGauge <- function(
     endDigits <- gsub("-", "", end)
     dodDebug(debug, "destdir=\"", destdir, "\"\n", sep = "")
     if (agency == "CHS") {
-        if (!requireNamespace("rjsonlite", quietly = TRUE)) {
-            stop("must install.packages(\"rjsonlite\") before using dod.tideGauge() with agency=\"CHS\"")
+        if (!requireNamespace("jsonlite", quietly = TRUE)) {
+            stop("must install.packages(\"jsonlite\") before using dod.tideGauge() with agency=\"CHS\"")
         }
         dodDebug(debug, "about to try to find code for ID=\"", ID, "\"\n", sep = "")
         # Find station ID.  This is a string like 5cebf1e23d0f4a073c4bbfac,
@@ -192,7 +192,7 @@ dod.tideGauge <- function(
         # so no attempt is made to save known names.)
         url <- "https://api-iwls.dfo-mpo.gc.ca/api/v1/stations"
         s <- readLines(url, warn = FALSE)
-        d <- rjsonlite::fromJSON(s)
+        d <- jsonlite::fromJSON(s)
         if (grepl("a-zA-Z", ID)) {
             dodDebug(debug, "looking up station by name", ID, "\n")
             # e.g. "Bedford Institute"
@@ -218,10 +218,10 @@ dod.tideGauge <- function(
             url <- sprintf("https://api-iwls.dfo-mpo.gc.ca/api/v1/stations/%s/metadata", stationID)
             s <- readLines(url, warn = FALSE)
             dodDebug(debug, "returning metadata, not a file name\n")
-            if (!requireNamespace("rjsonlite", quietly = TRUE)) {
-                stop("must install.packages(\"rjsonlite\") before using dod.tideGauge() with agency=\"CHS\"")
+            if (!requireNamespace("jsonlite", quietly = TRUE)) {
+                stop("must install.packages(\"jsonlite\") before using dod.tideGauge() with agency=\"CHS\"")
             }
-            return(rjsonlite::fromJSON(s))
+            return(jsonlite::fromJSON(s))
         }
         # OK, now we know the user wants data
         variableRemote <- variable
@@ -238,7 +238,7 @@ dod.tideGauge <- function(
         url <- paste0("https://", gsub(":", "%3A", url))
         dodDebug(debug, "url: \"", url, "\"\n", sep = "")
         s <- readLines(url, warn = FALSE)
-        d <- rjson::fromJSON(s)
+        d <- jsonlite::fromJSON(s)
         time <- sapply(d, \(x) x$eventDate)
         time <- gsub("Z$", "", gsub("T", " ", time)) # for output
         QC <- sapply(d, \(x) x$qcFlagCode)
