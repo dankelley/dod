@@ -1,3 +1,7 @@
+# dod 0.1.13
+
+* Change `dod.tideGauge()` to handle present-day DFO format.
+
 # dod 0.1.12
 
 * Change `dod.amsr()` to default to 4 days into the past, because in early

@@ -116,16 +116,16 @@ library(oce)
 ofile <- dod.tideGauge(491)
 pfile <- dod.tideGauge(491, "predictions")
 O <- read.csv(ofile)
-O$time <- as.POSIXct(O$Date.Time, tz = "UTC")
+O$time <- as.POSIXct(O$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz="UTC")
 P <- read.csv(pfile)
-P$time <- as.POSIXct(P$Date.Time, tz = "UTC")
+P$time <- as.POSIXct(P$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz="UTC")
 # Top panel: observation (black) and prediction (gray)
 par(mfrow = c(2, 1))
-oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]")
+oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
 lines(P$time, P$Predictions, col = "gray", type = "l")
 # Bottom panel: misfit. Note the interpolation to observation time.
 misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
-oce.plot.ts(O$time, misfit, ylab = "Deviation [m]")
+oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
 }
 
 }

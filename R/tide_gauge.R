@@ -90,16 +90,16 @@
 #' ofile <- dod.tideGauge(491)
 #' pfile <- dod.tideGauge(491, "predictions")
 #' O <- read.csv(ofile)
-#' O$time <- as.POSIXct(O$Date.Time, tz = "UTC")
+#' O$time <- as.POSIXct(O$Date.Time, "%Y-%m-%d %H:%M:%S", tz="UTC")
 #' P <- read.csv(pfile)
-#' P$time <- as.POSIXct(P$Date.Time, tz = "UTC")
+#' P$time <- as.POSIXct(P$Date.Time, "%Y-%m-%d %H:%M:%S", tz="UTC")
 #' # Top panel: observation (black) and prediction (gray)
 #' par(mfrow = c(2, 1))
-#' oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]")
+#' oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
 #' lines(P$time, P$Predictions, col = "gray", type = "l")
 #' # Bottom panel: misfit. Note the interpolation to observation time.
 #' misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
-#' oce.plot.ts(O$time, misfit, ylab = "Deviation [m]")
+#' oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
 #' }
 #'
 #' @references
@@ -160,7 +160,7 @@ dod.tideGauge <- function(
             "FIFTEEN_MINUTES" = 15,
             "SIXTY_MINUTES" = 60
         )
-    } else if (identical(agency, "NOAA")) { # FIXME: is this right? (is anything still right?)
+    } else if (identical(agency, "NOAA")) { # Is this right?
         if (is.null(resolution)) {
             resolution <- 60
             resolutionNumeric <- 60
@@ -177,8 +177,10 @@ dod.tideGauge <- function(
         ), ".csv")
     }
     dodDebug(debug, "file=\"", file, "\"\n", sep = "")
-    startDigits <- gsub("-", "", start)
-    endDigits <- gsub("-", "", end)
+    dodDebug(debug, "start=\"", start, "\"\n", sep = "")
+    dodDebug(debug, "end=\"", end, "\"\n", sep = "")
+    #startDigits <- gsub("-", "", start)
+    #endDigits <- gsub("-", "", end)
     dodDebug(debug, "destdir=\"", destdir, "\"\n", sep = "")
     if (agency == "CHS") {
         if (!requireNamespace("jsonlite", quietly = TRUE)) {
@@ -203,19 +205,25 @@ dod.tideGauge <- function(
         } else {
             dodDebug(debug, "looking up station by ID number", ID, "\n")
             # e.g. "00491"
-            ID <- as.integer(ID)
-            w <- which(sapply(d, \(s) identical(ID, as.integer(s$code))))
+            w <- which(as.integer(ID) == as.integer(d$code))
             if (length(w) == 0L) {
                 stop("cannot find API code for ID=\"", ID, "\" (interpreted as a number)")
             }
+            if (length(w) > 1L) {
+                stop("multiple matches for ID=\"", ID, "\" at indices ", paste(w, collapse=" "))
+            }
+            dodDebug(debug, "got this ID, at entry", w, "of the data\n")
         }
-        ds <- d[[w]]
-        stationID <- ds$id
+        #ds <- d$timeSeries[[w]]
+        stationID <- d$id[w]
         dodDebug(debug, "calculated CHS station ID code to be \"", stationID, "\"\n", sep = "")
         # return metadata, if requested
         url <- "https://api-iwls.dfo-mpo.gc.ca/api/v1/stations"
+        dodDebug(debug, "at the start, url = \"", url, "\"\n", sep = "")
+        dodDebug(debug, "at the start, variable = \"", variable, "\"\n", sep = "")
         if (identical(variable, "metadata")) {
             url <- sprintf("https://api-iwls.dfo-mpo.gc.ca/api/v1/stations/%s/metadata", stationID)
+            dodDebug(debug, "for metadata, using url = \"", url, "\"\n", sep = "")
             s <- readLines(url, warn = FALSE)
             dodDebug(debug, "returning metadata, not a file name\n")
             if (!requireNamespace("jsonlite", quietly = TRUE)) {
@@ -227,6 +235,7 @@ dod.tideGauge <- function(
         variableRemote <- variable
         variableRemote <- gsub("^water_level$", "wlo", variableRemote)
         variableRemote <- gsub("^predictions$", "wlp", variableRemote)
+        dodDebug(debug, "after variable name translation, variableRemote = \"", variableRemote, "\"\n", sep = "")
         url <- sprintf(
             "api-iwls.dfo-mpo.gc.ca/api/v1/stations/%s/data?time-series-code=%s&from=%s&to=%s&resolution=%s",
             stationID,
@@ -235,14 +244,15 @@ dod.tideGauge <- function(
             format(end, "%Y-%m-%dT%H:%M:00Z"),
             resolution
         )
+        dodDebug(debug, "url for data (step 1): \"", url, "\"\n", sep = "")
         url <- paste0("https://", gsub(":", "%3A", url))
-        dodDebug(debug, "url: \"", url, "\"\n", sep = "")
+        dodDebug(debug, "url for data (step 2): \"", url, "\"\n", sep = "")
+        # https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/api/v1/stations/5cebf1e23d0f4a073c4bbfac/data\?time-series-code\=wlo\&from\=2024-12-10T01%3A01%3A01Z\&to\=2024-12-15T01%3A01%3A01Z\&resolution\=THREE_MINUTES # nolint: line_length_linter.
         s <- readLines(url, warn = FALSE)
         d <- jsonlite::fromJSON(s)
-        time <- sapply(d, \(x) x$eventDate)
-        time <- gsub("Z$", "", gsub("T", " ", time)) # for output
-        QC <- sapply(d, \(x) x$qcFlagCode)
-        var <- sapply(d, \(x) x$value)
+        time <- as.POSIXct(d$eventDate, format="%Y-%m-%dT%H:%M:%SZ", tz="UTC")
+        QC <- as.integer(d$qcFlagCode)
+        var <- d$value
         if (variable == "water_level") {
             res <- data.frame("Date.Time" = time, "Water.Level" = var, "QC" = QC)
         } else if (variable == "predictions") {
@@ -252,7 +262,7 @@ dod.tideGauge <- function(
         write.csv(res, file = file, row.names = FALSE)
         return(file)
     } else if (agency == "NOAA") {
-        # https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20230801&end_date=20230830&datum=MLLW&station=8727520&time_zone=GMT&units=metric&interval=&format=CSV
+        # https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20230801&end_date=20230830&datum=MLLW&station=8727520&time_zone=GMT&units=metric&interval=&format=CSV # nolint: line_length_linter.
         server <- "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
         # Rename variable
         variableRemote <- variable
