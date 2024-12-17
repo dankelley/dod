@@ -47,28 +47,22 @@
 #' @author Dan Kelley
 #'
 #' @examples
-#' # This code works locally, but pkgdown::build_site() balks on it.
-#' if (!FALSE) {
-#'     # Meteorological data for Halifax, Nova Scotia.
-#'     # Note that a temporary directory is used, in case
-#'     # the package is later submitted to CRAN, which does not
-#'     # permit downloads to the working directory.
+#' # Meteorological data for Halifax, Nova Scotia.
+#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#'     # NOTE: data file is removed at end, to pass CRAN checks
 #'     library(dod)
 #'     destdir <- tempdir("met")
-#'     print(destdir)
 #'     metFile <- dod.met(43405, destdir = destdir, debug = 1)
-#'     print(metFile)
-#'     ##     if (requireNamespace("oce", quietly = TRUE) &&
-#'     ##         requireNamespace("XML", quietly = TRUE)) {
-#'     ##         library(oce)
-#'     ##         met <- read.met(metFile)
-#'     ##         t <- met[["time"]]
-#'     ##         p <- met[["pressure"]]
-#'     ##         oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
-#'     ##     }
+#'     if (requireNamespace("oce", quietly = TRUE) &&
+#'         requireNamespace("XML", quietly = TRUE)) {
+#'         library(oce)
+#'         met <- read.met(metFile)
+#'         t <- met[["time"]]
+#'         p <- met[["pressure"]]
+#'         oce.plot.ts(t, p, ylab = "Atm. Pressure [Pa]")
+#'     }
 #'     unlink(destdir, recursive = TRUE)
 #' }
-#'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
 #' `https://climate.weather.gc.ca/index_e.html`

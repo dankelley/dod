@@ -110,28 +110,32 @@ hour marker, but observations may be at a variety of times, depending
 will require interpolation (see \sQuote{Examples}).
 }
 \examples{
-\dontrun{
-library(dod)
-library(oce)
-ofile <- dod.tideGauge(491)
-pfile <- dod.tideGauge(491, "predictions")
-O <- read.csv(ofile)
-O$time <- as.POSIXct(O$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz="UTC")
-P <- read.csv(pfile)
-P$time <- as.POSIXct(P$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz="UTC")
-# Top panel: observation (black) and prediction (gray)
-par(mfrow = c(2, 1))
-oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
-lines(P$time, P$Predictions, col = "gray", type = "l")
-# Bottom panel: misfit. Note the interpolation to observation time.
-misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
-oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
+# Download and plot tide-guage data for Halifax Harbour
+if (FALSE) { # this is a problem for pkgdown::build_site()
+    # NOTE: data file is removed at end, to pass CRAN checks
+    library(dod)
+    library(oce)
+    destdir <- tempdir("met")
+    ofile <- dod.tideGauge(491, destdir = destdir)
+    pfile <- dod.tideGauge(491, "predictions", destdir = destdir)
+    O <- read.csv(ofile)
+    O$time <- as.POSIXct(O$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC")
+    P <- read.csv(pfile)
+    P$time <- as.POSIXct(P$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC")
+    # Top panel: observation (black) and prediction (gray)
+    par(mfrow = c(2, 1))
+    oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
+    lines(P$time, P$Predictions, col = "gray", type = "l")
+    # Bottom panel: misfit. Note the interpolation to observation time.
+    misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
+    oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
+    unlink(destdir, recursive = TRUE)
 }
 
 }
 \references{
 \enumerate{
-\item https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html
+\item https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html
 \item https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
 }
 }

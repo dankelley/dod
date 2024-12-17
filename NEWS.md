@@ -1,6 +1,9 @@
 # dod 0.1.13
 
-* Change `dod.tideGauge()` to handle present-day DFO format.
+* Change `dod.tideGauge()` to handle present-day DFO format (issue #12).
+* Change `dod.ctd.bats()` to simply report an error about the BATS website (issue #15).
+* Change all examples to no longer download since this causes problems with
+  `pkgdown::build_site()`. The problem was first noticed on 2024-12-17.
 
 # dod 0.1.12
 

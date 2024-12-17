@@ -84,27 +84,32 @@
 #' NOAA case, it is a downloaded file.
 #'
 #' @examples
-#' \dontrun{
-#' library(dod)
-#' library(oce)
-#' ofile <- dod.tideGauge(491)
-#' pfile <- dod.tideGauge(491, "predictions")
-#' O <- read.csv(ofile)
-#' O$time <- as.POSIXct(O$Date.Time, "%Y-%m-%d %H:%M:%S", tz="UTC")
-#' P <- read.csv(pfile)
-#' P$time <- as.POSIXct(P$Date.Time, "%Y-%m-%d %H:%M:%S", tz="UTC")
-#' # Top panel: observation (black) and prediction (gray)
-#' par(mfrow = c(2, 1))
-#' oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
-#' lines(P$time, P$Predictions, col = "gray", type = "l")
-#' # Bottom panel: misfit. Note the interpolation to observation time.
-#' misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
-#' oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
+#' # Download and plot tide-guage data for Halifax Harbour
+#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#'     # NOTE: data file is removed at end, to pass CRAN checks
+#'     library(dod)
+#'     library(oce)
+#'     destdir <- tempdir("met")
+#'     ofile <- dod.tideGauge(491, destdir = destdir)
+#'     pfile <- dod.tideGauge(491, "predictions", destdir = destdir)
+#'     O <- read.csv(ofile)
+#'     O$time <- as.POSIXct(O$Date.Time, "%Y-%m-%d %H:%M:%S", tz = "UTC")
+#'     P <- read.csv(pfile)
+#'     P$time <- as.POSIXct(P$Date.Time, "%Y-%m-%d %H:%M:%S", tz = "UTC")
+#'     # Top panel: observation (black) and prediction (gray)
+#'     par(mfrow = c(2, 1))
+#'     oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
+#'     lines(P$time, P$Predictions, col = "gray", type = "l")
+#'     # Bottom panel: misfit. Note the interpolation to observation time.
+#'     misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
+#'     oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
+#'     unlink(destdir, recursive = TRUE)
 #' }
 #'
 #' @references
 #'
-#' 1. https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html
+## 1. https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html
+#' 1. https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html
 #'
 #' 2. https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
 #'
@@ -179,8 +184,8 @@ dod.tideGauge <- function(
     dodDebug(debug, "file=\"", file, "\"\n", sep = "")
     dodDebug(debug, "start=\"", start, "\"\n", sep = "")
     dodDebug(debug, "end=\"", end, "\"\n", sep = "")
-    #startDigits <- gsub("-", "", start)
-    #endDigits <- gsub("-", "", end)
+    # startDigits <- gsub("-", "", start)
+    # endDigits <- gsub("-", "", end)
     dodDebug(debug, "destdir=\"", destdir, "\"\n", sep = "")
     if (agency == "CHS") {
         if (!requireNamespace("jsonlite", quietly = TRUE)) {
@@ -210,11 +215,11 @@ dod.tideGauge <- function(
                 stop("cannot find API code for ID=\"", ID, "\" (interpreted as a number)")
             }
             if (length(w) > 1L) {
-                stop("multiple matches for ID=\"", ID, "\" at indices ", paste(w, collapse=" "))
+                stop("multiple matches for ID=\"", ID, "\" at indices ", paste(w, collapse = " "))
             }
             dodDebug(debug, "got this ID, at entry", w, "of the data\n")
         }
-        #ds <- d$timeSeries[[w]]
+        # ds <- d$timeSeries[[w]]
         stationID <- d$id[w]
         dodDebug(debug, "calculated CHS station ID code to be \"", stationID, "\"\n", sep = "")
         # return metadata, if requested
@@ -250,7 +255,7 @@ dod.tideGauge <- function(
         # https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/api/v1/stations/5cebf1e23d0f4a073c4bbfac/data\?time-series-code\=wlo\&from\=2024-12-10T01%3A01%3A01Z\&to\=2024-12-15T01%3A01%3A01Z\&resolution\=THREE_MINUTES # nolint: line_length_linter.
         s <- readLines(url, warn = FALSE)
         d <- jsonlite::fromJSON(s)
-        time <- as.POSIXct(d$eventDate, format="%Y-%m-%dT%H:%M:%SZ", tz="UTC")
+        time <- as.POSIXct(d$eventDate, format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
         QC <- as.integer(d$qcFlagCode)
         var <- d$value
         if (variable == "water_level") {

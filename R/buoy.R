@@ -1,5 +1,5 @@
-" Download buoy data
-#"
+#' Download buoy data
+#'
 #' This function downloads buoy data from various programs
 #' including, as listed in \sQuote{Details}.
 #'
@@ -54,12 +54,9 @@
 #' downloaded file.
 #'
 #' @examples
-#' # This code works locally, but pkgdown::build_site() balks on it.
-#' if (FALSE) {
-#'     # Show significant wave height in Halifax Harbour over past 28 days.
-#'     # Note that a temporary directory is used, in case
-#'     # the package is later submitted to CRAN, which does not
-#'     # permit downloads to the working directory.
+#' # Show significant wave height in Halifax Harbour over past 28 days.
+#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#'     # NOTE: data file is removed at end, to pass CRAN checks
 #'     library(dod)
 #'     destdir <- tempdir("buoy")
 #'     file <- dod.buoy("smartatlantic", "h1", destdir = destdir)

@@ -31,18 +31,7 @@
 #' there is a problem of any kind, the result will be the empty
 #' string.
 #'
-#' @seealso The work is done with [utils::download.file()].
-#'
-#' @examples
-#' \dontrun{
-#' library(oce)
-#' # User must create directory ~/data/coastline first.
-#' # As of September 2016, the downloaded file, named
-#' # "ne_50m_coastline.zip", occupies 443K bytes.
-#' filename <- dod.coastline(destdir = "~/data/coastline")
-#' coastline <- read.coastline(filename)
-#' plot(coastline)
-#' }
+## @seealso The work is done with [utils::download.file()].
 #'
 #' @references
 #' 1. The NaturalEarth server is at `https://www.naturalearthdata.com`

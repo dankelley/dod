@@ -2,8 +2,7 @@
 % Please edit documentation in R/buoy.R
 \name{dod.buoy}
 \alias{dod.buoy}
-\title{This function downloads buoy data from various programs
-including, as listed in \sQuote{Details}.}
+\title{Download buoy data}
 \usage{
 dod.buoy(program, ID = NULL, destdir = ".", age = 1, debug = 0)
 }
@@ -36,9 +35,11 @@ return a data frame.  Otherwise, return the name of the
 downloaded file.
 }
 \description{
-If \code{program} is `"MEDS"', then the choices for ID are as follows.
+This function downloads buoy data from various programs
+including, as listed in \sQuote{Details}.
 }
 \details{
+If \code{program} is `"MEDS"', then the choices for ID are as follows.
 \itemize{
 \item \code{"Banquereau Bank"}
 \item \code{"East Scotian Slope"}
@@ -68,12 +69,9 @@ buoys in the Atlantic Provinces, are as follows.
 }
 }
 \examples{
-# This code works locally, but pkgdown::build_site() balks on it.
-if (FALSE) {
-    # Show significant wave height in Halifax Harbour over past 28 days.
-    # Note that a temporary directory is used, in case
-    # the package is later submitted to CRAN, which does not
-    # permit downloads to the working directory.
+# Show significant wave height in Halifax Harbour over past 28 days.
+if (FALSE) { # this is a problem for pkgdown::build_site()
+    # NOTE: data file is removed at end, to pass CRAN checks
     library(dod)
     destdir <- tempdir("buoy")
     file <- dod.buoy("smartatlantic", "h1", destdir = destdir)

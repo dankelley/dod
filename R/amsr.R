@@ -56,14 +56,12 @@
 #' `oce` function.
 #'
 #' @examples
-#' # This code works locally, but pkgdown::build_site() balks on it.
-#' if (!FALSE) {
+#' if (FALSE) { # this is a problem for pkgdown::build_site()
 #'     library("oce")
 #'     # Get temporary space (to obey CRAN rules)
 #'     destdir <- tempdir()
 #'     file <- dod.amsr(destdir = destdir)
-#'     a <- read.amsr(file)
-#'     natl <- a |>
+#'     natl <- read.amsr(file) |>
 #'         subset(-90 < longitude & longitude < 0) |>
 #'         subset(20 < latitude & latitude < 70)
 #'     plot(natl)

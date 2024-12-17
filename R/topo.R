@@ -59,18 +59,21 @@
 #' @author Dan Kelley
 #'
 #' @examples
-#' \dontrun{
-#' library(oce)
-#' topoFile <- dod.topo(
-#'     west = -66, east = -60, south = 43, north = 47,
-#'     resolution = 1, destdir = "~/data/topo"
-#' )
-#' topo <- read.topo(topoFile)
-#' imagep(topo, zlim = c(-400, 400), col = oceColorsTwo, drawTriangles = TRUE)
-#' if (requireNamespace("ocedata", quietly = TRUE)) {
-#'     data(coastlineWorldFine, package = "ocedata")
-#'     lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
-#' }
+#' # Download and plot topographic data
+#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#'     library(oce)
+#'     destdir <- tempdir("met")
+#'     topoFile <- dod.topo(
+#'         west = -66, east = -60, south = 43, north = 47,
+#'         resolution = 1, destdir = destdir
+#'     )
+#'     topo <- read.topo(topoFile)
+#'     imagep(topo, zlim = c(-400, 400), col = oceColorsTwo, drawTriangles = TRUE)
+#'     if (requireNamespace("ocedata", quietly = TRUE)) {
+#'         data(coastlineWorldFine, package = "ocedata")
+#'         lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#'     }
+#'     unlink(destdir, recursive = TRUE)
 #' }
 #'
 #' @references

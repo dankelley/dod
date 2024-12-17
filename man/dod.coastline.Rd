@@ -51,26 +51,12 @@ string.
 Constructs a query to the NaturalEarth server (see reference 1) to download coastline
 data (or lake data, river data, etc) in any of three resolutions.
 }
-\examples{
-\dontrun{
-library(oce)
-# User must create directory ~/data/coastline first.
-# As of September 2016, the downloaded file, named
-# "ne_50m_coastline.zip", occupies 443K bytes.
-filename <- dod.coastline(destdir = "~/data/coastline")
-coastline <- read.coastline(filename)
-plot(coastline)
-}
-
-}
 \references{
 \enumerate{
 \item The NaturalEarth server is at \verb{https://www.naturalearthdata.com}
 }
 }
 \seealso{
-The work is done with \code{\link[utils:download.file]{utils::download.file()}}.
-
 Other functions that download files: 
 \code{\link{dod.met}()},
 \code{\link{dod.topo}()}
