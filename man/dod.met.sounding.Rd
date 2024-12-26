@@ -56,31 +56,32 @@ Department of Atmospheric science website at
 \url{https://weather.uwyo.edu/upperair/sounding.html}.
 }
 \examples{
-\dontrun{
-# Download
-destdir <- tempdir("met")
-station <- "73110"
-year <- "2023"
-month <- "01"
-day <- "08"
-file <- dod.met.sounding(station, year = year, month = month, day = day, destdir = tempdir)
-# Read data, extracting the table crudely.
-lines <- readLines(file)
-start <- grep("<PRE>", lines)[1]
-end <- grep("</PRE>", lines)[1]
-table <- lines[seq(start + 5, end - 1)]
-col.names <- strsplit(gsub("^ [ ]*", "", lines[start + 2]), "[ ]+")[[1]]
-# Must read in fixed-width format because missing data are blanked out
-data <- read.fwf(
-    file = textConnection(table),
-    widths = rep(7, 11), col.names = col.names
-)
-# Plot mixing ratio variation with height
-plot(data$MIXR, data$HGHT,
-    type = "l", cex = 0.5, pch = 20, col = 4,
-    xlab = "Mixing Ratio", ylab = "Height [m]"
-)
-unlink(destdir, recursive = TRUE)
+if (interactive()) { # sidestep a pkgdown::build_site() error
+    # NOTE: data file is removed at end, to pass CRAN checks
+    # Download
+    destdir <- tempdir()
+    station <- "73110"
+    year <- "2023"
+    month <- "01"
+    day <- "08"
+    file <- dod.met.sounding(station, year = year, month = month, day = day, destdir = tempdir)
+    # Read data, extracting the table crudely.
+    lines <- readLines(file)
+    start <- grep("<PRE>", lines)[1]
+    end <- grep("</PRE>", lines)[1]
+    table <- lines[seq(start + 5, end - 1)]
+    col.names <- strsplit(gsub("^ [ ]*", "", lines[start + 2]), "[ ]+")[[1]]
+    # Must read in fixed-width format because missing data are blanked out
+    data <- read.fwf(
+        file = textConnection(table),
+        widths = rep(7, 11), col.names = col.names
+    )
+    # Plot mixing ratio variation with height
+    plot(data$MIXR, data$HGHT,
+        type = "l", cex = 0.5, pch = 20, col = 4,
+        xlab = "Mixing Ratio", ylab = "Height [m]"
+    )
+    unlink(destdir, recursive = TRUE)
 }
 
 }

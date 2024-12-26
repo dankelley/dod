@@ -55,10 +55,10 @@
 #'
 #' @examples
 #' # Show significant wave height in Halifax Harbour over past 28 days.
-#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#' if (interactive()) { # sidestep a pkgdown::build_site() error
 #'     # NOTE: data file is removed at end, to pass CRAN checks
 #'     library(dod)
-#'     destdir <- tempdir("buoy")
+#'     destdir <- tempdir()
 #'     file <- dod.buoy("smartatlantic", "h1", destdir = destdir)
 #'     col.names <- strsplit(readLines(file, 1), ",")[[1]]
 #'     d <- read.csv(file, skip = 2, col.names = col.names)

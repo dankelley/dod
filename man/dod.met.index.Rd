@@ -53,9 +53,7 @@ with \code{\link[=dod.met]{dod.met()}}, the ID field that is of use is named
 interest for hourly data.
 }
 \examples{
-# This block works interactively, but not when checked
-# or run by pkgdown::build_site(). I am unsure why.
-if (FALSE) {
+if (interactive()) { # sidestep a pkgdown::build_site() error
     # Get index of meteorological data for Halifax, N.S.
     library(dod)
     i <- dod.met.index("halifax")

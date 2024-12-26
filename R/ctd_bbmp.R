@@ -38,10 +38,10 @@
 #'
 #' @examples
 #' # Download and study this year's first BBMP CTD file
-#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#' if (interactive()) { # sidestep a pkgdown::build_site() error
 #'     # NOTE: data file is removed at end, to pass CRAN checks
 #'     library(dod)
-#'     destdir <- tempdir("met")
+#'     destdir <- tempdir()
 #'     indexFile <- dod.ctd("BBMP", index = TRUE, destdir = destdir)
 #'     index <- read.csv(indexFile, header = FALSE, col.names = c("file", "time"), skip = 3)
 #'     # Download the first file in the index

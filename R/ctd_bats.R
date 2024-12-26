@@ -46,10 +46,10 @@
 ## # change at any time.) What the function does now is to produce an
 ## # error message that instructs users to visit a website and download
 ## # file manually.)
-## if (FALSE) {
+## if (interactive()) { # sidestep a pkgdown::build_site() error
 ##     library(dod)
 ##     # Read info file
-##     destdir <- tempdir("bats")
+##     destdir <- tempdir()
 ##     infoFile <- dod.ctd.bats(ID = 10001, info = TRUE, destdir = destdir)
 ##     info.names <- c(
 ##         "ID",

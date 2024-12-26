@@ -43,17 +43,38 @@ value is passed down to related functions, but with 1 subtracted
 for each pass.}
 }
 \value{
-A character value indicating the filename of the result; if
-there is a problem of any kind, the result will be the empty
-string.
+A character value indicating the (ziip) filename of the result,
+or an empty string, if there is a problem.
 }
 \description{
 Constructs a query to the NaturalEarth server (see reference 1) to download coastline
 data (or lake data, river data, etc) in any of three resolutions.
 }
+\examples{
+
+# Download, unzip, read file, and then erase (as per CRAN policies)
+if (interactive()) { # this is a problem for pkgdown::build_site()
+    library(dod)
+    # NOTE: data file is removed at end, to pass CRAN checks
+    destdir <- tempdir()
+    zip <- dod.coastline(destdir = destdir, debug = 3)
+    unzip(zip, exdir = destdir)
+    list.files(destdir) # note the .shp file
+    shpfile <- list.files(destdir, ".shp$", full.names = TRUE)
+    if (requireNamespace("oce", quietly = TRUE)) {
+        library(oce)
+        cl <- read.coastline(shpfile, type = "shapefile")
+        plot(cl)
+    }
+    unlink(destdir, recursive = TRUE, force = TRUE)
+}
+
+}
 \references{
 \enumerate{
-\item The NaturalEarth server is at \verb{https://www.naturalearthdata.com}
+\item The NaturalEarth website is at \verb{https://www.naturalearthdata.com} but the
+files are available at e.g.
+\url{https://naturalearth.s3.amazonaws.com/50m_physical/ne_50m_coastline.zip}
 }
 }
 \seealso{

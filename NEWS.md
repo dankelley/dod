@@ -2,11 +2,23 @@
 
 * Update documentation to show the familial relationships between all
   downloading functions.
+* Change `dod.coastline()` to handle the new server location noticed in
+  December 2024.
+* Prevent documentation examples from running in non-interactive mode. This
+  seems to be the only way to prevent a `pkgdown::build_site()` error that
+  comes up with downloaded files.  The error is actually a warning, but it
+  stops the processing, so we cannot tolerate it.  The message is from
+  `gzfile()` stating that it cannot open a compressed file.  I've seen errors
+  like this in discussion boards going back many years, related to many things.
+  I have no idea what the problem is, despite quite a lot of searching and
+  testing.  Would I like it if the website showed plots, etc?  Sure.  Do I want
+  to spend a day aimlessly trying things and searching the web? Not so much.
 
 # dod 0.1.13
 
 * Change `dod.tideGauge()` to handle present-day DFO format (issue #12).
-* Change `dod.ctd.bats()` to simply report an error about the BATS website (issue #15).
+* Change `dod.ctd.bats()` to simply report an error about the BATS website
+  (issue #15).
 * Change all examples to no longer download since this causes problems with
   `pkgdown::build_site()`. The problem was first noticed on 2024-12-17.
 

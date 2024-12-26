@@ -57,9 +57,9 @@
 #'
 #' @examples
 #' # Download and plot topographic data
-#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#' if (interactive()) { # sidestep a pkgdown::build_site() error
 #'     library(oce)
-#'     destdir <- tempdir("met")
+#'     destdir <- tempdir()
 #'     topoFile <- dod.topo(
 #'         west = -66, east = -60, south = 43, north = 47,
 #'         resolution = 1, destdir = destdir

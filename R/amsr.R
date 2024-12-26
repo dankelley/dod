@@ -56,7 +56,7 @@
 #' `oce` function.
 #'
 #' @examples
-#' if (FALSE) { # this is a problem for pkgdown::build_site()
+#' if (interactive()) { # sidestep a pkgdown::build_site() error
 #'     library("oce")
 #'     # Get temporary space (to obey CRAN rules)
 #'     destdir <- tempdir()

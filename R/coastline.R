@@ -27,14 +27,42 @@
 #'
 #' @template debugTemplate
 #'
-#' @return A character value indicating the filename of the result; if
-#' there is a problem of any kind, the result will be the empty
-#' string.
+#' @return A character value indicating the (ziip) filename of the result,
+#' or an empty string, if there is a problem.
 #'
-## @seealso The work is done with [utils::download.file()].
+#' @examples
+#'
+#' # Download, unzip, read file, and then erase (as per CRAN policies)
+#' if (interactive()) { # this is a problem for pkgdown::build_site()
+#'     library(dod)
+#'     # NOTE: data file is removed at end, to pass CRAN checks
+#'     destdir <- tempdir()
+##     cat("\ndestdir: ", destdir, "\n", file = stderr())
+#'     zip <- dod.coastline(destdir = destdir, debug = 3)
+#'     unzip(zip, exdir = destdir)
+#'     list.files(destdir) # note the .shp file
+#'     shpfile <- list.files(destdir, ".shp$", full.names = TRUE)
+##     cat("\nshpfile: ", shpfile, "\n", file = stderr())
+#'     if (requireNamespace("oce", quietly = TRUE)) {
+##         cat("\nDAN 1\n", file = stderr())
+#'         library(oce)
+##         cat("\nDAN 2\n", file = stderr())
+#'         cl <- read.coastline(shpfile, type = "shapefile")
+##         cat("\nDAN 3\n", file = stderr())
+#'         plot(cl)
+##         cat(class(cl), "\n", file = stderr())
+##         cat("\nDAN 4\n", file = stderr())
+#'     }
+##     cat("\nDAN 5\n", file = stderr())
+#'     unlink(destdir, recursive = TRUE, force = TRUE)
+##     #file.remove(destdir)
+##     cat("\nDAN 6\n", file = stderr())
+#' }
 #'
 #' @references
-#' 1. The NaturalEarth server is at `https://www.naturalearthdata.com`
+#' 1. The NaturalEarth website is at `https://www.naturalearthdata.com` but the
+#' files are available at e.g.
+#' <https://naturalearth.s3.amazonaws.com/50m_physical/ne_50m_coastline.zip>
 #'
 #' @family functions that download files
 #' @export
@@ -48,7 +76,7 @@ dod.coastline <- function(resolution, item = "coastline", destdir = ".", destfil
         stop("'resolution' must be one of: '", paste(resolutionChoices, collapse = "' '"), "'")
     }
     if (server == "naturalearth") {
-        urlBase <- "https://www.naturalearthdata.com/downloads"
+        urlBase <- "https://naturalearth.s3.amazonaws.com/"
     } else {
         stop("the only server that works is naturalearth")
     }
@@ -56,7 +84,9 @@ dod.coastline <- function(resolution, item = "coastline", destdir = ".", destfil
     if (missing(destfile)) {
         destfile <- filename
     }
-    url <- paste(urlBase, "/", resolution, "/physical/", filename, sep = "")
+    # https://naturalearth.s3.amazonaws.com/50m_physical/ne_50m_coastline.zip
+    url <- paste0(urlBase, resolution, "_physical/ne_", resolution, "_", item, ".zip")
+    dodDebug(debug, "attempting to download ", url, "\n", sep = "")
     destination <- paste(destdir, destfile, sep = "/")
     if (1 == length(list.files(path = destdir, pattern = paste("^", destfile, "$", sep = "")))) {
         dodDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")

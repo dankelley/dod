@@ -111,11 +111,11 @@ will require interpolation (see \sQuote{Examples}).
 }
 \examples{
 # Download and plot tide-guage data for Halifax Harbour
-if (FALSE) { # this is a problem for pkgdown::build_site()
+if (interactive()) { # sidestep a pkgdown::build_site() error
     # NOTE: data file is removed at end, to pass CRAN checks
     library(dod)
     library(oce)
-    destdir <- tempdir("met")
+    destdir <- tempdir()
     ofile <- dod.tideGauge(491, destdir = destdir)
     pfile <- dod.tideGauge(491, "predictions", destdir = destdir)
     O <- read.csv(ofile)

@@ -81,7 +81,7 @@ inventory files are read in \code{.txt} format, which increases download and rea
 time by over an order of magnitude.
 }
 \examples{
-if (FALSE) { # this is a problem for pkgdown::build_site()
+if (interactive()) { # sidestep a pkgdown::build_site() error
     # Two examples are shown here.  The first specifies the remote file by a full
     # URL, and the second infers such a URL from a subset of an index file. Since
     # downloading an index is slow, a common approach is to combine the approaches,
