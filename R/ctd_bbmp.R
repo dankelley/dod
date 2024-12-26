@@ -54,8 +54,7 @@
 #'     unlink(destdir, recursive = TRUE)
 #' }
 #'
-#' @family functions that download CTD data
-#'
+#' @family functions that download files
 #' @export
 dod.ctd.bbmp <- function(year, ID = NULL, index = FALSE, file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
     server <- "ftp://ftp.dfo-mpo.gc.ca/BIOWebMaster/BBMP/ODF"

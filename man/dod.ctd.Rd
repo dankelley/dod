@@ -24,3 +24,17 @@ This function downloads CTD data from various programs.
    Ice-Tethered Profile \tab \code{GTSPP} \tab \code{\link[=dod.ctd.itp]{dod.ctd.itp()}} \cr
 }
 }
+\seealso{
+Other functions that download files: 
+\code{\link{dod.amsr}()},
+\code{\link{dod.buoy}()},
+\code{\link{dod.coastline}()},
+\code{\link{dod.ctd.bats}()},
+\code{\link{dod.ctd.bbmp}()},
+\code{\link{dod.ctd.gtspp}()},
+\code{\link{dod.ctd.itp}()},
+\code{\link{dod.met}()},
+\code{\link{dod.tideGauge}()},
+\code{\link{dod.topo}()}
+}
+\concept{functions that download files}

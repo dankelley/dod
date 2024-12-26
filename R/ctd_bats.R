@@ -88,7 +88,7 @@
 ##     unlink(destdir, recursive = TRUE)
 ## }
 #'
-#' @family functions that download CTD data
+#' @family functions that download files
 #'
 #' @export
 dod.ctd.bats <- function() {

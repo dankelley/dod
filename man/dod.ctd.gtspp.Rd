@@ -130,7 +130,8 @@ if (FALSE) { # this is a problem for pkgdown::build_site()
         plot(coastlineWorldFine, clongitude = hlon, clatitude = hlat, span = 2000)
         points(index$longitude, index$latitude, col = 4)
         # Focus on the point nearest Halifax
-        # https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/2022/01/gtspp_47477452_te_111.nc
+        # https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/\
+        # 2022/01/gtspp_47477452_te_111.nc
         dist <- geodDist(index$longitude, index$latitude, hlon, hlat)
         focus <- index[which.min(dist), ]
         dataFile <- dod.ctd.gtspp(nc = focus$data_URL)
@@ -140,9 +141,19 @@ if (FALSE) { # this is a problem for pkgdown::build_site()
 
 }
 \seealso{
-Other functions that download CTD data: 
+Other functions that download files: 
+\code{\link{dod.amsr}()},
+\code{\link{dod.buoy}()},
+\code{\link{dod.coastline}()},
+\code{\link{dod.ctd}()},
 \code{\link{dod.ctd.bats}()},
 \code{\link{dod.ctd.bbmp}()},
-\code{\link{dod.ctd.itp}()}
+\code{\link{dod.ctd.itp}()},
+\code{\link{dod.met}()},
+\code{\link{dod.tideGauge}()},
+\code{\link{dod.topo}()}
 }
-\concept{functions that download CTD data}
+\author{
+Dan Kelley
+}
+\concept{functions that download files}

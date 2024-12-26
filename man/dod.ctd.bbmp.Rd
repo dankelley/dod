@@ -86,9 +86,16 @@ if (FALSE) { # this is a problem for pkgdown::build_site()
 
 }
 \seealso{
-Other functions that download CTD data: 
+Other functions that download files: 
+\code{\link{dod.amsr}()},
+\code{\link{dod.buoy}()},
+\code{\link{dod.coastline}()},
+\code{\link{dod.ctd}()},
 \code{\link{dod.ctd.bats}()},
 \code{\link{dod.ctd.gtspp}()},
-\code{\link{dod.ctd.itp}()}
+\code{\link{dod.ctd.itp}()},
+\code{\link{dod.met}()},
+\code{\link{dod.tideGauge}()},
+\code{\link{dod.topo}()}
 }
-\concept{functions that download CTD data}
+\concept{functions that download files}

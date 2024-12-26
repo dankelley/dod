@@ -72,7 +72,7 @@
 #' }
 #'
 #' @export
-#'
+#' @family functions that download files
 #' @author Dan Kelley
 # https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c44258_csv.zip
 # https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData/c44139_csv.zip

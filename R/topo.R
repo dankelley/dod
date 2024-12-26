@@ -54,9 +54,6 @@
 #'
 #' @template debugTemplate
 #'
-#' @return String indicating the full pathname to the downloaded file.
-#'
-#' @author Dan Kelley
 #'
 #' @examples
 #' # Download and plot topographic data
@@ -81,14 +78,13 @@
 #' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 #' NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
 #'
-#' @family functions that download files
-#' @family things related to topo data
-#'
 ## @importFrom terra as.matrix flip rast xmin xmax ymin ymax
 #'
-#' @author Dan Kelley
+#' @return String indicating the full pathname to the downloaded file.
 #'
 #' @export
+#' @family functions that download files
+#' @author Dan Kelley
 dod.topo <- function(
     west, east, south, north, resolution = 4,
     destdir = ".", destfile, server = "https://gis.ngdc.noaa.gov",

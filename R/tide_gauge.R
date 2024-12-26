@@ -113,7 +113,9 @@
 #'
 #' 2. https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
 #'
+#' @family functions that download files
 #' @export
+#' @author Dan Kelley
 dod.tideGauge <- function(
     ID = NULL, variable = "water_level", agency = "CHS",
     start = NULL, end = NULL, resolution = NULL,

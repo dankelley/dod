@@ -70,7 +70,7 @@
 #' }
 #'
 #' @export
-#'
+#' @family functions that download files
 #' @author Dan Kelley
 dod.amsr <- function(
     date = Sys.Date() - 4L,

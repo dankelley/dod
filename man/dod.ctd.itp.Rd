@@ -66,12 +66,19 @@ server does not provide a searchable index, so users will need to visit the webs
 \url{https://www2.whoi.edu/site/itp/data/} to determine IDs of interest.
 }
 \seealso{
-Other functions that download CTD data: 
+Other functions that download files: 
+\code{\link{dod.amsr}()},
+\code{\link{dod.buoy}()},
+\code{\link{dod.coastline}()},
+\code{\link{dod.ctd}()},
 \code{\link{dod.ctd.bats}()},
 \code{\link{dod.ctd.bbmp}()},
-\code{\link{dod.ctd.gtspp}()}
+\code{\link{dod.ctd.gtspp}()},
+\code{\link{dod.met}()},
+\code{\link{dod.tideGauge}()},
+\code{\link{dod.topo}()}
 }
 \author{
 Dan Kelley
 }
-\concept{functions that download CTD data}
+\concept{functions that download files}

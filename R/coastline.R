@@ -37,10 +37,7 @@
 #' 1. The NaturalEarth server is at `https://www.naturalearthdata.com`
 #'
 #' @family functions that download files
-#' @family things related to coastline data
-#'
 #' @export
-#'
 #' @author Dan Kelley
 dod.coastline <- function(resolution, item = "coastline", destdir = ".", destfile, server = "naturalearth", debug = 0) {
     if (missing(resolution)) {

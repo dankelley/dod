@@ -110,11 +110,18 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
 }
 \seealso{
 Other functions that download files: 
+\code{\link{dod.amsr}()},
+\code{\link{dod.buoy}()},
 \code{\link{dod.coastline}()},
-\code{\link{dod.met}()}
+\code{\link{dod.ctd}()},
+\code{\link{dod.ctd.bats}()},
+\code{\link{dod.ctd.bbmp}()},
+\code{\link{dod.ctd.gtspp}()},
+\code{\link{dod.ctd.itp}()},
+\code{\link{dod.met}()},
+\code{\link{dod.tideGauge}()}
 }
 \author{
 Dan Kelley
 }
 \concept{functions that download files}
-\concept{things related to topo data}

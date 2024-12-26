@@ -15,6 +15,7 @@
 #' [dod.ctd.gtspp()].
 #'
 #' @export
+#' @family functions that download files
 dod.ctd <- function(program = NULL, ...) {
     allowed <- c("BATS", "BBMP", "GTSPP", "ITP")
     if (is.null(program)) {

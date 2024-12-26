@@ -139,3 +139,20 @@ if (FALSE) { # this is a problem for pkgdown::build_site()
 \item https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
 }
 }
+\seealso{
+Other functions that download files: 
+\code{\link{dod.amsr}()},
+\code{\link{dod.buoy}()},
+\code{\link{dod.coastline}()},
+\code{\link{dod.ctd}()},
+\code{\link{dod.ctd.bats}()},
+\code{\link{dod.ctd.bbmp}()},
+\code{\link{dod.ctd.gtspp}()},
+\code{\link{dod.ctd.itp}()},
+\code{\link{dod.met}()},
+\code{\link{dod.topo}()}
+}
+\author{
+Dan Kelley
+}
+\concept{functions that download files}

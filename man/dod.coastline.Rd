@@ -58,11 +58,18 @@ data (or lake data, river data, etc) in any of three resolutions.
 }
 \seealso{
 Other functions that download files: 
+\code{\link{dod.amsr}()},
+\code{\link{dod.buoy}()},
+\code{\link{dod.ctd}()},
+\code{\link{dod.ctd.bats}()},
+\code{\link{dod.ctd.bbmp}()},
+\code{\link{dod.ctd.gtspp}()},
+\code{\link{dod.ctd.itp}()},
 \code{\link{dod.met}()},
+\code{\link{dod.tideGauge}()},
 \code{\link{dod.topo}()}
 }
 \author{
 Dan Kelley
 }
 \concept{functions that download files}
-\concept{things related to coastline data}

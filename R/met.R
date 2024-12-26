@@ -44,8 +44,6 @@
 #' @return [dod.met()] returns a character value holding the full
 #' pathname of the downloaded file.
 #'
-#' @author Dan Kelley
-#'
 #' @examples
 #' # Meteorological data for Halifax, Nova Scotia.
 #' if (FALSE) { # this is a problem for pkgdown::build_site()
@@ -70,13 +68,10 @@
 #' 2. Gavin Simpson's `canadaHCD` package on GitHub
 #' `https://github.com/gavinsimpson/canadaHCD`
 #'
-#' @family functions that download files
-#' @family things related to met data
-#'
-#' @export
-#'
 #' @importFrom utils capture.output
-#'
+#' @export
+#' @author Dan Kelley
+#' @family functions that download files
 #' @author Dan Kelley
 dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 1, debug = 0) {
     dodDebug(debug, "dod.met() ...\n")

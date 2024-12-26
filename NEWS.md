@@ -1,3 +1,8 @@
+# dod 0.1.14
+
+* Update documentation to show the familial relationships between all
+  downloading functions.
+
 # dod 0.1.13
 
 * Change `dod.tideGauge()` to handle present-day DFO format (issue #12).
@@ -48,12 +53,12 @@
 
 # dod 0.1.4
 
-* Move project to github.com/dankelley/dod
-* `dod.amsr()` improvements.
+* Move project to <https://www.github.com/dankelley/dod> for future development.
+* Improve `dod.amsr()`.
 
 # dod 0.1.3
 
-* `dod.amsr()` is now local, as opposed to a call to `oce::download.amsr()`.
+* Make `dod.amsr()` be local, as opposed to a call to `oce::download.amsr()`.
   It is also changed in major ways, because the data provider has altered
   both the directory structure and the data format.  For more, see
   <https://github.com/dankelley/oce/issues/2124>.

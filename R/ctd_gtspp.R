@@ -45,8 +45,6 @@
 #'
 #' @return [dod.ctd.gtspp()] returns the local name of the downloaded file.
 #'
-#' @family functions that download CTD data
-#'
 #' @examples
 #' if (FALSE) { # this is a problem for pkgdown::build_site()
 #'     # Two examples are shown here.  The first specifies the remote file by a full
@@ -97,7 +95,8 @@
 #'         plot(coastlineWorldFine, clongitude = hlon, clatitude = hlat, span = 2000)
 #'         points(index$longitude, index$latitude, col = 4)
 #'         # Focus on the point nearest Halifax
-#'         # https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/2022/01/gtspp_47477452_te_111.nc
+#'         # https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/\
+#'         # 2022/01/gtspp_47477452_te_111.nc
 #'         dist <- geodDist(index$longitude, index$latitude, hlon, hlat)
 #'         focus <- index[which.min(dist), ]
 #'         dataFile <- dod.ctd.gtspp(nc = focus$data_URL)
@@ -106,6 +105,8 @@
 #' }
 #'
 #' @export
+#' @family functions that download files
+#' @author Dan Kelley
 dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index = FALSE, nc = NULL, age = 0, quiet = FALSE, debug = 0) {
     ncIsURL <- !is.null(nc) && identical(substr(nc, 1, 4), "http")
     if (ncIsURL) {

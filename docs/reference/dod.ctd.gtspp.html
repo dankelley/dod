@@ -11,7 +11,7 @@ somewhat challenging to use; see &amp;#8216;Details&amp;#8217;."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -150,10 +150,21 @@ time by over an order of magnitude.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>Other functions that download CTD data:
+    <div class="dont-index"><p>Other functions that download files:
+<code><a href="dod.amsr.html">dod.amsr</a>()</code>,
+<code><a href="dod.buoy.html">dod.buoy</a>()</code>,
+<code><a href="dod.coastline.html">dod.coastline</a>()</code>,
+<code><a href="dod.ctd.html">dod.ctd</a>()</code>,
 <code><a href="dod.ctd.bats.html">dod.ctd.bats</a>()</code>,
 <code><a href="dod.ctd.bbmp.html">dod.ctd.bbmp</a>()</code>,
-<code><a href="dod.ctd.itp.html">dod.ctd.itp</a>()</code></p></div>
+<code><a href="dod.ctd.itp.html">dod.ctd.itp</a>()</code>,
+<code><a href="dod.met.html">dod.met</a>()</code>,
+<code><a href="dod.tideGauge.html">dod.tideGauge</a>()</code>,
+<code><a href="dod.topo.html">dod.topo</a>()</code></p></div>
+    </div>
+    <div class="section level2">
+    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
+    <p>Dan Kelley</p>
     </div>
 
     <div class="section level2">
@@ -207,7 +218,8 @@ time by over an order of magnitude.</p>
 <span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">coastlineWorldFine</span>, clongitude <span class="op">=</span> <span class="va">hlon</span>, clatitude <span class="op">=</span> <span class="va">hlat</span>, span <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span></span>
 <span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">index</span><span class="op">$</span><span class="va">longitude</span>, <span class="va">index</span><span class="op">$</span><span class="va">latitude</span>, col <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span>        <span class="co"># Focus on the point nearest Halifax</span></span></span>
-<span class="r-in"><span>        <span class="co"># https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/2022/01/gtspp_47477452_te_111.nc</span></span></span>
+<span class="r-in"><span>        <span class="co"># https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/\</span></span></span>
+<span class="r-in"><span>        <span class="co"># 2022/01/gtspp_47477452_te_111.nc</span></span></span>
 <span class="r-in"><span>        <span class="va">dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dankelley.github.io/oce/reference/geodDist.html" class="external-link">geodDist</a></span><span class="op">(</span><span class="va">index</span><span class="op">$</span><span class="va">longitude</span>, <span class="va">index</span><span class="op">$</span><span class="va">latitude</span>, <span class="va">hlon</span>, <span class="va">hlat</span><span class="op">)</span></span></span>
 <span class="r-in"><span>        <span class="va">focus</span> <span class="op">&lt;-</span> <span class="va">index</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.min</a></span><span class="op">(</span><span class="va">dist</span><span class="op">)</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span>        <span class="va">dataFile</span> <span class="op">&lt;-</span> <span class="fu">dod.ctd.gtspp</span><span class="op">(</span>nc <span class="op">=</span> <span class="va">focus</span><span class="op">$</span><span class="va">data_URL</span><span class="op">)</span></span></span>

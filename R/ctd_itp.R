@@ -36,10 +36,8 @@
 #' downloaded zip file, or a URL of an information site,
 #' depending on the value of `info`.
 #'
-#' @family functions that download CTD data
-#'
 #' @export
-#'
+#' @family functions that download files
 #' @author Dan Kelley
 dod.ctd.itp <- function(ID, info = FALSE, file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
     # For ITP 135, info is at
