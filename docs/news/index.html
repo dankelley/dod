@@ -42,6 +42,8 @@
 <h2 class="pkg-version" data-toc-text="0.1.14" id="dod-0114">dod 0.1.14<a class="anchor" aria-label="anchor" href="#dod-0114"></a></h2>
 <ul><li>Update documentation to show the familial relationships between all downloading functions.</li>
 <li>Change <code><a href="../reference/dod.coastline.html">dod.coastline()</a></code> to handle the new server location noticed in December 2024.</li>
+<li>Change <code><a href="../reference/dod.tideGauge.html">dod.tideGauge()</a></code> to obey <code>age</code> parameter.</li>
+<li>Prevent documentation examples from running in non-interactive mode. This seems to be the only way to prevent a <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> error that comes up with downloaded files. The error is actually a warning, but it stops the processing, so we cannot tolerate it. The message is from <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">gzfile()</a></code> stating that it cannot open a compressed file. I’ve seen errors like this in discussion boards going back many years, related to many things. I have no idea what the problem is, despite quite a lot of searching and testing. Would I like it if the website showed plots, etc? Sure. Do I want to spend a day aimlessly trying things and searching the web? Not so much.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.13" id="dod-0113">dod 0.1.13<a class="anchor" aria-label="anchor" href="#dod-0113"></a></h2>

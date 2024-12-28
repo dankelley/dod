@@ -4,13 +4,16 @@
 \alias{dodDebug}
 \title{Debug dod package functions}
 \usage{
-dodDebug(debug = 0, ...)
+dodDebug(debug = 0, ..., unindent = 0)
 }
 \arguments{
 \item{debug}{integer valaue indicating level of debugging. If
 this exceeds zero, then \code{...} is passed to \code{\link[=cat]{cat()}}, for printing.}
 
 \item{...}{content passed to \code{\link[=cat]{cat()}}.}
+
+\item{unindent}{integer, for the left-indent level. Set this to X
+to indent 2 space to the left.}
 }
 \description{
 This function is used throughout the \code{dod} package to provide

@@ -120,6 +120,11 @@ dod.tideGauge <- function(
     ID = NULL, variable = "water_level", agency = "CHS",
     start = NULL, end = NULL, resolution = NULL,
     file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
+    dodDebug(debug, "dod.tideGauge() START\n", unindent = 1)
+    rval <- ""
+    if (!dir.exists(destdir)) {
+        stop("destdir \"", destdir, "\" does not exist")
+    }
     if (is.null(ID)) {
         stop("ID must be supplied")
     }
@@ -148,10 +153,13 @@ dod.tideGauge <- function(
     }
     start <- as.POSIXct(start, tz = "UTC")
     end <- as.POSIXct(end, tz = "UTC")
-    dodDebug(debug, "after conversions etc, start: \"", start, "\"\n", sep = "")
-    dodDebug(debug, "after conversions etc, end:   \"", end, "\"\n", sep = "")
     if (end < start) {
         stop("'start' time (", format(start), " is not prior to 'end' time (", format(end), ")")
+    }
+    dodDebug(debug, "start: \"", format(start), "\"\n", sep = "")
+    dodDebug(debug, "end: \"", format(end), "\"\n", sep = "")
+    if (agency != "CHS" && agency != "NOAA") {
+        stop("unknown agency ", agency, "; try either \"CHS\" or \"NOAA\"\n")
     }
     if (identical(agency, "CHS")) {
         if (is.null(resolution)) {
@@ -184,16 +192,24 @@ dod.tideGauge <- function(
         ), ".csv")
     }
     dodDebug(debug, "file=\"", file, "\"\n", sep = "")
-    dodDebug(debug, "start=\"", start, "\"\n", sep = "")
-    dodDebug(debug, "end=\"", end, "\"\n", sep = "")
     # startDigits <- gsub("-", "", start)
     # endDigits <- gsub("-", "", end)
     dodDebug(debug, "destdir=\"", destdir, "\"\n", sep = "")
     if (agency == "CHS") {
+        fullfilename <- paste0(destdir, "/", file)
+        if (file.exists(fullfilename)) {
+            ctime <- file.info(fullfilename)$ctime
+            now <- Sys.time()
+            fileAge <- (as.numeric(now) - as.numeric(ctime)) / 86400
+            if (fileAge < age) {
+                dodDebug(debug, "the existing file is recent enough to skip downloading\n")
+                dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
+                return(fullfilename)
+            }
+        }
         if (!requireNamespace("jsonlite", quietly = TRUE)) {
             stop("must install.packages(\"jsonlite\") before using dod.tideGauge() with agency=\"CHS\"")
         }
-        dodDebug(debug, "about to try to find code for ID=\"", ID, "\"\n", sep = "")
         # Find station ID.  This is a string like 5cebf1e23d0f4a073c4bbfac,
         # which is a value matching officialName "Bedford Institute",
         # or code "00491".  (Whether the ID will change over time for
@@ -203,14 +219,14 @@ dod.tideGauge <- function(
         s <- readLines(url, warn = FALSE)
         d <- jsonlite::fromJSON(s)
         if (grepl("a-zA-Z", ID)) {
-            dodDebug(debug, "looking up station by name", ID, "\n")
+            dodDebug(debug, "looking up station by name ", ID, "\n")
             # e.g. "Bedford Institute"
             w <- which(sapply(d, \(s) grepl(ID, s$officialName)))
             if (length(w) == 0L) {
                 stop("cannot find API code for ID=\"", ID, "\" (interpreted as a name)")
             }
         } else {
-            dodDebug(debug, "looking up station by ID number", ID, "\n")
+            dodDebug(debug, "looking up station by ID number ", ID, "\n")
             # e.g. "00491"
             w <- which(as.integer(ID) == as.integer(d$code))
             if (length(w) == 0L) {
@@ -219,7 +235,7 @@ dod.tideGauge <- function(
             if (length(w) > 1L) {
                 stop("multiple matches for ID=\"", ID, "\" at indices ", paste(w, collapse = " "))
             }
-            dodDebug(debug, "got this ID, at entry", w, "of the data\n")
+            dodDebug(debug, "got this ID, at entry ", w, " of the data\n")
         }
         # ds <- d$timeSeries[[w]]
         stationID <- d$id[w]
@@ -242,7 +258,7 @@ dod.tideGauge <- function(
         variableRemote <- variable
         variableRemote <- gsub("^water_level$", "wlo", variableRemote)
         variableRemote <- gsub("^predictions$", "wlp", variableRemote)
-        dodDebug(debug, "after variable name translation, variableRemote = \"", variableRemote, "\"\n", sep = "")
+        dodDebug(debug, "after name translation, variableRemote = \"", variableRemote, "\"\n", sep = "")
         url <- sprintf(
             "api-iwls.dfo-mpo.gc.ca/api/v1/stations/%s/data?time-series-code=%s&from=%s&to=%s&resolution=%s",
             stationID,
@@ -265,8 +281,9 @@ dod.tideGauge <- function(
         } else if (variable == "predictions") {
             res <- data.frame("Date.Time" = time, "Predictions" = var, "QC" = QC)
         }
-        dodDebug(debug, "about to save data in \"", file, "\"\n", sep = "")
-        write.csv(res, file = file, row.names = FALSE)
+        write.csv(res, file = fullfilename, row.names = FALSE)
+        dodDebug(debug, "saving \"", fullfilename, "\"\n", sep = "")
+        dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
         return(file)
     } else if (agency == "NOAA") {
         # https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20230801&end_date=20230830&datum=MLLW&station=8727520&time_zone=GMT&units=metric&interval=&format=CSV # nolint: line_length_linter.
@@ -278,15 +295,18 @@ dod.tideGauge <- function(
             server, variableRemote, start, end, ID
         )
     } else {
+        # we already checked the agency, but retain this for code clarity
         stop("unknown agency \"", agency, "\"; try either \"CHS\" or \"NOAA\"")
     }
-    dodDebug(debug, "url: ", url, "\n", sep = "")
-    filename <- try(
+    dodDebug(debug, "about to download \"", url, "\"\n")
+    rval <- try(
         dod.download(url = url, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1L),
         silent = TRUE
     )
-    if (inherits(filename, "try-error")) {
+    if (inherits(rval, "try-error")) {
         stop("cannot download \"", file, "\" from \"", url, "\"")
     }
-    return(filename)
+    dodDebug(debug, "downloaded \"", file, "\"\n")
+    dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
+    return(rval)
 }

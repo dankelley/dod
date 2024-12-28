@@ -4,6 +4,7 @@
   downloading functions.
 * Change `dod.coastline()` to handle the new server location noticed in
   December 2024.
+* Change `dod.tideGauge()` to obey `age` parameter.
 * Prevent documentation examples from running in non-interactive mode. This
   seems to be the only way to prevent a `pkgdown::build_site()` error that
   comes up with downloaded files.  The error is actually a warning, but it
