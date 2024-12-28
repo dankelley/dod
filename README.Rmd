@@ -55,7 +55,7 @@ library(oce)
 d <- read.ctd(file)
 # 3. Standard CTD plot
 plot(d)
-# 4. Check also biochemistry variables
+# 4. Plot some biochemistry variables
 par(mfrow = c(2, 2))
 plotProfile(d, "SA")
 plotProfile(d, "CT")
