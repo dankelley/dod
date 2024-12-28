@@ -158,9 +158,6 @@ dod.tideGauge <- function(
     }
     dodDebug(debug, "start: \"", format(start), "\"\n", sep = "")
     dodDebug(debug, "end: \"", format(end), "\"\n", sep = "")
-    if (agency != "CHS" && agency != "NOAA") {
-        stop("unknown agency ", agency, "; try either \"CHS\" or \"NOAA\"\n")
-    }
     if (identical(agency, "CHS")) {
         if (is.null(resolution)) {
             resolution <- "THREE_MINUTES"
@@ -299,6 +296,17 @@ dod.tideGauge <- function(
         stop("unknown agency \"", agency, "\"; try either \"CHS\" or \"NOAA\"")
     }
     dodDebug(debug, "about to download \"", url, "\"\n")
+    fullfilename <- paste0(destdir, "/", file)
+    if (file.exists(fullfilename)) {
+        ctime <- file.info(fullfilename)$ctime
+        now <- Sys.time()
+        fileAge <- (as.numeric(now) - as.numeric(ctime)) / 86400
+        if (fileAge < age) {
+            dodDebug(debug, "the existing file is recent enough to skip downloading\n")
+            dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
+            return(fullfilename)
+        }
+    }
     rval <- try(
         dod.download(url = url, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1L),
         silent = TRUE
@@ -306,7 +314,7 @@ dod.tideGauge <- function(
     if (inherits(rval, "try-error")) {
         stop("cannot download \"", file, "\" from \"", url, "\"")
     }
-    dodDebug(debug, "downloaded \"", file, "\"\n")
+    dodDebug(debug, "downloaded \"", fullfilename, "\"\n")
     dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
     return(rval)
 }
