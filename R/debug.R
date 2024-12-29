@@ -11,8 +11,11 @@
 #' @param unindent integer, for the left-indent level. Set this to X
 #' to indent 2 space to the left.
 #'
+#' @param sep separation character, passed to [cat()] in displaying debugging
+#' messages.
+#'
 #' @export
-dodDebug <- function(debug = 0, ..., unindent = 0) {
+dodDebug <- function(debug = 0, ..., unindent = 0, sep = "") {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     unindent <- max(0, min(3, unindent))
     if (debug > 0) {
@@ -20,6 +23,6 @@ dodDebug <- function(debug = 0, ..., unindent = 0) {
         if (n > 0) {
             cat(paste(rep("  ", n), collapse = "", sep = ""))
         }
-        cat(..., sep = "")
+        cat(..., sep = sep)
     }
 }

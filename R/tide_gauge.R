@@ -120,7 +120,7 @@ dod.tideGauge <- function(
     ID = NULL, variable = "water_level", agency = "CHS",
     start = NULL, end = NULL, resolution = NULL,
     file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
-    dodDebug(debug, "dod.tideGauge() START\n", unindent = 1)
+    dodDebug(debug, "dod.tideGauge() START\n", unindent = 1, sep = "")
     rval <- ""
     if (!dir.exists(destdir)) {
         stop("destdir \"", destdir, "\" does not exist")
@@ -178,7 +178,7 @@ dod.tideGauge <- function(
             resolutionNumeric <- 60
         }
     }
-    dodDebug(debug, "resolution=", resolution, ", resolutionNumeric=", resolutionNumeric, "\n")
+    dodDebug(debug, "resolution=", resolution, ", resolutionNumeric=", resolutionNumeric, "\n", sep = "")
     if (is.null(file)) {
         file <- paste0(paste("tide_gauge", agency, ID,
             format(start, "%Y%m%dT%H%M"),
@@ -199,8 +199,8 @@ dod.tideGauge <- function(
             now <- Sys.time()
             fileAge <- (as.numeric(now) - as.numeric(ctime)) / 86400
             if (fileAge < age) {
-                dodDebug(debug, "the existing file is recent enough to skip downloading\n")
-                dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
+                dodDebug(debug, "the existing file is recent enough to skip downloading\n", sep = "")
+                dodDebug(debug, "dod.tideGauge() END\n", unindent = 1, sep = "")
                 return(fullfilename)
             }
         }
@@ -216,14 +216,18 @@ dod.tideGauge <- function(
         s <- readLines(url, warn = FALSE)
         d <- jsonlite::fromJSON(s)
         if (grepl("a-zA-Z", ID)) {
-            dodDebug(debug, "looking up station by name ", ID, "\n")
+            dodDebug(debug, "looking up CHS station named ", ID, "\n", sep = "")
             # e.g. "Bedford Institute"
             w <- which(sapply(d, \(s) grepl(ID, s$officialName)))
             if (length(w) == 0L) {
                 stop("cannot find API code for ID=\"", ID, "\" (interpreted as a name)")
             }
+            if (length(w) > 1L) {
+                stop("multiple matches for ID=\"", ID, "\" at indices ", paste(w, collapse = " "))
+            }
+            dodDebug(debug, "got this ID, at entry ", w, " of the data\n", sep = "")
         } else {
-            dodDebug(debug, "looking up station by ID number ", ID, "\n")
+            dodDebug(debug, "looking up CHS station with ID number ", ID, "\n", sep = "")
             # e.g. "00491"
             w <- which(as.integer(ID) == as.integer(d$code))
             if (length(w) == 0L) {
@@ -232,11 +236,11 @@ dod.tideGauge <- function(
             if (length(w) > 1L) {
                 stop("multiple matches for ID=\"", ID, "\" at indices ", paste(w, collapse = " "))
             }
-            dodDebug(debug, "got this ID, at entry ", w, " of the data\n")
+            dodDebug(debug, "got this ID, at entry ", w, " of the data\n", sep = "")
         }
         # ds <- d$timeSeries[[w]]
         stationID <- d$id[w]
-        dodDebug(debug, "calculated CHS station ID code to be \"", stationID, "\"\n", sep = "")
+        dodDebug(debug, "CHS station ID code: \"", stationID, "\"\n", sep = "")
         # return metadata, if requested
         url <- "https://api-iwls.dfo-mpo.gc.ca/api/v1/stations"
         dodDebug(debug, "at the start, url = \"", url, "\"\n", sep = "")
@@ -245,7 +249,7 @@ dod.tideGauge <- function(
             url <- sprintf("https://api-iwls.dfo-mpo.gc.ca/api/v1/stations/%s/metadata", stationID)
             dodDebug(debug, "for metadata, using url = \"", url, "\"\n", sep = "")
             s <- readLines(url, warn = FALSE)
-            dodDebug(debug, "returning metadata, not a file name\n")
+            dodDebug(debug, "returning metadata, not a file name\n", sep = "")
             if (!requireNamespace("jsonlite", quietly = TRUE)) {
                 stop("must install.packages(\"jsonlite\") before using dod.tideGauge() with agency=\"CHS\"")
             }
@@ -280,8 +284,8 @@ dod.tideGauge <- function(
         }
         write.csv(res, file = fullfilename, row.names = FALSE)
         dodDebug(debug, "saving \"", fullfilename, "\"\n", sep = "")
-        dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
-        return(file)
+        dodDebug(debug, "dod.tideGauge() END\n", unindent = 1, sep = "")
+        return(fullfilename)
     } else if (agency == "NOAA") {
         # https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20230801&end_date=20230830&datum=MLLW&station=8727520&time_zone=GMT&units=metric&interval=&format=CSV # nolint: line_length_linter.
         server <- "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
@@ -295,15 +299,15 @@ dod.tideGauge <- function(
         # we already checked the agency, but retain this for code clarity
         stop("unknown agency \"", agency, "\"; try either \"CHS\" or \"NOAA\"")
     }
-    dodDebug(debug, "about to download \"", url, "\"\n")
+    dodDebug(debug, "about to download \"", url, "\"\n", sep = "")
     fullfilename <- paste0(destdir, "/", file)
     if (file.exists(fullfilename)) {
         ctime <- file.info(fullfilename)$ctime
         now <- Sys.time()
         fileAge <- (as.numeric(now) - as.numeric(ctime)) / 86400
         if (fileAge < age) {
-            dodDebug(debug, "the existing file is recent enough to skip downloading\n")
-            dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
+            dodDebug(debug, "the existing file is recent enough to skip downloading\n", sep = "")
+            dodDebug(debug, "dod.tideGauge() END\n", unindent = 1, sep = "")
             return(fullfilename)
         }
     }
@@ -314,7 +318,7 @@ dod.tideGauge <- function(
     if (inherits(rval, "try-error")) {
         stop("cannot download \"", file, "\" from \"", url, "\"")
     }
-    dodDebug(debug, "downloaded \"", fullfilename, "\"\n")
-    dodDebug(debug, "dod.tideGauge() END\n", unindent = 1)
+    dodDebug(debug, "downloaded \"", fullfilename, "\"\n", sep = "")
+    dodDebug(debug, "dod.tideGauge() END\n", unindent = 1, sep = "")
     return(rval)
 }
