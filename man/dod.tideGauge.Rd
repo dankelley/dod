@@ -25,39 +25,38 @@ is either the station number or the station name (e.g. number 491
 corresponds to the "Bedford Institute" station).  For American
 data, it is a numerical code.}
 
-\item{variable}{a character value indicating the name of the variable to
-be downloaded.  This defaults to \code{"water_level"} for observed water
-level (called \code{"wlo"} on the CHS server and \code{"water_level"} on the NOAA server).
-Another permitted choice is \verb{"predictions" (called }"wlp"\verb{by CHS and}"predictions"\verb{by NOAA). In either of these two cases,}time\code{and}QC\verb{are also stored alongside the variable.  But there is a third case: if}variable\code{is}"metadata"`,
-then \emph{no} file is saved; instead, the return value is a list containing
-information about the station, such as its code number, its official
-name, its datum, etc.}
+\item{variable}{a character value indicating the name of the variable to be
+downloaded.  This defaults to \code{"water_level"} for observed water level
+(called \code{"wlo"} on the CHS server and \code{"water_level"} on the NOAA server).
+Another permitted choice is \code{"predictions"} (called \code{"wlp"} by CHS and
+\code{"predictions"} by NOAA). In either of these two cases, \code{time} and \code{QC} are
+also stored alongside the variable.  And there is a third case: if
+\code{variable} is \code{"metadata"}, then the return value will a list containing
+information about the station, such as its code number, its official name,
+its datum, etc.}
 
-\item{agency}{a character value indicating the agency from which data will be
-sought. Use \verb{"CHS" for Canadian tide gauges (the default), or }"NOAA"` for
-American tide gauges.}
+\item{agency}{a character value indicating the agency from which data will
+be sought. Use \code{"CHS"} for Canadian tide gauges (the default), or \code{"NOAA"}
+for American tide gauges.}
 
-\item{start, end}{POSIXt times or character values that can be converted
-to such times (via \code{\link[=as.POSIXct]{as.POSIXct()}} with \code{tz="UTC"}) that indicate
-the time interval for the requested data.  If \code{end} is not specified,
-then the present time is used.  If \code{start} is not provided, then
-it is set to the present time minus 7 days.  If \code{start} is a
-numeric value, then it is interpreted as the number of days
-to go back in time from the \code{end} time.}
+\item{start, end}{POSIXt times or character values that can be converted to
+such times (via \code{\link[=as.POSIXct]{as.POSIXct()}} with \code{tz="UTC"}) that indicate the time
+interval for the requested data.  If \code{end} is not specified, then the
+present time is used.  If \code{start} is not provided, then it is set to the
+present time minus 7 days.  If \code{start} is a numeric value, then it is
+interpreted as the number of days to go back in time from the \code{end} time.}
 
-\item{resolution}{character value indicating the resolution, only used
-if \code{agency} is \code{"CHS"}.  The choices are \verb{"ONE_MINUTE", }"THREE_MINUTES"\verb{(the default),}"FIVE_MINUTES"\verb{, }"FIFTEEN_MINUTES"\verb{, and }"SIXTY_MINUTES"\verb{.  The server website indicates that }"Not all resolution are available for every station and every time series."`
-It also indicates that
-"The time frame available increases with the resolution, it is equal
-to a week (7 days) multiplied by the resolution, but the maximum
-available is 31 days. (a month)".  This second statement perhaps
-means that it is possible to download at most 1 week of data for
-1-minute resolution.}
+\item{resolution}{character value indicating the resolution, only used if
+\code{agency="CHS"}.  The choices are \code{"ONE_MINUTE"}, \code{"THREE_MINUTES"} (the
+default), \code{"FIVE_MINUTES"}, \code{"FIFTEEN_MINUTES"}, and \code{"SIXTY_MINUTES"}.  The
+website that serves the data indicates that not all resolutions are
+available for all stations and/or time intervals, and that the maximum time
+range of a request depends on the requested resolution.}
 
 \item{file}{a character value indicating the name to be used for the
 downloaded data.  If not provided, this is constructed as e.g.
-\code{"tide_A_N_S_E_R_V.csv"} where \code{A} is the value of the agency argument, \code{N} is
-the station ID number, \code{S} and \code{E} are the start and end dates written in
+\code{"tide_A_N_S_E_R_V.csv"} where \code{A} is the value of the agency argument, \code{N}
+is the station ID number, \code{S} and \code{E} are the start and end dates written in
 8-digit format (i.e. sans the \code{"-"} characters), \code{R} is the resolution in
 minutes, and \code{V} is the variable name.}
 
@@ -95,19 +94,18 @@ NOAA case, it is a downloaded file.
 Canadian (CHS) or American (NOAA) tide gauges.
 }
 \details{
-Downloads are done from for either the Canadian Hydrographic Service (CHS) or
-from the American National Oceanographic and Atmospheric
-Agency (NOAA), respectively (see References 1 and 2). The resultant data are saved in
-either constructed filenames, or filenames provided by the user;
-in either case, if a recent file already exists with the indicated name,
-then no data are downloaded.
-
-For NOAA files, water level and predictions are provided on the same
-time sequence, but for CHS files, this is not the case, e.g. predictions
-(in the author's tests) are on 15 minute intervals, starting at an
-hour marker, but observations may be at a variety of times, depending
-\code{start} and \code{end}.  Therefore, numerical comparision with CHS data
-will require interpolation (see \sQuote{Examples}).
+Downloads are done from for either the Canadian Hydrographic Service (CHS)
+or from the American National Oceanographic and Atmospheric Agency (NOAA),
+respectively (see References 1 and 2). The resultant data are saved in
+either constructed filenames, or filenames provided by the user; in either
+case, if a recent file already exists with the indicated name, then no data
+are downloaded.
+For NOAA files, water level and predictions are provided on the same time
+sequence, but for CHS files, this is not the case, e.g. predictions (in the
+author's tests) are on 15 minute intervals, starting at an hour marker, but
+observations may be at a variety of times, depending \code{start} and \code{end}.
+Therefore, numerical comparision with CHS data will require interpolation
+(see \sQuote{Examples}).
 }
 \examples{
 # Download and plot tide-guage data for Halifax Harbour
@@ -135,8 +133,8 @@ if (interactive()) { # sidestep a pkgdown::build_site() error
 }
 \references{
 \enumerate{
-\item https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html
-\item https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
+\item \url{https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html}
+\item \url{https://api.tidesandcurrents.noaa.gov/api/prod/}
 }
 }
 \seealso{

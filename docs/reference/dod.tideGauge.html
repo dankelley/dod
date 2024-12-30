@@ -76,47 +76,46 @@ data, it is a numerical code.</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
-<dd><p>a character value indicating the name of the variable to
-be downloaded.  This defaults to <code>"water_level"</code> for observed water
-level (called <code>"wlo"</code> on the CHS server and <code>"water_level"</code> on the NOAA server).
-Another permitted choice is <code>"predictions" (called </code>"wlp"<code>by CHS and</code>"predictions"<code>by NOAA). In either of these two cases,</code>time<code>and</code>QC<code>are also stored alongside the variable.  But there is a third case: if</code>variable<code>is</code>"metadata"`,
-then <em>no</em> file is saved; instead, the return value is a list containing
-information about the station, such as its code number, its official
-name, its datum, etc.</p></dd>
+<dd><p>a character value indicating the name of the variable to be
+downloaded.  This defaults to <code>"water_level"</code> for observed water level
+(called <code>"wlo"</code> on the CHS server and <code>"water_level"</code> on the NOAA server).
+Another permitted choice is <code>"predictions"</code> (called <code>"wlp"</code> by CHS and
+<code>"predictions"</code> by NOAA). In either of these two cases, <code>time</code> and <code>QC</code> are
+also stored alongside the variable.  And there is a third case: if
+<code>variable</code> is <code>"metadata"</code>, then the return value will a list containing
+information about the station, such as its code number, its official name,
+its datum, etc.</p></dd>
 
 
 <dt id="arg-agency">agency<a class="anchor" aria-label="anchor" href="#arg-agency"></a></dt>
-<dd><p>a character value indicating the agency from which data will be
-sought. Use <code>"CHS" for Canadian tide gauges (the default), or </code>"NOAA"` for
-American tide gauges.</p></dd>
+<dd><p>a character value indicating the agency from which data will
+be sought. Use <code>"CHS"</code> for Canadian tide gauges (the default), or <code>"NOAA"</code>
+for American tide gauges.</p></dd>
 
 
 <dt id="arg-start-end">start, end<a class="anchor" aria-label="anchor" href="#arg-start-end"></a></dt>
-<dd><p>POSIXt times or character values that can be converted
-to such times (via <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code> with <code>tz="UTC"</code>) that indicate
-the time interval for the requested data.  If <code>end</code> is not specified,
-then the present time is used.  If <code>start</code> is not provided, then
-it is set to the present time minus 7 days.  If <code>start</code> is a
-numeric value, then it is interpreted as the number of days
-to go back in time from the <code>end</code> time.</p></dd>
+<dd><p>POSIXt times or character values that can be converted to
+such times (via <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code> with <code>tz="UTC"</code>) that indicate the time
+interval for the requested data.  If <code>end</code> is not specified, then the
+present time is used.  If <code>start</code> is not provided, then it is set to the
+present time minus 7 days.  If <code>start</code> is a numeric value, then it is
+interpreted as the number of days to go back in time from the <code>end</code> time.</p></dd>
 
 
 <dt id="arg-resolution">resolution<a class="anchor" aria-label="anchor" href="#arg-resolution"></a></dt>
-<dd><p>character value indicating the resolution, only used
-if <code>agency</code> is <code>"CHS"</code>.  The choices are <code>"ONE_MINUTE", </code>"THREE_MINUTES"<code>(the default),</code>"FIVE_MINUTES"<code>, </code>"FIFTEEN_MINUTES"<code>, and </code>"SIXTY_MINUTES"<code>.  The server website indicates that </code>"Not all resolution are available for every station and every time series."`
-It also indicates that
-"The time frame available increases with the resolution, it is equal
-to a week (7 days) multiplied by the resolution, but the maximum
-available is 31 days. (a month)".  This second statement perhaps
-means that it is possible to download at most 1 week of data for
-1-minute resolution.</p></dd>
+<dd><p>character value indicating the resolution, only used if
+<code>agency="CHS"</code>.  The choices are <code>"ONE_MINUTE"</code>, <code>"THREE_MINUTES"</code> (the
+default), <code>"FIVE_MINUTES"</code>, <code>"FIFTEEN_MINUTES"</code>, and <code>"SIXTY_MINUTES"</code>.  The
+website that serves the data indicates that not all resolutions are
+available for all stations and/or time intervals, and that the maximum time
+range of a request depends on the requested resolution.</p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
 <dd><p>a character value indicating the name to be used for the
 downloaded data.  If not provided, this is constructed as e.g.
-<code>"tide_A_N_S_E_R_V.csv"</code> where <code>A</code> is the value of the agency argument, <code>N</code> is
-the station ID number, <code>S</code> and <code>E</code> are the start and end dates written in
+<code>"tide_A_N_S_E_R_V.csv"</code> where <code>A</code> is the value of the agency argument, <code>N</code>
+is the station ID number, <code>S</code> and <code>E</code> are the start and end dates written in
 8-digit format (i.e. sans the <code>"-"</code> characters), <code>R</code> is the resolution in
 minutes, and <code>V</code> is the variable name.</p></dd>
 
@@ -161,24 +160,24 @@ NOAA case, it is a downloaded file.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Downloads are done from for either the Canadian Hydrographic Service (CHS) or
-from the American National Oceanographic and Atmospheric
-Agency (NOAA), respectively (see References 1 and 2). The resultant data are saved in
-either constructed filenames, or filenames provided by the user;
-in either case, if a recent file already exists with the indicated name,
-then no data are downloaded.</p>
-<p>For NOAA files, water level and predictions are provided on the same
-time sequence, but for CHS files, this is not the case, e.g. predictions
-(in the author's tests) are on 15 minute intervals, starting at an
-hour marker, but observations may be at a variety of times, depending
-<code>start</code> and <code>end</code>.  Therefore, numerical comparision with CHS data
-will require interpolation (see ‘Examples’).</p>
+    <p>Downloads are done from for either the Canadian Hydrographic Service (CHS)
+or from the American National Oceanographic and Atmospheric Agency (NOAA),
+respectively (see References 1 and 2). The resultant data are saved in
+either constructed filenames, or filenames provided by the user; in either
+case, if a recent file already exists with the indicated name, then no data
+are downloaded.
+For NOAA files, water level and predictions are provided on the same time
+sequence, but for CHS files, this is not the case, e.g. predictions (in the
+author's tests) are on 15 minute intervals, starting at an hour marker, but
+observations may be at a variety of times, depending <code>start</code> and <code>end</code>.
+Therefore, numerical comparision with CHS data will require interpolation
+(see ‘Examples’).</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
 
-<ol><li><p>https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html</p></li>
-<li><p>https://api.tidesandcurrents.noaa.gov/api/prod/datagetter</p></li>
+<ol><li><p><a href="https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html" class="external-link">https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html</a></p></li>
+<li><p><a href="https://api.tidesandcurrents.noaa.gov/api/prod/" class="external-link">https://api.tidesandcurrents.noaa.gov/api/prod/</a></p></li>
 </ol></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

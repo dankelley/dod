@@ -3,69 +3,61 @@
 #' [dod.tideGauge()] downloads tide-gauge data from either
 #' Canadian (CHS) or American (NOAA) tide gauges.
 #'
-#' Downloads are done from for either the Canadian Hydrographic Service (CHS) or
-#' from the American National Oceanographic and Atmospheric
-#' Agency (NOAA), respectively (see References 1 and 2). The resultant data are saved in
-#' either constructed filenames, or filenames provided by the user;
-#' in either case, if a recent file already exists with the indicated name,
-#' then no data are downloaded.
-#'
-#' For NOAA files, water level and predictions are provided on the same
-#' time sequence, but for CHS files, this is not the case, e.g. predictions
-#' (in the author's tests) are on 15 minute intervals, starting at an
-#' hour marker, but observations may be at a variety of times, depending
-#' `start` and `end`.  Therefore, numerical comparision with CHS data
-#' will require interpolation (see \sQuote{Examples}).
-#'
+#' Downloads are done from for either the Canadian Hydrographic Service (CHS)
+#' or from the American National Oceanographic and Atmospheric Agency (NOAA),
+#' respectively (see References 1 and 2). The resultant data are saved in
+#' either constructed filenames, or filenames provided by the user; in either
+#' case, if a recent file already exists with the indicated name, then no data
+#' are downloaded.
+
+#' For NOAA files, water level and predictions are provided on the same time
+#' sequence, but for CHS files, this is not the case, e.g. predictions (in the
+#' author's tests) are on 15 minute intervals, starting at an hour marker, but
+#' observations may be at a variety of times, depending `start` and `end`.
+#' Therefore, numerical comparision with CHS data will require interpolation
+#' (see \sQuote{Examples}).
+
 #' @param ID a character (or possibly integer) value specifying the
 #' numeric identifier of the tide gauge. For Canadian data, this
 #' is either the station number or the station name (e.g. number 491
 #' corresponds to the "Bedford Institute" station).  For American
 #' data, it is a numerical code.
-#'
-#' @param agency a character value indicating the agency from which data will be
-#' sought. Use `"CHS" for Canadian tide gauges (the default), or `"NOAA"` for
-#' American tide gauges.
-#'
-#' @param start,end POSIXt times or character values that can be converted
-#' to such times (via [as.POSIXct()] with `tz="UTC"`) that indicate
-#' the time interval for the requested data.  If `end` is not specified,
-#' then the present time is used.  If `start` is not provided, then
-#' it is set to the present time minus 7 days.  If `start` is a
-#' numeric value, then it is interpreted as the number of days
-#' to go back in time from the `end` time.
-#'
-#' @param resolution character value indicating the resolution, only used
-#' if `agency` is `"CHS"`.  The choices are `"ONE_MINUTE",
-#' `"THREE_MINUTES"` (the default),
-#' `"FIVE_MINUTES"`,
-#' `"FIFTEEN_MINUTES"`, and
-#' `"SIXTY_MINUTES"`.  The server website indicates that
-#' `"Not all resolution are available for every station and every time series."`
-#' It also indicates that
-#' "The time frame available increases with the resolution, it is equal
-#' to a week (7 days) multiplied by the resolution, but the maximum
-#' available is 31 days. (a month)".  This second statement perhaps
-#' means that it is possible to download at most 1 week of data for
-#' 1-minute resolution.
-#'
-#' @param variable a character value indicating the name of the variable to
-#' be downloaded.  This defaults to `"water_level"` for observed water
-#' level (called `"wlo"` on the CHS server and `"water_level"` on the NOAA server).
-#' Another permitted choice is `"predictions" (called `"wlp"` by CHS and `"predictions"`
-#' by NOAA). In either of these two cases, `time` and `QC` are also stored alongside
-#' the variable.  But there is a third case: if `variable` is `"metadata"`,
-#' then *no* file is saved; instead, the return value is a list containing
-#' information about the station, such as its code number, its official
-#' name, its datum, etc.
-#'
+
+#' @param agency a character value indicating the agency from which data will
+#' be sought. Use `"CHS"` for Canadian tide gauges (the default), or `"NOAA"`
+#' for American tide gauges.
+
+#' @param start,end POSIXt times or character values that can be converted to
+#' such times (via [as.POSIXct()] with `tz="UTC"`) that indicate the time
+#' interval for the requested data.  If `end` is not specified, then the
+#' present time is used.  If `start` is not provided, then it is set to the
+#' present time minus 7 days.  If `start` is a numeric value, then it is
+#' interpreted as the number of days to go back in time from the `end` time.
+
+#' @param resolution character value indicating the resolution, only used if
+#' `agency="CHS"`.  The choices are `"ONE_MINUTE"`, `"THREE_MINUTES"` (the
+#' default), `"FIVE_MINUTES"`, `"FIFTEEN_MINUTES"`, and `"SIXTY_MINUTES"`.  The
+#' website that serves the data indicates that not all resolutions are
+#' available for all stations and/or time intervals, and that the maximum time
+#' range of a request depends on the requested resolution.
+
+#' @param variable a character value indicating the name of the variable to be
+#' downloaded.  This defaults to `"water_level"` for observed water level
+#' (called `"wlo"` on the CHS server and `"water_level"` on the NOAA server).
+#' Another permitted choice is `"predictions"` (called `"wlp"` by CHS and
+#' `"predictions"` by NOAA). In either of these two cases, `time` and `QC` are
+#' also stored alongside the variable.  And there is a third case: if
+#' `variable` is `"metadata"`, then the return value will a list containing
+#' information about the station, such as its code number, its official name,
+#' its datum, etc.
+
 #' @param file a character value indicating the name to be used for the
 #' downloaded data.  If not provided, this is constructed as e.g.
-#' `"tide_A_N_S_E_R_V.csv"` where `A` is the value of the agency argument, `N` is
-#' the station ID number, `S` and `E` are the start and end dates written in
+#' `"tide_A_N_S_E_R_V.csv"` where `A` is the value of the agency argument, `N`
+#' is the station ID number, `S` and `E` are the start and end dates written in
 #' 8-digit format (i.e. sans the `"-"` characters), `R` is the resolution in
 #' minutes, and `V` is the variable name.
-#'
+
 #' @template destdirTemplate
 #'
 #' @template ageTemplate
@@ -108,10 +100,10 @@
 #'
 #' @references
 #'
-## 1. https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html
-#' 1. https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html
+#old 1. <https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html>
+#' 1. <https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html>
 #'
-#' 2. https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
+#' 2. <https://api.tidesandcurrents.noaa.gov/api/prod/>
 #'
 #' @family functions that download files
 #' @export
