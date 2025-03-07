@@ -18,4 +18,14 @@ Useful links:
 }
 
 }
+\author{
+\strong{Maintainer}: Dan Kelley \email{Dan.Kelley@Dal.Ca} (\href{https://orcid.org/0000-0001-7808-5911}{ORCID})
+
+Authors:
+\itemize{
+  \item Annie Howard (\href{https://orcid.org/0000-????-????-????}{ORCID})
+  \item Jaimie Harbin (\href{https://orcid.org/0000-0003-3774-3732}{ORCID})
+}
+
+}
 \keyword{internal}

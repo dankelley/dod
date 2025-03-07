@@ -2,8 +2,10 @@ Package: dod
 Type: Package
 Title: Download Oceanographic Data
 Version: 0.1.14
-Author: Dan Kelley, Annie Howard, and Jaimie Harbin
-Maintainer: Dan Kelley <dan.kelley@dal.c>
+Authors@R: c(
+        person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre"), comment=c(ORCID="https://orcid.org/0000-0001-7808-5911")),
+        person(given="Annie", family="Howard", email="", rol=c("aut"), comment=c(ORCID="https://orcid.org/0000-????-????-????")),
+        person(given="Jaimie", family="Harbin", email="", rol=c("aut"), comment=c(ORCID="https://orcid.org/0000-0003-3774-3732")))
 Description: The package is used to download various types of oceanographic data including ctd, topography, advanced microwave scanning radiometer, and meteorological data.
 License: GPL (>= 2)
 Encoding: UTF-8
