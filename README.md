@@ -53,7 +53,7 @@ plot(d)
 <img src="man/figures/README-example-1.png" width="100%" />
 
 ``` r
-# 4. Check also biochemistry variables
+# 4. Plot some biochemistry variables
 par(mfrow = c(2, 2))
 plotProfile(d, "SA")
 plotProfile(d, "CT")
@@ -63,5 +63,5 @@ plotProfile(d, "fluorescence")
 
 <img src="man/figures/README-example-2.png" width="100%" />
 
-PS. This `README.md` file was created on 2024-07-25 by rendering the
+PS. This `README.md` file was created on 2025-03-07 by rendering the
 `README.Rmd` file with `devtools::build_readme()`.
