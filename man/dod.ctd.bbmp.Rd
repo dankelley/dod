@@ -7,7 +7,6 @@
 dod.ctd.bbmp(
   year,
   ID = NULL,
-  index = FALSE,
   file = NULL,
   destdir = ".",
   age = 0,
@@ -19,14 +18,8 @@ dod.ctd.bbmp(
 \item{year}{a numeric or character value specifying the year of interest.
 If this is not provided, it defaults to the current year.}
 
-\item{ID}{a character value specifying the file of interest
-that is copied from the index.}
-
-\item{index}{a boolean value. If this is TRUE, then \link{dod.ctd.bbmp}
-downloads an index file that provides the names of files containing CTD data
-along with the sampling dates.  The value of \code{ID} is ignored in this case.
-By contrast, if \code{index} is FALSE, then \link{dod.ctd.bbmp} downloads
-the CTD file with the specified \code{ID}.  See \sQuote{Examples}.}
+\item{ID}{an integer value giving the sequence number of the CTD
+cast in the given year.}
 
 \item{file}{character value giving the name to be used for
 the downloaded file.  If this is NULL (which is the default) then
@@ -66,19 +59,28 @@ convention of the data files may alter from year to year, it is
 important to start by downloading an index first, to ascertain
 the name of a file of interest; see \sQuote{Examples}.
 }
+\section{Historical Note}{
+
+
+Sometime in prior to April 2025, the DFO server and the format
+of the data files both changed, and this necessitated changes
+to both \code{dod.ctd.bbmp()}. Note that the server no longer
+supplies index files, so a parameter of the same name
+was deleted on 2024-04-19.
+}
+
 \examples{
 # Download and study this year's first BBMP CTD file
 if (interactive()) { # sidestep a pkgdown::build_site() error
     # NOTE: data file is removed at end, to pass CRAN checks
     library(dod)
     destdir <- tempdir()
-    indexFile <- dod.ctd("BBMP", index = TRUE, destdir = destdir)
-    index <- read.csv(indexFile, header = FALSE, col.names = c("file", "time"), skip = 3)
-    # Download the first file in the index
-    ctdFile <- dod.ctd("BBMP", ID = index$file[1], destdir = destdir)
+    ctdFile <- dod.ctd("BBMP", ID = 1, destdir = destdir)
     # Use oce to read, summarize and plot the data.
     library(oce)
-    ctd <- read.oce(ctdFile)
+    ctd <- read.netcdf(ctdFile) |>
+        rename() |>
+        as.ctd()
     summary(ctd)
     plot(ctd)
     unlink(destdir, recursive = TRUE)

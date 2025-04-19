@@ -1,3 +1,7 @@
+# dod 0.1.15
+
+* Add `riverDirectory()` and `riverData()` (issue #16).
+
 # dod 0.1.14
 
 * Update documentation to show the familial relationships between all
