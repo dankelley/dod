@@ -1,11 +1,11 @@
-pandoc: 3.6.2
+pandoc: 3.6.4
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   buoy: buoy.html
   ctd: ctd.html
   dod_package: dod_package.html
-last_built: 2025-03-07T21:12Z
+last_built: 2025-04-19T16:54Z
 urls:
   reference: https://dankelley.github.io/dod/reference
   article: https://dankelley.github.io/dod/articles

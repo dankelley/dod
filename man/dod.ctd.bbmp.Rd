@@ -70,14 +70,15 @@ was deleted on 2024-04-19.
 }
 
 \examples{
-# Download and study this year's first BBMP CTD file
+# Download and study first BBMP CTD file of year 2024
 if (interactive()) { # sidestep a pkgdown::build_site() error
     # NOTE: data file is removed at end, to pass CRAN checks
     library(dod)
-    destdir <- tempdir()
-    ctdFile <- dod.ctd("BBMP", ID = 1, destdir = destdir)
-    # Use oce to read, summarize and plot the data.
     library(oce)
+    destdir <- tempdir()
+    # Note: cannot specify year=2025 as of 2025-04-19 because of URL oddity
+    ctdFile <- dod.ctd("BBMP", year = 2024, ID = 1, destdir = destdir)
+    # Use oce to read, summarize and plot the data.
     ctd <- read.netcdf(ctdFile) |>
         rename() |>
         as.ctd()

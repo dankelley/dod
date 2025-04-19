@@ -45,10 +45,11 @@
 #' was deleted on 2024-04-19.
 #'
 #' @examples
-#' # Download and study this year's first BBMP CTD file
+#' # Download and study first BBMP CTD file of year 2024
 #' if (interactive()) { # sidestep a pkgdown::build_site() error
 #'     # NOTE: data file is removed at end, to pass CRAN checks
 #'     library(dod)
+#'     library(oce)
 #'     destdir <- tempdir()
 ##     if (FALSE) { # this fails since the ERDAPP does not serve an index file
 ##         indexFile <- dod.ctd("BBMP", index = TRUE, destdir = destdir)
@@ -57,16 +58,16 @@
 ##         ctdFile <- dod.ctd("BBMP", ID = index$file[1], destdir = destdir)
 ##     }
 ##     # https://cioosatlantic.ca/erddap/files/bio_atlantic_zone_monitoring_program_ctd/Bedford%20Basin%20Monitoring%20Program/2024/CTD_BCD2024667_001_1_DN.ODF.nc
-#'     ctdFile <- dod.ctd("BBMP", ID = 1, destdir = destdir)
+#'     # Note: cannot specify year=2025 as of 2025-04-19 because of URL oddity
+#'     ctdFile <- dod.ctd("BBMP", year = 2024, ID = 1, destdir = destdir)
 #'     # Use oce to read, summarize and plot the data.
-#'     library(oce)
 #'     ctd <- read.netcdf(ctdFile) |>
 #'         rename() |>
 #'         as.ctd()
 #'     summary(ctd)
 #'     plot(ctd)
 #'     unlink(destdir, recursive = TRUE)
-#' }
+#'}
 #'
 #' @family functions that download files
 #' @export
