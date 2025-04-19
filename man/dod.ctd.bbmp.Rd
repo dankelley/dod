@@ -7,6 +7,7 @@
 dod.ctd.bbmp(
   year,
   ID = NULL,
+  index = FALSE,
   file = NULL,
   destdir = ".",
   age = 0,
@@ -20,6 +21,9 @@ If this is not provided, it defaults to the current year.}
 
 \item{ID}{an integer value giving the sequence number of the CTD
 cast in the given year.}
+
+\item{index}{logical value indicating whether to download an index,
+rather than a file.  See Examples.}
 
 \item{file}{character value giving the name to be used for
 the downloaded file.  If this is NULL (which is the default) then
@@ -48,9 +52,10 @@ value is passed down to related functions, but with 1 subtracted
 for each pass.}
 }
 \value{
-\link{dod.ctd.bbmp} returns a character value naming the file that
-was retrieved. This may be either an index file or a data file; see
-the \sQuote{Examples} section for an example of a typical workflow.
+\link{dod.ctd.bbmp} returns one of two things: (a) if \code{index} is TRUE, it
+returns a data frame with columns named \code{year}, \code{id} and \code{direction} or (b)
+a character value naming the file that was retrieved. See the
+\sQuote{Examples} section for an example of a typical workflow.
 }
 \description{
 \link{dod.ctd.bbmp} can retrieve both index files and data files
@@ -64,27 +69,28 @@ the name of a file of interest; see \sQuote{Examples}.
 
 Sometime in prior to April 2025, the DFO server and the format
 of the data files both changed, and this necessitated changes
-to both \code{dod.ctd.bbmp()}. Note that the server no longer
-supplies index files, so a parameter of the same name
-was deleted on 2024-04-19.
+to \code{dod.ctd.bbmp()}. Note that the server no longer
+supplies index files, so the present code tries to discover
+information by scraping the website ... making it very sensitive
+to changes and thus brittle.
 }
 
 \examples{
 # Download and study first BBMP CTD file of year 2024
 if (interactive()) { # sidestep a pkgdown::build_site() error
-    # NOTE: data file is removed at end, to pass CRAN checks
     library(dod)
-    library(oce)
-    destdir <- tempdir()
-    # Note: cannot specify year=2025 as of 2025-04-19 because of URL oddity
-    ctdFile <- dod.ctd("BBMP", year = 2024, ID = 1, destdir = destdir)
+    # Note: cannot specify year=2025 because the URL is differently constructed
+    index <- dod.ctd("BBMP", year = "2024", index = TRUE)
+    destdir <- tempdir() # get temporary storage
+    ctdFile <- dod.ctd("BBMP", year = index$year[1], ID = index$id[1], destdir = destdir)
     # Use oce to read, summarize and plot the data.
+    library(oce)
     ctd <- read.netcdf(ctdFile) |>
         rename() |>
         as.ctd()
     summary(ctd)
     plot(ctd)
-    unlink(destdir, recursive = TRUE)
+    unlink(destdir, recursive = TRUE) # clean up temporary storage
 }
 
 }
@@ -100,5 +106,8 @@ Other functions that download files:
 \code{\link{dod.met}()},
 \code{\link{dod.tideGauge}()},
 \code{\link{dod.topo}()}
+}
+\author{
+Dan Kelley
 }
 \concept{functions that download files}

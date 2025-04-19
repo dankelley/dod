@@ -31,37 +31,28 @@ devtools::install_github("dankelley/dod")
 The following example shows how to (1) download an index of CTD data
 files resulting from observations made as part of the BBMP program in
 the present year and then (2) use functions in the oce package to read
-and plot the last CTD profile in the dataset.
+and plot the first CTD profile of year 2024.
 
 ``` r
 library(dod)
-year <- format(Sys.Date(), "%Y")
-indexFile <- dod.ctd("BBMP", index = TRUE)
-index <- read.csv(indexFile, skip = 2)
-# 1. Discover column names
-names(index)
-#> [1] "FILE"            "START_DATE_TIME"
-# 2. Download CTD file
-file <- dod.ctd("BBMP", ID = tail(index, 1)$FILE)
 library(oce)
 #> Loading required package: gsw
-d <- read.ctd(file)
-# 3. Standard CTD plot
-plot(d)
+# Note: cannot specify year=2025 because the URL is differently constructed
+index <- dod.ctd("BBMP", year = "2024", index = TRUE)
+ctdFile <- dod.ctd("BBMP", year = index$year[1], ID = index$id[1])
+# Use oce to read, summarize and plot the data.
+ctd <- read.netcdf(ctdFile) |>
+    rename() |>
+    as.ctd()
+# Plot some biochemistry variables
+par(mfrow = c(2, 2))
+plotProfile(ctd, "SA")
+plotProfile(ctd, "CT")
+plotProfile(ctd, "oxygen")
+plotProfile(ctd, "chlorophyllA")
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
-``` r
-# 4. Plot some biochemistry variables
-par(mfrow = c(2, 2))
-plotProfile(d, "SA")
-plotProfile(d, "CT")
-plotProfile(d, "oxygen")
-plotProfile(d, "fluorescence")
-```
-
-<img src="man/figures/README-example-2.png" width="100%" />
-
-PS. This `README.md` file was created on 2025-03-07 by rendering the
+PS. This `README.md` file was created on 2025-04-19 by rendering the
 `README.Rmd` file with `devtools::build_readme()`.
