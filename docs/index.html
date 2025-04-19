@@ -71,32 +71,26 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>The following example shows how to (1) download an index of CTD data files resulting from observations made as part of the BBMP program in the present year and then (2) use functions in the oce package to read and plot the last CTD profile in the dataset.</p>
+<p>The following example shows how to (1) download an index of CTD data files resulting from observations made as part of the BBMP program in the present year and then (2) use functions in the oce package to read and plot the first CTD profile of year 2024.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/">dod</a></span><span class="op">)</span></span>
-<span><span class="va">year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%Y"</span><span class="op">)</span></span>
-<span><span class="va">indexFile</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dod.ctd.html">dod.ctd</a></span><span class="op">(</span><span class="st">"BBMP"</span>, index <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">indexFile</span>, skip <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co"># 1. Discover column names</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">index</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "FILE"            "START_DATE_TIME"</span></span>
-<span><span class="co"># 2. Download CTD file</span></span>
-<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dod.ctd.html">dod.ctd</a></span><span class="op">(</span><span class="st">"BBMP"</span>, ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">index</span>, <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">FILE</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: gsw</span></span>
-<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dankelley.github.io/oce/reference/read.ctd.html" class="external-link">read.ctd</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
-<span><span class="co"># 3. Standard CTD plot</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-1.png" width="100%"></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 4. Plot some biochemistry variables</span></span>
+<span><span class="co"># Note: cannot specify year=2025 because the URL is differently constructed</span></span>
+<span><span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dod.ctd.html">dod.ctd</a></span><span class="op">(</span><span class="st">"BBMP"</span>, year <span class="op">=</span> <span class="st">"2024"</span>, index <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">ctdFile</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dod.ctd.html">dod.ctd</a></span><span class="op">(</span><span class="st">"BBMP"</span>, year <span class="op">=</span> <span class="va">index</span><span class="op">$</span><span class="va">year</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, ID <span class="op">=</span> <span class="va">index</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># Use oce to read, summarize and plot the data.</span></span>
+<span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dankelley.github.io/oce/reference/read.netcdf.html" class="external-link">read.netcdf</a></span><span class="op">(</span><span class="va">ctdFile</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dankelley.github.io/oce/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dankelley.github.io/oce/reference/as.ctd.html" class="external-link">as.ctd</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Plot some biochemistry variables</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"SA"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"CT"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"oxygen"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"fluorescence"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-2.png" width="100%"></p>
-<p>PS. This <code>README.md</code> file was created on 2025-03-07 by rendering the <code>README.Rmd</code> file with <code><a href="https://devtools.r-lib.org/reference/build_rmd.html" class="external-link">devtools::build_readme()</a></code>.</p>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"SA"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"CT"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"oxygen"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/plotProfile.html" class="external-link">plotProfile</a></span><span class="op">(</span><span class="va">ctd</span>, <span class="st">"chlorophyllA"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-example-1.png" width="100%"></p>
+<p>PS. This <code>README.md</code> file was created on 2025-04-19 by rendering the <code>README.Rmd</code> file with <code><a href="https://devtools.r-lib.org/reference/build_rmd.html" class="external-link">devtools::build_readme()</a></code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
