@@ -1,15 +1,15 @@
 #' Acquire a directory of river water-level files
 #'
-#' For examples, see [riverData()].
+#' For examples, see [dod.river()].
 #'
 #' @param url character value indicating the URL of a station listing.
 #' If not provided, this defaults to
 #' `https://hpfx.collab.science.gc.ca/today/hydrometric/doc/hydrometric_StationList.csv`
 #' and this is the only URL on which the code is expected to work.
 #'
-#' @param station character value indicating the name of the station for
+#' @param name character value indicating the name of the station for
 #' which information is sought.  This may be a regular expression. If not
-#' provided, `"sackville.*bedford"` is used. Set `station` to NULL to
+#' provided, `"sackville.*bedford"` is used. Set `name` to NULL to
 #' get a listing for all stations.
 #'
 #' @param debug integer indicating the level of debugging information
@@ -23,16 +23,16 @@
 #' @export
 #'
 #' @author Dan Kelley
-riverDirectory <- function(url, station, debug = 0) {
+dod.river.index <- function(url, name, debug = 0) {
     if (missing(url)) {
         url <- "https://hpfx.collab.science.gc.ca/today/hydrometric/doc/hydrometric_StationList.csv"
     }
-    if (missing(station)) {
-        station <- "sackville.*bedford"
+    if (missing(name)) {
+        name <- "sackville.*bedford"
     }
     dodDebug(debug, "url=\"", url, "\"\n")
     if (length(url) != 1) stop("length of 'url' must be 1")
-    if (length(station) != 1) stop("length of 'station' must be 1")
+    if (length(name) != 1) stop("length of 'name' must be 1")
     dir <- read.csv(url, header = TRUE)
     # Change names to simpler values (no caps, no dots, no slashes, etc)
     names <- names(dir)
@@ -43,12 +43,12 @@ riverDirectory <- function(url, station, debug = 0) {
     names[grep("Prov", names)] <- "region"
     names[grep("Timez", names)] <- "tz"
     names(dir) <- names
-    if (!is.null(station)) {
-        dir[grep(station, dir$name, ignore.case = TRUE), ]
+    if (!is.null(name)) {
+        dir[grep(name, dir$name, ignore.case = TRUE), ]
     } else {
         dir
     }
-} # riverDirectory
+} # dod.river.index
 
 #' Download and read a river water-level file
 #'
@@ -57,7 +57,7 @@ riverDirectory <- function(url, station, debug = 0) {
 #' into a POSIX time value using [lubridate::ymd_hms()].
 #'
 #' @param id character value indicating the ID of the desired station. This
-#' may be discovered by using [riverDirectory()] first. This
+#' may be discovered by using [dod.river.index()] first. This
 #' defaults to `"01EJ001"`, for the Sackville River at Bedford.
 #'
 #' @param region character value indicating the province or territory
@@ -67,7 +67,7 @@ riverDirectory <- function(url, station, debug = 0) {
 #' indicating the time interval desired. (The first seems to yield
 #' data in the current month, and the second seems to yield data
 #' since over the last 1 or 2 days.)
-
+#'
 #' @param saveFile logical value indicating whether to save the file for later
 #' use. This can be handy because the server does provide archived data. The
 #' filename will be as on the server, but with the main part of the filename
@@ -75,22 +75,25 @@ riverDirectory <- function(url, station, debug = 0) {
 #' may be read later with [read.csv()], with its time column being decoded with
 #' [lubridate::ymd_hms()]; perhaps the server has information on the meanings
 #' of the other columns, or perhaps you will be able to guess.
-
+#'
 #' @param debug integer indicating the level of debugging information
 #' that is printed during processing.  The default, `debug=0`, means
 #' to work quietly.
 #'
 #' @return a data frame containing the data, with columns named `"time"` and
-#' `"level"` in m, and `"discharge"` in m^3/s. (Note that files contain
+#' `"level"` (m), `"grade"` and `"discharge"` (m^3/s). (Note that files contain
 #' other columns; if you want them, save the file and read it
 #' as explained in \sQuote{Details}.)
 #'
 #' @examples
 #' library(oce)
 #' library(dod)
-#' dir <- riverDirectory() # defaults to Sackville River at Bedford
-#' data <- riverData(id = dir$id)
-#' # This 3-panel layout might be useful to river experts
+#' dir <- dod.river.index() # defaults to Sackville River at Bedford
+#' data <- dod.river(id = dir$id)
+#'
+#' # Plot a 3-panel summary graph; see e.g. Gore and Banning (2017) for more
+#' # information on discharge.
+#'
 #' layout(matrix(c(1, 3, 2, 3), 2, 2, byrow = TRUE), width = c(0.6, 0.4))
 #' oce.plot.ts(data$time, data$level,
 #'     xaxs = "i",
@@ -105,14 +108,24 @@ riverDirectory <- function(url, station, debug = 0) {
 #'     xlab = "", ylab = expression("Discharge [" * m^3 / s * "]"),
 #'     drawTimeRange = FALSE, grid = TRUE
 #' )
-#' with(data, plot(level, discharge, type = "l"))
+#' plot(data$discharge, data$level,
+#'     type = "l",
+#'     xlab = expression("Discharge [" * m^3 / s * "]"), ylab = "Level [m]"
+#' )
+#'
+#' @references
+#'
+#' Gore, James A., and James Banning. “Chapter 3 - Discharge Measurements and
+#' Streamflow Analysis.” In Methods in Stream Ecology, Volume 1 (Third
+#' Edition), edited by F. Richard Hauer and Gary A. Lamberti, 49–70. Boston:
+#' Academic Press, 2017. https://doi.org/10.1016/B978-0-12-416558-8.00003-2.
 #'
 #' @export
 #'
 #' @importFrom lubridate ymd_hms
 #'
 #' @author Dan Kelley
-riverData <- function(id = "01EJ001", region = "NS", interval = "daily",
+dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
                       saveFile = FALSE, debug = 0) {
     if (length(id) != 1L) stop("length of 'id' must be 1")
     if (length(region) != 1L) stop("length of 'region' must be 1")
@@ -141,6 +154,6 @@ riverData <- function(id = "01EJ001", region = "NS", interval = "daily",
     data <- read.csv(file, header = TRUE)
     data.frame(
         time = lubridate::ymd_hms(data[, 2]), level = data[, 3],
-        discharge = data[, 7]
+        grade = data[, 4], discharge = data[, 7]
     )
-} # riverData
+} # dod.river
