@@ -9,16 +9,11 @@
 #' @param year a numeric or character value specifying the year of interest.
 #' If this is not provided, it defaults to the current year.
 #'
-#' @param index a boolean value indicating whether to return a data
-#' frame with an index of available files for the given year.  Note
-#' that this is done in analysing the webpage of the data server,
-#' and so it is very dependent on that webpage not changing
-#' in how it lists the links to files.  Please inform
-#' the developers if you find that this fails, so they can
-#' try to make changes.
-#'
-#' @param index logical value indicating whether to download an index,
-#' rather than a file.  See Examples.
+#' @param index a boolean value indicating whether to return a data frame with
+#' an index of available files for the given year.  Note that this is done in
+#' analysing the webpage of the data server, and so it will likely fail if the
+#' format of the webpage is changed. Please inform the developers if you find
+#' such a failure, so they can try to make changes.
 #'
 #' @param ID an integer value giving the sequence number of the CTD
 #' cast in the given year.
@@ -83,7 +78,9 @@ dod.ctd.bbmp <- function(year, index = FALSE,
     if (missing(year)) {
         year <- format(Sys.Date(), "%Y")
     }
-    if (!is.logical(index)) stop("'index' must be a logical value")
+    if (!is.logical(index)) {
+        stop("'index' must be a logical value")
+    }
     if (is.null(ID) && !index) {
         stop("ID must be supplied")
     }
