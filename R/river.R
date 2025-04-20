@@ -52,6 +52,10 @@ riverDirectory <- function(url, station, debug = 0) {
 
 #' Download and read a river water-level file
 #'
+#' If `saveFile` is TRUE, then the file is saved for later use.  Its
+#' first line will be a header. A column named `"Date"` may be decoded
+#' into a POSIX time value using [lubridate::ymd_hms()].
+#'
 #' @param id character value indicating the ID of the desired station. This
 #' may be discovered by using [riverDirectory()] first. This
 #' defaults to `"01EJ001"`, for the Sackville River at Bedford.
@@ -63,38 +67,53 @@ riverDirectory <- function(url, station, debug = 0) {
 #' indicating the time interval desired. (The first seems to yield
 #' data in the current month, and the second seems to yield data
 #' since over the last 1 or 2 days.)
-#'
+
 #' @param saveFile logical value indicating whether to save the file for later
-#' use. This can be handy if the goal is to archive data, since the
-#' server does not seem to provide archived information.  Please examine
-#' the code of this function to see how to read the file, which is a bit
-#' tricky.
-#'
+#' use. This can be handy because the server does provide archived data. The
+#' filename will be as on the server, but with the main part of the filename
+#' ending with a timestamp. This file name is printed during processing, and it
+#' may be read later with [read.csv()], with its time column being decoded with
+#' [lubridate::ymd_hms()]; perhaps the server has information on the meanings
+#' of the other columns, or perhaps you will be able to guess.
+
 #' @param debug integer indicating the level of debugging information
 #' that is printed during processing.  The default, `debug=0`, means
 #' to work quietly.
 #'
 #' @return a data frame containing the data, with columns named `"time"` and
-#' `"level"`.
+#' `"level"` in m, and `"discharge"` in m^3/s. (Note that files contain
+#' other columns; if you want them, save the file and read it
+#' as explained in \sQuote{Details}.)
 #'
 #' @examples
 #' library(oce)
 #' library(dod)
-#' dir <- riverDirectory()
+#' dir <- riverDirectory() # defaults to Sackville River at Bedford
 #' data <- riverData(id = dir$id)
+#' # This 3-panel layout might be useful to river experts
+#' layout(matrix(c(1, 3, 2, 3), 2, 2, byrow = TRUE), width = c(0.6, 0.4))
 #' oce.plot.ts(data$time, data$level,
 #'     xaxs = "i",
-#'     xlab = "", ylab = "Level [m]", lwd = 2,
+#'     xlab = "", ylab = "Level [m]",
 #'     drawTimeRange = FALSE, grid = TRUE
 #' )
 #' mtext(sprintf("%s (%.4fN %.4fE)", dir$name, dir$latitude, dir$longitude),
 #'     line = 0.2, cex = 0.7 * par("cex")
 #' )
+#' oce.plot.ts(data$time, data$discharge,
+#'     xaxs = "i",
+#'     xlab = "", ylab = expression("Discharge [" * m^3 / s * "]"),
+#'     drawTimeRange = FALSE, grid = TRUE
+#' )
+#' with(data, plot(level, discharge, type = "l"))
 #'
 #' @export
 #'
+#' @importFrom lubridate ymd_hms
+#'
 #' @author Dan Kelley
-riverData <- function(id = "01EJ001", region = "NS", interval = "daily", saveFile = FALSE, debug = 0) {
+riverData <- function(id = "01EJ001", region = "NS", interval = "daily",
+                      saveFile = FALSE, debug = 0) {
     if (length(id) != 1L) stop("length of 'id' must be 1")
     if (length(region) != 1L) stop("length of 'region' must be 1")
     if (length(interval) != 1L) stop("length of 'interval' must be 1")
@@ -112,25 +131,16 @@ riverData <- function(id = "01EJ001", region = "NS", interval = "daily", saveFil
         "_hydrometric.csv"
     )
     dodDebug(debug, "url = \"", url, "\"\n")
-    file <- gsub(".*/", "", url)
-    dodDebug(debug, "file = \"", file, "\"\n")
     if (saveFile) {
+        file <- paste0(gsub(".*/(.*).csv", "\\1", url), "_", Sys.Date(), ".csv")
         download.file(url, file)
         message("saved file to \"", file, "\"")
     } else {
         file <- url
     }
     data <- read.csv(file, header = TRUE)
-    timeString <- gsub("^(.*)([+-][0-9][0-9]:[0-9][0-9])$", "\\1", data[, 2])
-    # Decode tz offset (maybe lubridate has a way to do this...)
-    tzString <- gsub("^(.*)([+-][0-9][0-9]:[0-9][0-9])$", "\\2", data[, 2])
-    stopifnot(all(tzString == tzString[1])) # don't permit daylight-saving shifts (unlikely)
-    tzSign <- ifelse(substr(tzString, 1, 1) == "-", -1, 1)
-    tmp <- strsplit(substr(tzString, 2, 6), ":")
-    hour <- as.numeric(sapply(tmp, \(x) x[1]))
-    minute <- as.numeric(sapply(tmp, \(x) x[2]))
-    offset <- -tzSign * (hour + minute / 60) * 3600
-    time <- as.POSIXct(timeString, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC") + offset
-    level <- data[, 3]
-    data.frame(time = time, level = level)
+    data.frame(
+        time = lubridate::ymd_hms(data[, 2]), level = data[, 3],
+        discharge = data[, 7]
+    )
 } # riverData
