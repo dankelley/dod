@@ -17,15 +17,18 @@
 #' the developers if you find that this fails, so they can
 #' try to make changes.
 #'
+#' @param index logical value indicating whether to download an index,
+#' rather than a file.  See Examples.
+#'
 #' @param ID an integer value giving the sequence number of the CTD
 #' cast in the given year.
+#'
+#' @param direction a character value indicating the direction
+#' of the cast, either `"DN"` (the default) or `"UP"`.
 #'
 #' @param file character value giving the name to be used for
 #' the downloaded file.  If this is NULL (which is the default) then
 #' the filename is as on the remote data server.
-#'
-#' @param index logical value indicating whether to download an index,
-#' rather than a file.  See Examples.
 #'
 #' @template destdirTemplate
 #'
@@ -74,8 +77,9 @@
 #' @export
 #'
 #' @author Dan Kelley
-dod.ctd.bbmp <- function(year, ID = NULL, index = FALSE,
-                         file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
+dod.ctd.bbmp <- function(year, index = FALSE,
+                         ID = NULL, direction = "DN", file = NULL,
+                         destdir = ".", age = 0, quiet = FALSE, debug = 0) {
     if (missing(year)) {
         year <- format(Sys.Date(), "%Y")
     }
@@ -105,10 +109,14 @@ dod.ctd.bbmp <- function(year, ID = NULL, index = FALSE,
         direction <- gsub(".*_(DN|UP).*", "\\1", l)
         return(data.frame(year = year, id = id, direction = direction))
     }
-    # FIXME: let user supply direction
+    if (!direction %in% c("DN", "UP")) {
+        stop("'direction' must be either \"DN\" or \"UP\"")
+    }
     url <- paste0(
         server, "/", year, "/CTD_BCD", year, "667_",
-        sprintf("%03d", as.integer(ID)), "_1_DN.ODF.nc"
+        sprintf("%03d", as.integer(ID)), "_1_",
+        direction,
+        ".ODF.nc"
     )
     dodDebug(debug, "will try downloading from \"", url, "\"\n")
     file <- gsub(".*/", "", url)

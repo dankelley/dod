@@ -6,8 +6,9 @@
 \usage{
 dod.ctd.bbmp(
   year,
-  ID = NULL,
   index = FALSE,
+  ID = NULL,
+  direction = "DN",
   file = NULL,
   destdir = ".",
   age = 0,
@@ -19,11 +20,14 @@ dod.ctd.bbmp(
 \item{year}{a numeric or character value specifying the year of interest.
 If this is not provided, it defaults to the current year.}
 
+\item{index}{logical value indicating whether to download an index,
+rather than a file.  See Examples.}
+
 \item{ID}{an integer value giving the sequence number of the CTD
 cast in the given year.}
 
-\item{index}{logical value indicating whether to download an index,
-rather than a file.  See Examples.}
+\item{direction}{a character value indicating the direction
+of the cast, either \code{"DN"} (the default) or \code{"UP"}.}
 
 \item{file}{character value giving the name to be used for
 the downloaded file.  If this is NULL (which is the default) then
