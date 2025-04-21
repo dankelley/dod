@@ -27,6 +27,11 @@ this exceeds 0, then some debugging messages will be printed. This
 value is passed down to related functions, but with 1 subtracted
 for each pass.}
 }
+\value{
+\code{dod.ctd.bbmp.index} returns a data frame with columns
+named \code{year}, \code{ID}, and \code{direction}. These elements may be supplied
+as parameters of the same name to \code{\link[=dod.ctd.bbmp]{dod.ctd.bbmp()}}.
+}
 \description{
 Download an index of BBMP files available in a specified year. This is done
 in analysing the webpage of the data server, and so it will likely fail if

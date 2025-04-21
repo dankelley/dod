@@ -24,11 +24,14 @@
 #'
 #' @export
 dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet = FALSE, debug = 0) {
+    if (debug == 0) {
+        quiet <- TRUE
+    }
     if (is.null(url)) {
         stop("url must not be NULL")
     }
     if (!dir.exists(destdir)) {
-        stop("destdir \"", destdir, "\" not found; please create it first")
+        stop("destdir \"", destdir, "\" not found; please create it first.")
     }
     dodDebug(debug, "    dod.download(",
         "url=\"", url, "\", ",

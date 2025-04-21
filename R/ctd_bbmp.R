@@ -9,8 +9,12 @@
 #' @param year a numeric or character value specifying the year of interest.
 #' If this is not provided, it defaults to the current year.
 #'
-#' @param ID an integer value giving the sequence number of the CTD
-#' cast in the given year.
+#' @param ID a character value indicating the station name. This is
+#' usually in a form like `001_1`, but for some years also have some
+#' profiles with IDs like `001_01`, as well as `001_1`. Using
+#' [dod.ctd.bbmp.index()] to discover IDs usually works, but
+#' if that fails, explore the webserver defined by the `server`
+#' parameter, to check.
 #'
 #' @param direction a character value indicating the direction
 #' of the cast, either `"DN"` (the default) or `"UP"`.
@@ -51,7 +55,7 @@
 #'     index <- dod.ctd.bbmp.index(year = "2024")
 #'     destdir <- tempdir() # get temporary storage
 #'     ctdFile <- dod.ctd("BBMP",
-#'         year = index$year[1], ID = index$id[1],
+#'         year = index$year[1], ID = index$ID[1],
 #'         direction = "DN", destdir = destdir
 #'     )
 #'     # Use oce to read, summarize and plot the data.
@@ -80,9 +84,11 @@ dod.ctd.bbmp <- function(year, ID = NULL, direction = "DN",
     if (missing(year)) {
         year <- format(Sys.Date(), "%Y")
     }
-    if (is.null(ID)) {
-        stop("ID must be supplied")
-    }
+    if (is.null(ID)) stop("ID must be supplied")
+    if (!is.character(ID)) stop("ID must be a character value")
+    if (length(year) > 1) stop("year must be of length 1")
+    if (length(ID) > 1) stop("ID must be of length 1")
+    if (length(direction) > 1) stop("direction must be of length 1")
     # server <- "https://cioosatlantic.ca/erddap/files/bio_atlantic_zone_monitoring_program_ctd/Bedford%20Basin%20Monitoring%20Program"
     dodDebug(debug, "  dod.ctd.bbmp(year=", year,
         ", ID=", ID, ", file=\"", file, "\", destdir=\"", destdir, "\"",
@@ -95,7 +101,7 @@ dod.ctd.bbmp <- function(year, ID = NULL, direction = "DN",
     }
     url <- paste0(
         server, "/", year, "/CTD_BCD", year, "667_",
-        sprintf("%03d", as.integer(ID)), "_1_",
+        ID, "_",
         direction,
         ".ODF.nc"
     )
@@ -116,7 +122,7 @@ dod.ctd.bbmp <- function(year, ID = NULL, direction = "DN",
                 "bio_atlantic_zone_monitoring_program_ctd/",
                 "Bedford%20Basin%20Monitoring%20Program/"
             ),
-            "and descending to the desired year, then dowload a file directly"
+            " and descending to the desired year, then dowload a file directly"
         )
     }
     dodDebug(debug, "dod.ctd.bbmp() END (data successfully downloaded to file \"", file, "\")\n")
@@ -129,6 +135,10 @@ dod.ctd.bbmp <- function(year, ID = NULL, direction = "DN",
 #' in analysing the webpage of the data server, and so it will likely fail if
 #' the format of the webpage is changed. Please inform the developers if you
 #' find such a failure, so they can try to make changes.
+#'
+#' @return `dod.ctd.bbmp.index` returns a data frame with columns
+#' named `year`, `ID`, and `direction`. These elements may be supplied
+#' as parameters of the same name to [dod.ctd.bbmp()].
 #'
 #' @param year integer or character value indicating the year of interest.
 #' Note that the year 2025 will not work, because the server supplies
@@ -178,11 +188,12 @@ dod.ctd.bbmp.index <- function(year,
     dodDebug(debug, "  step 4 (isolate href lines) complete\n")
     l <- gsub("&#x2e;", ".", gsub("&#x5f;", "_", l))
     dodDebug(debug, "  step 5 (translate underline characters) complete\n")
-    id <- gsub("CTD_[^_]*_([^_]*).*", "\\1", l)
-    dodDebug(debug, "  step 6 (isolate id) complete (first value=", id[1], ")\n")
+    #id <- gsub("CTD_[^_]*_([^_]*).*", "\\1", l)
+    ID <- gsub("CTD_[^_]*_([^_]*_[^_]*).*", "\\1", l)
+    dodDebug(debug, "  step 6 (isolate id) complete (first value=", ID[1], ")\n")
     direction <- gsub(".*_(DN|UP).*", "\\1", l)
     dodDebug(debug, "  step 7 (isolate direction) complete (first value=", direction[1], ")\n")
-    rval <- data.frame(year = year, id = id, direction = direction)
+    rval <- data.frame(year = year, ID = ID, direction = direction)
     dodDebug(debug, "END dod.ctd.bbmp.index(); returning an index with ", nrow(rval), " rows\n")
     rval
 } # dod.ctd.bbmp.index

@@ -22,8 +22,12 @@ dod.ctd.bbmp(
 \item{year}{a numeric or character value specifying the year of interest.
 If this is not provided, it defaults to the current year.}
 
-\item{ID}{an integer value giving the sequence number of the CTD
-cast in the given year.}
+\item{ID}{a character value indicating the station name. This is
+usually in a form like \verb{001_1}, but for some years also have some
+profiles with IDs like \verb{001_01}, as well as \verb{001_1}. Using
+\code{\link[=dod.ctd.bbmp.index]{dod.ctd.bbmp.index()}} to discover IDs usually works, but
+if that fails, explore the webserver defined by the \code{server}
+parameter, to check.}
 
 \item{direction}{a character value indicating the direction
 of the cast, either \code{"DN"} (the default) or \code{"UP"}.}
@@ -86,7 +90,7 @@ if (interactive()) { # sidestep a pkgdown::build_site() error
     index <- dod.ctd.bbmp.index(year = "2024")
     destdir <- tempdir() # get temporary storage
     ctdFile <- dod.ctd("BBMP",
-        year = index$year[1], ID = index$id[1],
+        year = index$year[1], ID = index$ID[1],
         direction = "DN", destdir = destdir
     )
     # Use oce to read, summarize and plot the data.

@@ -45,7 +45,7 @@ library(oce)
 #> Loading required package: gsw
 # Note: cannot specify year=2025 because the URL is differently constructed
 index <- dod.ctd.bbmp.index(year = "2024")
-ctdFile <- dod.ctd.bbmp(year = index$year[1], ID = index$id[1], direction = "DN")
+ctdFile <- dod.ctd.bbmp(year = index$year[1], ID = index$ID[1], direction = "DN")
 # Use oce to read, summarize and plot the data.
 ctd <- read.netcdf(ctdFile) |>
     rename() |>
