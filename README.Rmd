@@ -46,8 +46,8 @@ first CTD profile of year 2024.
 library(dod)
 library(oce)
 # Note: cannot specify year=2025 because the URL is differently constructed
-index <- dod.ctd("BBMP", year = "2024", index = TRUE)
-ctdFile <- dod.ctd("BBMP", year = index$year[1], ID = index$id[1])
+index <- dod.ctd.bbmp.index(year = "2024")
+ctdFile <- dod.ctd.bbmp(year = index$year[1], ID = index$id[1], direction = "DN")
 # Use oce to read, summarize and plot the data.
 ctd <- read.netcdf(ctdFile) |>
     rename() |>

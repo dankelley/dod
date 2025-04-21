@@ -35,11 +35,17 @@ and plot the first CTD profile of year 2024.
 
 ``` r
 library(dod)
+#> Loading required package: lubridate
+#> 
+#> Attaching package: 'lubridate'
+#> The following objects are masked from 'package:base':
+#> 
+#>     date, intersect, setdiff, union
 library(oce)
 #> Loading required package: gsw
 # Note: cannot specify year=2025 because the URL is differently constructed
-index <- dod.ctd("BBMP", year = "2024", index = TRUE)
-ctdFile <- dod.ctd("BBMP", year = index$year[1], ID = index$id[1])
+index <- dod.ctd.bbmp.index(year = "2024")
+ctdFile <- dod.ctd.bbmp(year = index$year[1], ID = index$id[1], direction = "DN")
 # Use oce to read, summarize and plot the data.
 ctd <- read.netcdf(ctdFile) |>
     rename() |>
@@ -54,5 +60,5 @@ plotProfile(ctd, "chlorophyllA")
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
-PS. This `README.md` file was created on 2025-04-19 by rendering the
+PS. This `README.md` file was created on 2025-04-21 by rendering the
 `README.Rmd` file with `devtools::build_readme()`.

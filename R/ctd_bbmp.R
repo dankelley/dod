@@ -86,7 +86,7 @@ dod.ctd.bbmp <- function(year, ID = NULL, direction = "DN",
     # server <- "https://cioosatlantic.ca/erddap/files/bio_atlantic_zone_monitoring_program_ctd/Bedford%20Basin%20Monitoring%20Program"
     dodDebug(debug, "  dod.ctd.bbmp(year=", year,
         ", ID=", ID, ", file=\"", file, "\", destdir=\"", destdir, "\"",
-        ", age=", age, ", debug=", debug, ")\n  BEGIN\n",
+        ", age=", age, ", debug=", debug, ")\n  START\n",
         sep = ""
     )
     # https://cioosatlantic.ca/erddap/files/bio_atlantic_zone_monitoring_program_ctd/Bedford%20Basin%20Monitoring%20Program/2024/CTD_BCD2024667_001_1_DN.ODF.nc
@@ -99,11 +99,28 @@ dod.ctd.bbmp <- function(year, ID = NULL, direction = "DN",
         direction,
         ".ODF.nc"
     )
-    dodDebug(debug, "will try downloading from \"", url, "\"\n")
     file <- gsub(".*/", "", url)
-    file <- dod.download(url = url, file = file, destdir = destdir, age = age, quiet = quiet, debug = debug - 1)
-    dodDebug(debug, "END dod.ctd.bbmp()\n", sep = "")
-    return(file)
+    dodDebug(debug, "will try downloading from \"", url, "\"\n")
+    rval <- try(
+        dod.download(
+            url = url, file = file,
+            destdir = destdir, age = age, quiet = quiet, debug = debug - 1
+        ),
+        silent = TRUE
+    )
+    if (inherits(rval, "try-error")) {
+        stop(
+            "Cannot determine the file. Try visiting \"",
+            paste0(
+                "https://cioosatlantic.ca/erddap/files/",
+                "bio_atlantic_zone_monitoring_program_ctd/",
+                "Bedford%20Basin%20Monitoring%20Program/"
+            ),
+            "and descending to the desired year, then dowload a file directly"
+        )
+    }
+    dodDebug(debug, "dod.ctd.bbmp() END (data successfully downloaded to file \"", file, "\")\n")
+    rval
 } # dod.ctd.bbmp
 
 #' Download an index of BBMP files
@@ -135,21 +152,36 @@ dod.ctd.bbmp.index <- function(year,
                                ), debug = 0) {
     dodDebug(debug, "dod.ctd.bbmp.index(year=", year, ", ...) START\n")
     url <- paste0(server, "/", year, "/")
+    dodDebug(debug, "  step 1 (construct url) complete\n")
+    # Try to download a URL from which the index will be inferred.
+    # If this fails for 2025 (as it does on 2025-04-21), tell the
+    # user where to try to manually download the file.  I tried
+    # altering the code to try the "provisional" webpage, but the
+    # files also have names that don't match the old names, so the
+    # code I'm using to scrape id, etc., fails.
     l <- try(readLines(url), silent = TRUE) # takes 0.01s user, 0.002s system, but 1.2s elapsed
     if (inherits(l, "try-error")) {
-        stop("cannot download \"", url, "\"")
+        stop(
+            "Cannot determine an index. Try visiting \"",
+            paste0(
+                "https://cioosatlantic.ca/erddap/files/",
+                "bio_atlantic_zone_monitoring_program_ctd/",
+                "Bedford%20Basin%20Monitoring%20Program/"
+            ),
+            " and dowloading files directly"
+        )
     }
-    dodDebug(debug, "  step 1 (read URL) complete\n")
-    l <- l[grep("CTD.*BCD", l)]
-    dodDebug(debug, "  step 2 (isolate CTD lines) complete\n")
+    dodDebug(debug, "  step 2 (read URL) complete\n")
+    l <- l[grep("D.*ODF.*nc", l)]
+    dodDebug(debug, "  step 3 (isolate CTD lines) complete\n")
     l <- gsub("\".*", "", gsub("^.*href=\"", "", l))
-    dodDebug(debug, "  step 3 (further isolate href lines) complete\n")
+    dodDebug(debug, "  step 4 (isolate href lines) complete\n")
     l <- gsub("&#x2e;", ".", gsub("&#x5f;", "_", l))
-    dodDebug(debug, "  step 4 (translate underline characters) complete\n")
+    dodDebug(debug, "  step 5 (translate underline characters) complete\n")
     id <- gsub("CTD_[^_]*_([^_]*).*", "\\1", l)
-    dodDebug(debug, "  step 5 (isolate id) complete\n")
+    dodDebug(debug, "  step 6 (isolate id) complete (first value=", id[1], ")\n")
     direction <- gsub(".*_(DN|UP).*", "\\1", l)
-    dodDebug(debug, "  step 6 (isolate direction) complete\n")
+    dodDebug(debug, "  step 7 (isolate direction) complete (first value=", direction[1], ")\n")
     rval <- data.frame(year = year, id = id, direction = direction)
     dodDebug(debug, "END dod.ctd.bbmp.index(); returning an index with ", nrow(rval), " rows\n")
     rval
