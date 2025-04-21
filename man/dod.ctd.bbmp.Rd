@@ -6,9 +6,11 @@
 \usage{
 dod.ctd.bbmp(
   year,
-  index = FALSE,
   ID = NULL,
   direction = "DN",
+  server = paste0("https://cioosatlantic.ca/erddap/files/",
+    "bio_atlantic_zone_monitoring_program_ctd/",
+    "Bedford\%20Basin\%20Monitoring\%20Program"),
   file = NULL,
   destdir = ".",
   age = 0,
@@ -20,14 +22,14 @@ dod.ctd.bbmp(
 \item{year}{a numeric or character value specifying the year of interest.
 If this is not provided, it defaults to the current year.}
 
-\item{index}{logical value indicating whether to download an index,
-rather than a file.  See Examples.}
-
 \item{ID}{an integer value giving the sequence number of the CTD
 cast in the given year.}
 
 \item{direction}{a character value indicating the direction
 of the cast, either \code{"DN"} (the default) or \code{"UP"}.}
+
+\item{server}{character value indicating the base name of the server.
+This may change over time.}
 
 \item{file}{character value giving the name to be used for
 the downloaded file.  If this is NULL (which is the default) then
@@ -56,27 +58,24 @@ value is passed down to related functions, but with 1 subtracted
 for each pass.}
 }
 \value{
-\link{dod.ctd.bbmp} returns one of two things: (a) if \code{index} is TRUE, it
-returns a data frame with columns named \code{year}, \code{id} and \code{direction} or (b)
-a character value naming the file that was retrieved. See the
-\sQuote{Examples} section for an example of a typical workflow.
+\link{dod.ctd.bbmp} returns a character value naming the file that was
+retrieved. See the \sQuote{Examples} section for an example of a typical
+workflow.
 }
 \description{
-\link{dod.ctd.bbmp} can retrieve both index files and data files
-from the Bedford Basin Mooring Project (BBMP). Since the naming
-convention of the data files may alter from year to year, it is
-important to start by downloading an index first, to ascertain
-the name of a file of interest; see \sQuote{Examples}.
+\link{dod.ctd.bbmp} can retrieve both index files and data files from the Bedford
+Basin Mooring Project (BBMP). Since the naming convention of the data files
+may alter from year to year, it is important to start by downloading an
+index first, using \link{dod.ctd.bbmp.index} first, to determine a file of
+interest; see \sQuote{Examples}.
 }
 \section{Historical Note}{
 
 
 Sometime in prior to April 2025, the DFO server and the format
 of the data files both changed, and this necessitated changes
-to \code{dod.ctd.bbmp()}. Note that the server no longer
-supplies index files, so the present code tries to discover
-information by scraping the website ... making it very sensitive
-to changes and thus brittle.
+to \code{\link[=dod.ctd.bbmp]{dod.ctd.bbmp()}}. Also, for clarity of use, the new
+function \code{\link[=dod.ctd.bbmp.index]{dod.ctd.bbmp.index()}} was added then.
 }
 
 \examples{
@@ -84,9 +83,12 @@ to changes and thus brittle.
 if (interactive()) { # sidestep a pkgdown::build_site() error
     library(dod)
     # Note: cannot specify year=2025 because the URL is differently constructed
-    index <- dod.ctd("BBMP", year = "2024", index = TRUE)
+    index <- dod.ctd.bbmp.index(year = "2024")
     destdir <- tempdir() # get temporary storage
-    ctdFile <- dod.ctd("BBMP", year = index$year[1], ID = index$id[1], destdir = destdir)
+    ctdFile <- dod.ctd("BBMP",
+        year = index$year[1], ID = index$id[1],
+        direction = "DN", destdir = destdir
+    )
     # Use oce to read, summarize and plot the data.
     library(oce)
     ctd <- read.netcdf(ctdFile) |>

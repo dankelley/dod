@@ -1,6 +1,10 @@
+# dod 0.1.16
+
+* Add `dod.ctd.bbmp.index()` (issue #16).
+
 # dod 0.1.15
 
-* Add `riverDirectory()` and `riverData()` (issue #16).
+* Add `dod.river.index()` and `dod.river()` (issue #16).
 
 # dod 0.1.14
 
