@@ -9,55 +9,54 @@
 #' either constructed filenames, or filenames provided by the user; in either
 #' case, if a recent file already exists with the indicated name, then no data
 #' are downloaded.
-
+#'
 #' For NOAA files, water level and predictions are provided on the same time
 #' sequence, but for CHS files, this is not the case, e.g. predictions (in the
 #' author's tests) are on 15 minute intervals, starting at an hour marker, but
 #' observations may be at a variety of times, depending `start` and `end`.
 #' Therefore, numerical comparision with CHS data will require interpolation
 #' (see \sQuote{Examples}).
-
+#'
 #' @param ID a character (or possibly integer) value specifying the
 #' numeric identifier of the tide gauge. For Canadian data, this
 #' is either the station number or the station name (e.g. number 491
 #' corresponds to the "Bedford Institute" station).  For American
 #' data, it is a numerical code.
-
+#'
 #' @param agency a character value indicating the agency from which data will
 #' be sought. Use `"CHS"` for Canadian tide gauges (the default), or `"NOAA"`
 #' for American tide gauges.
-
+#'
 #' @param start,end POSIXt times or character values that can be converted to
 #' such times (via [as.POSIXct()] with `tz="UTC"`) that indicate the time
 #' interval for the requested data.  If `end` is not specified, then the
 #' present time is used.  If `start` is not provided, then it is set to the
 #' present time minus 7 days.  If `start` is a numeric value, then it is
 #' interpreted as the number of days to go back in time from the `end` time.
-
-#' @param resolution character value indicating the resolution, only used if
-#' `agency="CHS"`.  The choices are `"ONE_MINUTE"`, `"THREE_MINUTES"` (the
-#' default), `"FIVE_MINUTES"`, `"FIFTEEN_MINUTES"`, and `"SIXTY_MINUTES"`.  The
-#' website that serves the data indicates that not all resolutions are
-#' available for all stations and/or time intervals, and that the maximum time
-#' range of a request depends on the requested resolution.
-
+#'
+#' @param resolution character value indicating the time resolution. This is
+#' handled differently for the two choices of `agency`. (1) For `agency="CHS"`,
+#' the choices are `"ONE_MINUTE"`, `"THREE_MINUTES"` (the default),
+#' `"FIVE_MINUTES"`, `"FIFTEEN_MINUTES"`, and `"SIXTY_MINUTES"`.  (2) For
+#' `agency="NOAA"`, the choices are `"ONE_MINUTE"`, `"SIX_MINUTES"` and
+#' `"SIXTY_MINUTES"` (the default).
+#'
 #' @param variable a character value indicating the name of the variable to be
-#' downloaded.  This defaults to `"water_level"` for observed water level
-#' (called `"wlo"` on the CHS server and `"water_level"` on the NOAA server).
-#' Another permitted choice is `"predictions"` (called `"wlp"` by CHS and
-#' `"predictions"` by NOAA). In either of these two cases, `time` and `QC` are
-#' also stored alongside the variable.  And there is a third case: if
-#' `variable` is `"metadata"`, then the return value will a list containing
+#' downloaded.  There are three types.  (1) `"water_level"` (the default)
+#' yields observed water level. This is called `"wlo"` on the CHS server and
+#' `"water_level"` on the NOAA server (on the latter, see also `resolution`).
+#' (2) `"predictions"` yields tidal predictions. These are called `"wlp"` by
+#' CHS and `"predictions"` by NOAA. (3) `"metadata"` yields a list containing
 #' information about the station, such as its code number, its official name,
 #' its datum, etc.
-
+#'
 #' @param file a character value indicating the name to be used for the
 #' downloaded data.  If not provided, this is constructed as e.g.
 #' `"tide_A_N_S_E_R_V.csv"` where `A` is the value of the agency argument, `N`
 #' is the station ID number, `S` and `E` are the start and end dates written in
 #' 8-digit format (i.e. sans the `"-"` characters), `R` is the resolution in
 #' minutes, and `V` is the variable name.
-
+#'
 #' @template destdirTemplate
 #'
 #' @template ageTemplate
@@ -100,7 +99,7 @@
 #'
 #' @references
 #'
-#old 1. <https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html>
+# old 1. <https://api-iwls.dfo-mpo.gc.ca/swagger-ui/index.html>
 #' 1. <https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca/swagger-ui/index.html>
 #'
 #' 2. <https://api.tidesandcurrents.noaa.gov/api/prod/>
@@ -165,10 +164,18 @@ dod.tideGauge <- function(
             "SIXTY_MINUTES" = 60
         )
     } else if (identical(agency, "NOAA")) { # Is this right?
+        # choices: "ONE_MINUTE", "SIX_MINUTES", "SIXTY_MINUTES"
         if (is.null(resolution)) {
-            resolution <- 60
-            resolutionNumeric <- 60
+            resolution <- "SIXTY_MINUTES"
         }
+        if (!is.character(resolution)) {
+            stop("'resolution' must be a character value")
+        }
+        resolutionNumeric <- switch(resolution,
+            "ONE_MINUTE" = 1,
+            "SIX_MINUTES" = 6,
+            "SIXTY_MINUTES" = 60
+        )
     }
     dodDebug(debug, "resolution=", resolution, ", resolutionNumeric=", resolutionNumeric, "\n", sep = "")
     if (is.null(file)) {
@@ -185,6 +192,7 @@ dod.tideGauge <- function(
     # endDigits <- gsub("-", "", end)
     dodDebug(debug, "destdir=\"", destdir, "\"\n", sep = "")
     if (agency == "CHS") {
+        dodDebug(debug, "Handling CHS download\n")
         fullfilename <- paste0(destdir, "/", file)
         if (file.exists(fullfilename)) {
             ctime <- file.info(fullfilename)$ctime
@@ -279,10 +287,24 @@ dod.tideGauge <- function(
         dodDebug(debug, "dod.tideGauge() END\n", unindent = 1, sep = "")
         return(fullfilename)
     } else if (agency == "NOAA") {
+        dodDebug(debug, "Handling NOAA download\n")
         # https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20230801&end_date=20230830&datum=MLLW&station=8727520&time_zone=GMT&units=metric&interval=&format=CSV # nolint: line_length_linter.
         server <- "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
         # Rename variable
         variableRemote <- variable
+        dodDebug(debug, oce::vectorShow(variable))
+        if (identical(variable, "water_level")) {
+            variableRemote <- if (resolution == "ONE_MINUTE") {
+                "one_minute_water_level"
+            } else if (resolution == "SIX_MINUTES") {
+                "water_level"
+            } else if (resolution == "SIXTY_MINUTES") {
+                "hourly_height"
+            }
+        } else {
+            variableRemote <- variable
+        }
+        dodDebug(debug, oce::vectorShow(variableRemote))
         url <- sprintf(
             "%s?product=%s&application=NOS.COOPS.TAC.WL&begin_date=%s&end_date=%s&datum=MLLW&station=%s&time_zone=GMT&units=metric&interval=&format=CSV",
             server, variableRemote, start, end, ID

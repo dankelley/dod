@@ -1,3 +1,7 @@
+# dod 0.1.17
+
+* `dod.tideGauge()` accepts `resolution` for NOAA data (issue #22)
+
 # dod 0.1.16
 
 * Add `dod.ctd.bbmp.index()` (issue #16).
