@@ -9,7 +9,7 @@ Canadian (CHS) or American (NOAA) tide gauges."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,12 +77,11 @@ data, it is a numerical code.</p></dd>
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
 <dd><p>a character value indicating the name of the variable to be
-downloaded.  This defaults to <code>"water_level"</code> for observed water level
-(called <code>"wlo"</code> on the CHS server and <code>"water_level"</code> on the NOAA server).
-Another permitted choice is <code>"predictions"</code> (called <code>"wlp"</code> by CHS and
-<code>"predictions"</code> by NOAA). In either of these two cases, <code>time</code> and <code>QC</code> are
-also stored alongside the variable.  And there is a third case: if
-<code>variable</code> is <code>"metadata"</code>, then the return value will a list containing
+downloaded.  There are three types.  (1) <code>"water_level"</code> (the default)
+yields observed water level. This is called <code>"wlo"</code> on the CHS server and
+<code>"water_level"</code> on the NOAA server (on the latter, see also <code>resolution</code>).
+(2) <code>"predictions"</code> yields tidal predictions. These are called <code>"wlp"</code> by
+CHS and <code>"predictions"</code> by NOAA. (3) <code>"metadata"</code> yields a list containing
 information about the station, such as its code number, its official name,
 its datum, etc.</p></dd>
 
@@ -103,12 +102,12 @@ interpreted as the number of days to go back in time from the <code>end</code> t
 
 
 <dt id="arg-resolution">resolution<a class="anchor" aria-label="anchor" href="#arg-resolution"></a></dt>
-<dd><p>character value indicating the resolution, only used if
-<code>agency="CHS"</code>.  The choices are <code>"ONE_MINUTE"</code>, <code>"THREE_MINUTES"</code> (the
-default), <code>"FIVE_MINUTES"</code>, <code>"FIFTEEN_MINUTES"</code>, and <code>"SIXTY_MINUTES"</code>.  The
-website that serves the data indicates that not all resolutions are
-available for all stations and/or time intervals, and that the maximum time
-range of a request depends on the requested resolution.</p></dd>
+<dd><p>character value indicating the time resolution. This is
+handled differently for the two choices of <code>agency</code>. (1) For <code>agency="CHS"</code>,
+the choices are <code>"ONE_MINUTE"</code>, <code>"THREE_MINUTES"</code> (the default),
+<code>"FIVE_MINUTES"</code>, <code>"FIFTEEN_MINUTES"</code>, and <code>"SIXTY_MINUTES"</code>.  (2) For
+<code>agency="NOAA"</code>, the choices are <code>"ONE_MINUTE"</code>, <code>"SIX_MINUTES"</code> and
+<code>"SIXTY_MINUTES"</code> (the default).</p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
@@ -165,8 +164,8 @@ or from the American National Oceanographic and Atmospheric Agency (NOAA),
 respectively (see References 1 and 2). The resultant data are saved in
 either constructed filenames, or filenames provided by the user; in either
 case, if a recent file already exists with the indicated name, then no data
-are downloaded.
-For NOAA files, water level and predictions are provided on the same time
+are downloaded.</p>
+<p>For NOAA files, water level and predictions are provided on the same time
 sequence, but for CHS files, this is not the case, e.g. predictions (in the
 author's tests) are on 15 minute intervals, starting at an hour marker, but
 observations may be at a variety of times, depending <code>start</code> and <code>end</code>.
@@ -233,7 +232,7 @@ Therefore, numerical comparision with CHS data will require interpolation
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>
