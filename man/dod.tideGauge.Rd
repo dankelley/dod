@@ -109,26 +109,25 @@ Therefore, numerical comparision with CHS data will require interpolation
 }
 \examples{
 # Download and plot tide-guage data for Halifax Harbour
-if (interactive()) { # sidestep a pkgdown::build_site() error
-    # NOTE: data file is removed at end, to pass CRAN checks
-    library(dod)
-    library(oce)
-    destdir <- tempdir()
-    ofile <- dod.tideGauge(491, destdir = destdir)
-    pfile <- dod.tideGauge(491, "predictions", destdir = destdir)
-    O <- read.csv(ofile)
-    O$time <- as.POSIXct(O$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC")
-    P <- read.csv(pfile)
-    P$time <- as.POSIXct(P$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC")
-    # Top panel: observation (black) and prediction (gray)
-    par(mfrow = c(2, 1))
-    oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
-    lines(P$time, P$Predictions, col = "gray", type = "l")
-    # Bottom panel: misfit. Note the interpolation to observation time.
-    misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
-    oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
-    unlink(destdir, recursive = TRUE)
-}
+library(dod)
+library(oce)
+destdir <- tempfile() # removed at the end, since CRAN requires that
+dir.create(destdir)
+message(destdir)
+ofile <- dod.tideGauge(491, destdir = destdir)
+pfile <- dod.tideGauge(491, "predictions", destdir = destdir)
+O <- read.csv(ofile)
+O$time <- as.POSIXct(O$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC")
+P <- read.csv(pfile)
+P$time <- as.POSIXct(P$Date.Time, "\%Y-\%m-\%d \%H:\%M:\%S", tz = "UTC")
+# Top panel: observation (black) and prediction (gray)
+par(mfrow = c(2, 1))
+oce.plot.ts(O$time, O$Water.Level, ylab = "Water Level [m]", xaxs = "i")
+lines(P$time, P$Predictions, col = "gray", type = "l")
+# Bottom panel: misfit. Note the interpolation to observation time.
+misfit <- O$Water.Level - approx(P$time, P$Predictions, O$time)$y
+oce.plot.ts(O$time, misfit, ylab = "Deviation [m]", xaxs = "i")
+unlink(destdir, recursive = TRUE)
 
 }
 \references{
