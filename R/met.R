@@ -45,7 +45,7 @@
 #'     # NOTE: data file is removed at end, to pass CRAN checks
 #'     library(dod)
 #'     destdir <- tempdir()
-#'     metFile <- dod.met(43405, destdir = destdir, debug = 1)
+#'     metFile <- dod.met(43405, destdir = destdir)
 #'     if (requireNamespace("oce", quietly = TRUE) &&
 #'         requireNamespace("XML", quietly = TRUE)) {
 #'         library(oce)
