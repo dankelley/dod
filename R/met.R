@@ -75,12 +75,12 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     dodDebug(debug, "dod.met() ...\n")
     if (missing(id)) {
         id <- 43405 # was 6358 until 2024-03-16
-        dodDebug(debug, "    defaulting id to", id, "\n")
+        dodDebug(debug, "    defaulting id to ", id, "\n")
     }
     id <- as.integer(id)
     if (missing(deltat)) {
         deltat <- "hour"
-        dodDebug(debug, "    defaulting deltat to", deltat, "\n")
+        dodDebug(debug, "    defaulting deltat to ", deltat, "\n")
     }
     yearGiven <- !missing(year)
     monthGiven <- !missing(month)

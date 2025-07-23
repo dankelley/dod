@@ -9,10 +9,14 @@
 #'
 #' @author Dan Kelley
 monthNumberFromName <- function(name) {
-    months <- c(
-        "january", "february", "march", "april", "may", "june",
-        "july", "august", "september", "october", "november",
-        "december"
-    )
-    pmatch(tolower(name), months)
+    if (is.numeric(name)) {
+        return(as.integer(name))
+    } else {
+        months <- c(
+            "january", "february", "march", "april", "may", "june",
+            "july", "august", "september", "october", "november",
+            "december"
+        )
+        pmatch(tolower(name), months)
+    }
 }
