@@ -1,3 +1,8 @@
+# dod 0.1.18
+
+* `dod.met.index()` handles the new URL that contains the Station ID field, and
+  `dod.met()` compensates for a change to the Name field (issue #23).
+
 # dod 0.1.17
 
 * `dod.tideGauge()` accepts `resolution` for NOAA data (issue #22)

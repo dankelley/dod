@@ -23,7 +23,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Annie Howard (\href{https://orcid.org/0000-????-????-????}{ORCID})
+  \item Annie Howard
   \item Jaimie Harbin \email{Jaimie.Harbin@dfo-mpo.gc.ca} (\href{https://orcid.org/0000-0003-3774-3732}{ORCID})
 }
 

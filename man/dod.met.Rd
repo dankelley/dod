@@ -16,26 +16,26 @@ dod.met(
 )
 }
 \arguments{
-\item{id}{A number giving the "Station ID" of the station of interest. If not
+\item{id}{a number giving the "Station ID" of the station of interest. If not
 provided, \code{id} defaults to 43405, for Halifax Dockyard. (Previously,
 the default was 6358, for Halifax International Airport, but in March
 2024 it was noticed that 6358 held no data.)
 See \dQuote{Details}.}
 
-\item{year}{A number giving the year of interest. Ignored unless \code{deltat}
+\item{year}{a number giving the year of interest. Ignored unless \code{deltat}
 is \code{"hour"}. If \code{year} is not given, it defaults to the present year.}
 
-\item{month}{A number giving the month of interest. Ignored unless \code{deltat}
+\item{month}{a number giving the month of interest. Ignored unless \code{deltat}
 is \code{"hour"}. If \code{month} is not given, it defaults to the present
 month.  As a special case, if neither \code{year} nor \code{month} is given,
 and it is the first day of the month, \code{\link[=dod.met]{dod.met()}} goes back one month,
 to avoid returning a file with no data.}
 
-\item{deltat}{Optional character string indicating the time step of the
+\item{deltat}{an optional character string indicating the time step of the
 desired dataset. This may be \code{"hour"} or \code{"month"}.
 If \code{deltat} is not given, it defaults to \code{"hour"}.}
 
-\item{type}{String indicating which type of file to download, either
+\item{type}{a character value indicating which type of file to download, either
 \code{"xml"} (the default) for an XML file or \code{"csv"} for a CSV file.}
 
 \item{destdir}{a character value indicating the directory
@@ -66,12 +66,7 @@ that web server.  For that reason, it is brittle.
 }
 \details{
 If this function fails, users might try using Gavin Simpson's \code{canadaHCD}
-package (reference 2). That package maintains a copy of the Environment
-Canada listing of stations, and its \code{find_station()} function provides an easy
-way to determine Station IDs.  After that, its \code{hcd_hourly} function (and
-related functions) make it easy to read data. These data can then be
-converted to the \code{met} class with \code{as.met()} in the \code{oce} package,
-although doing so leaves many important metadata blank.
+package (reference 2) or the weathercan package (reference 3).
 }
 \examples{
 # Meteorological data for Halifax, Nova Scotia.
@@ -90,6 +85,7 @@ if (interactive()) { # sidestep a pkgdown::build_site() error
     }
     unlink(destdir, recursive = TRUE)
 }
+
 }
 \references{
 \enumerate{
@@ -97,6 +93,7 @@ if (interactive()) { # sidestep a pkgdown::build_site() error
 \verb{https://climate.weather.gc.ca/index_e.html}
 \item Gavin Simpson's \code{canadaHCD} package on GitHub
 \verb{https://github.com/gavinsimpson/canadaHCD}
+\item Weathercan package \verb{https://github.com/ropensci/weathercan/tree/main}
 }
 }
 \seealso{

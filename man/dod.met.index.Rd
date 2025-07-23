@@ -7,7 +7,8 @@
 dod.met.index(
   name,
   max.distance = 0.1,
-  url = "https://dd.weather.gc.ca/climate/observations/climate_station_list.csv",
+  url = paste0("https://collaboration.cmc.ec.gc.ca/cmc/climate/",
+    "Get_More_Data_Plus_de_donnees/Station\%20Inventory\%20EN.csv"),
   quiet = FALSE,
   debug = 0
 )
@@ -20,11 +21,17 @@ and with \code{ignore.case} set to TRUE.}
 \item{max.distance}{numerical value passed to \code{\link[=agrep]{agrep()}} in
 the station-name search.}
 
-\item{url}{the URL of the source file.  The default value was
-tested on May 6, 2024, but this agency tends to change the file
-location (and data format) without notice, so if you find
-an error in downloading, please report it as an issue on the
-project github site.}
+\item{url}{the URL of the source file.  The default value has
+changed over time, owing to changes with the Government of Canada
+website. For example, from 2024-05-06, the link at Reference 1 worked. However,
+the author noticed on 2025-07-23 that this URL did not provide
+files that held a "Climate ID" column, and so the default was changed
+to Reference 2 on that date. Users are asked to post an issue
+on the \code{github.com/dankelley/dod/issues} website, if they find
+that \code{\link[=dod.met.index]{dod.met.index()}} either reports errors, or if the data
+frame returned by this function lacks a column labelled \verb{Climate ID},
+since values in that column are what is needed as the \code{id} parameter
+by \code{\link[=dod.met]{dod.met()}}.}
 
 \item{quiet}{a logical value, passed to \code{\link[curl:curl_download]{curl::curl_download()}}, which does
 the downloading.  If this is TRUE (the default), then the work is done
@@ -58,13 +65,33 @@ if (interactive()) { # sidestep a pkgdown::build_site() error
     library(dod)
     i <- dod.met.index("halifax")
     names(i) # see what's in these files
-    i[, c("Province", "Station.Name", "Climate.ID")]
+    i[, c("Province", "Name", "Climate.ID")]
     # focus on the ones in Nova Scotia
-    NS <- grep("nova", i$Province, ignore.case = TRUE)
-    i <- i[NS, ]
-    i[, c("Province", "Station.Name", "Climate.ID")]
+    i <- i[grep("nova scotia", i$Province, ignore.case = TRUE), ]
+    # Show start/end times for hourly data.
+    i[, c("Name", "Station.ID", "HLY.First.Year", "HLY.Last.Year")]
+    #>                           Name Station.ID HLY.First.Year HLY.Last.Year
+    #> 8196                   HALIFAX       6355             NA            NA
+    #> 8197                   HALIFAX       6356           1953          1963
+    #> 8198           HALIFAX CITADEL       6357             NA            NA
+    #> 8199           HALIFAX COMMONS      49128           2010          2011
+    #> 8200          HALIFAX DOCKYARD      43405           2004          2025
+    #> 8201 HALIFAX STANFIELD INT\'L A      53938           2019          2025
+    #> 8202 HALIFAX STANFIELD INT\'L A       6358           1961          2012
+    #> 8203 HALIFAX STANFIELD INT\'L A      50620           2012          2025
+    #> 8204          HALIFAX KOOTENAY      43124           2004          2025
+    #> 8205      HALIFAX WINDSOR PARK      43403           2004          2025
 }
 
+}
+\references{
+\enumerate{
+\item Default \code{url} from 2024-05-06 to 2025-07-23:
+\verb{https://dd.weather.gc.ca/climate/observations/climate_station_list.csv}.
+\item Default \code{url} from 2025-07-23 onward:
+paste0("https://collaboration.cmc.ec.gc.ca/cmc/climate/",
+"Get_More_Data_Plus_de_donnees/Station\%20Inventory\%20EN.csv).
+}
 }
 \author{
 Dan Kelley

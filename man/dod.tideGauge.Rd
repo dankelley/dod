@@ -113,7 +113,6 @@ library(dod)
 library(oce)
 destdir <- tempfile() # removed at the end, since CRAN requires that
 dir.create(destdir)
-message(destdir)
 ofile <- dod.tideGauge(491, destdir = destdir)
 pfile <- dod.tideGauge(491, "predictions", destdir = destdir)
 O <- read.csv(ofile)

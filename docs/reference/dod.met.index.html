@@ -11,7 +11,7 @@ use is to find a station ID, to be used with dod.met()."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,8 @@ use is to find a station ID, to be used with <code><a href="dod.met.html">dod.me
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dod.met.index</span><span class="op">(</span></span>
 <span>  <span class="va">name</span>,</span>
 <span>  max.distance <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  url <span class="op">=</span> <span class="st">"https://dd.weather.gc.ca/climate/observations/climate_station_list.csv"</span>,</span>
+<span>  url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://collaboration.cmc.ec.gc.ca/cmc/climate/"</span>,</span>
+<span>    <span class="st">"Get_More_Data_Plus_de_donnees/Station%20Inventory%20EN.csv"</span><span class="op">)</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -76,11 +77,17 @@ the station-name search.</p></dd>
 
 
 <dt id="arg-url">url<a class="anchor" aria-label="anchor" href="#arg-url"></a></dt>
-<dd><p>the URL of the source file.  The default value was
-tested on May 6, 2024, but this agency tends to change the file
-location (and data format) without notice, so if you find
-an error in downloading, please report it as an issue on the
-project github site.</p></dd>
+<dd><p>the URL of the source file.  The default value has
+changed over time, owing to changes with the Government of Canada
+website. For example, from 2024-05-06, the link at Reference 1 worked. However,
+the author noticed on 2025-07-23 that this URL did not provide
+files that held a "Climate ID" column, and so the default was changed
+to Reference 2 on that date. Users are asked to post an issue
+on the <code>github.com/dankelley/dod/issues</code> website, if they find
+that <code>dod.met.index()</code> either reports errors, or if the data
+frame returned by this function lacks a column labelled <code>Climate ID</code>,
+since values in that column are what is needed as the <code>id</code> parameter
+by <code><a href="dod.met.html">dod.met()</a></code>.</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
@@ -110,6 +117,15 @@ with <code><a href="dod.met.html">dod.met()</a></code>, the ID field that is of 
 interest for hourly data.</p>
     </div>
     <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+
+<ol><li><p>Default <code>url</code> from 2024-05-06 to 2025-07-23:
+<code>https://dd.weather.gc.ca/climate/observations/climate_station_list.csv</code>.</p></li>
+<li><p>Default <code>url</code> from 2025-07-23 onward:
+paste0("https://collaboration.cmc.ec.gc.ca/cmc/climate/",
+"Get_More_Data_Plus_de_donnees/Station%20Inventory%20EN.csv).</p></li>
+</ol></div>
+    <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Dan Kelley</p>
     </div>
@@ -121,11 +137,22 @@ interest for hourly data.</p>
 <span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/">dod</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu">dod.met.index</span><span class="op">(</span><span class="st">"halifax"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="co"># see what's in these files</span></span></span>
-<span class="r-in"><span>    <span class="va">i</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Province"</span>, <span class="st">"Station.Name"</span>, <span class="st">"Climate.ID"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>    <span class="va">i</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Province"</span>, <span class="st">"Name"</span>, <span class="st">"Climate.ID"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span>    <span class="co"># focus on the ones in Nova Scotia</span></span></span>
-<span class="r-in"><span>    <span class="va">NS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"nova"</span>, <span class="va">i</span><span class="op">$</span><span class="va">Province</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">i</span><span class="op">[</span><span class="va">NS</span>, <span class="op">]</span></span></span>
-<span class="r-in"><span>    <span class="va">i</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Province"</span>, <span class="st">"Station.Name"</span>, <span class="st">"Climate.ID"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">i</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"nova scotia"</span>, <span class="va">i</span><span class="op">$</span><span class="va">Province</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span>    <span class="co"># Show start/end times for hourly data.</span></span></span>
+<span class="r-in"><span>    <span class="va">i</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="st">"Station.ID"</span>, <span class="st">"HLY.First.Year"</span>, <span class="st">"HLY.Last.Year"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt;                           Name Station.ID HLY.First.Year HLY.Last.Year</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8196                   HALIFAX       6355             NA            NA</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8197                   HALIFAX       6356           1953          1963</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8198           HALIFAX CITADEL       6357             NA            NA</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8199           HALIFAX COMMONS      49128           2010          2011</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8200          HALIFAX DOCKYARD      43405           2004          2025</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8201 HALIFAX STANFIELD INT\'L A      53938           2019          2025</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8202 HALIFAX STANFIELD INT\'L A       6358           1961          2012</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8203 HALIFAX STANFIELD INT\'L A      50620           2012          2025</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8204          HALIFAX KOOTENAY      43124           2004          2025</span></span></span>
+<span class="r-in"><span>    <span class="co">#&gt; 8205      HALIFAX WINDSOR PARK      43403           2004          2025</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -139,7 +166,7 @@ interest for hourly data.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

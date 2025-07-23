@@ -6,33 +6,28 @@
 #' that web server.  For that reason, it is brittle.
 #'
 #' If this function fails, users might try using Gavin Simpson's `canadaHCD`
-#' package (reference 2). That package maintains a copy of the Environment
-#' Canada listing of stations, and its `find_station()` function provides an easy
-#' way to determine Station IDs.  After that, its `hcd_hourly` function (and
-#' related functions) make it easy to read data. These data can then be
-#' converted to the `met` class with `as.met()` in the `oce` package,
-#' although doing so leaves many important metadata blank.
+#' package (reference 2) or the weathercan package (reference 3).
 #'
-#' @param id A number giving the "Station ID" of the station of interest. If not
+#' @param id a number giving the "Station ID" of the station of interest. If not
 #' provided, `id` defaults to 43405, for Halifax Dockyard. (Previously,
 #' the default was 6358, for Halifax International Airport, but in March
 #' 2024 it was noticed that 6358 held no data.)
 #' See \dQuote{Details}.
 #'
-#' @param year A number giving the year of interest. Ignored unless `deltat`
+#' @param year a number giving the year of interest. Ignored unless `deltat`
 #' is `"hour"`. If `year` is not given, it defaults to the present year.
 #'
-#' @param month A number giving the month of interest. Ignored unless `deltat`
+#' @param month a number giving the month of interest. Ignored unless `deltat`
 #' is `"hour"`. If `month` is not given, it defaults to the present
 #' month.  As a special case, if neither `year` nor `month` is given,
 #' and it is the first day of the month, [dod.met()] goes back one month,
 #' to avoid returning a file with no data.
 #'
-#' @param deltat Optional character string indicating the time step of the
+#' @param deltat an optional character string indicating the time step of the
 #' desired dataset. This may be `"hour"` or `"month"`.
 #' If `deltat` is not given, it defaults to `"hour"`.
 #'
-#' @param type String indicating which type of file to download, either
+#' @param type a character value indicating which type of file to download, either
 #' `"xml"` (the default) for an XML file or `"csv"` for a CSV file.
 #'
 #' @template destdirTemplate
@@ -61,12 +56,15 @@
 #'     }
 #'     unlink(destdir, recursive = TRUE)
 #' }
+#'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
 #' `https://climate.weather.gc.ca/index_e.html`
 #'
 #' 2. Gavin Simpson's `canadaHCD` package on GitHub
 #' `https://github.com/gavinsimpson/canadaHCD`
+#'
+#' 3. Weathercan package `https://github.com/ropensci/weathercan/tree/main`
 #'
 #' @importFrom utils capture.output
 #' @export
@@ -277,11 +275,17 @@ dod.met.sounding <- function(station = "73110", year, month, day, region = "naco
 #' @param max.distance numerical value passed to [agrep()] in
 #' the station-name search.
 #'
-#' @param url the URL of the source file.  The default value was
-#' tested on May 6, 2024, but this agency tends to change the file
-#' location (and data format) without notice, so if you find
-#' an error in downloading, please report it as an issue on the
-#' project github site.
+#' @param url the URL of the source file.  The default value has
+#' changed over time, owing to changes with the Government of Canada
+#' website. For example, from 2024-05-06, the link at Reference 1 worked. However,
+#' the author noticed on 2025-07-23 that this URL did not provide
+#' files that held a "Climate ID" column, and so the default was changed
+#' to Reference 2 on that date. Users are asked to post an issue
+#' on the `github.com/dankelley/dod/issues` website, if they find
+#' that [dod.met.index()] either reports errors, or if the data
+#' frame returned by this function lacks a column labelled `Climate ID`,
+#' since values in that column are what is needed as the `id` parameter
+#' by [dod.met()].
 #'
 #' @template quietTemplate
 #'
@@ -293,19 +297,41 @@ dod.met.sounding <- function(station = "73110", year, month, day, region = "naco
 #'     library(dod)
 #'     i <- dod.met.index("halifax")
 #'     names(i) # see what's in these files
-#'     i[, c("Province", "Station.Name", "Climate.ID")]
+#'     i[, c("Province", "Name", "Climate.ID")]
 #'     # focus on the ones in Nova Scotia
-#'     NS <- grep("nova", i$Province, ignore.case = TRUE)
-#'     i <- i[NS, ]
-#'     i[, c("Province", "Station.Name", "Climate.ID")]
+#'     i <- i[grep("nova scotia", i$Province, ignore.case = TRUE), ]
+#'     # Show start/end times for hourly data.
+#'     i[, c("Name", "Station.ID", "HLY.First.Year", "HLY.Last.Year")]
+#'     #>                           Name Station.ID HLY.First.Year HLY.Last.Year
+#'     #> 8196                   HALIFAX       6355             NA            NA
+#'     #> 8197                   HALIFAX       6356           1953          1963
+#'     #> 8198           HALIFAX CITADEL       6357             NA            NA
+#'     #> 8199           HALIFAX COMMONS      49128           2010          2011
+#'     #> 8200          HALIFAX DOCKYARD      43405           2004          2025
+#'     #> 8201 HALIFAX STANFIELD INT\'L A      53938           2019          2025
+#'     #> 8202 HALIFAX STANFIELD INT\'L A       6358           1961          2012
+#'     #> 8203 HALIFAX STANFIELD INT\'L A      50620           2012          2025
+#'     #> 8204          HALIFAX KOOTENAY      43124           2004          2025
+#'     #> 8205      HALIFAX WINDSOR PARK      43403           2004          2025
 #' }
 #'
 #' @export
 #'
+#' @references
+#'
+#' 1. Default `url` from 2024-05-06 to 2025-07-23:
+#' `https://dd.weather.gc.ca/climate/observations/climate_station_list.csv`.
+#' 2. Default `url` from 2025-07-23 onward:
+#' paste0("https://collaboration.cmc.ec.gc.ca/cmc/climate/",
+#'     "Get_More_Data_Plus_de_donnees/Station%20Inventory%20EN.csv).
+#'
 #' @author Dan Kelley
 dod.met.index <- function(name,
                           max.distance = 0.1,
-                          url = "https://dd.weather.gc.ca/climate/observations/climate_station_list.csv",
+                          url = paste0(
+                              "https://collaboration.cmc.ec.gc.ca/cmc/climate/",
+                              "Get_More_Data_Plus_de_donnees/Station%20Inventory%20EN.csv"
+                          ),
                           quiet = FALSE,
                           debug = 0) {
     dodDebug(debug, "dod.met.index() START\n")
@@ -322,13 +348,18 @@ dod.met.index <- function(name,
         stop("could not download ", url)
     }
     dodDebug(debug, "    about to read downloaded file\n")
-    d <- read.csv(destfile)
-    dodDebug(debug, "    read", nrow(d), "lines\n")
-    w <- agrep(name, d$Station.Name, max.distance = max.distance, ignore.case = TRUE)
-    dodDebug(debug, "    found", length(w), "matches for \"", name, "\" with max.distance=", max.distance, "\n")
+    d <- read.csv(destfile, header = TRUE, skip = 3)
+    # "Name","Province","Climate ID","Station ID","WMO ID","TC ID","Latitude (Decimal Degrees)","Longitude (Decimal Degrees)","Latitude","Longitude","Elevation (m)","First Year","Last Year","HLY First Year","HLY Last Year","DLY First Year","DLY Last Year","MLY First Year","MLY Last Year"
+    dodDebug(debug, "    read ", nrow(d), " lines\n")
+    # until 2025-07-23, the station name was in d$Station.name
+    w <- agrep(name, d$Name, max.distance = max.distance, ignore.case = TRUE)
+    dodDebug(debug, "    found ", length(w), " matches for \"", name, "\" with max.distance=", max.distance, "\n")
     d <- d[w, ]
-    dodDebug(debug, "    removing temporary file\n")
-    file.remove(destfile)
+    if (FALSE) {
+        dodDebug(debug, "    removing temporary file '", destfile, "'\n")
+        file.remove(destfile)
+    }
+    message(destfile)
     dodDebug(debug, "END dod.met.index()\n")
     d
 }

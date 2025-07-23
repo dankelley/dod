@@ -9,7 +9,7 @@ Canadian (CHS) or American (NOAA) tide gauges."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -204,8 +204,6 @@ Therefore, numerical comparision with CHS data will require interpolation
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">destdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># removed at the end, since CRAN requires that</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">destdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="va">destdir</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> /var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//Rtmpn6aBZM/file27ee6364fb24</span>
 <span class="r-in"><span><span class="va">ofile</span> <span class="op">&lt;-</span> <span class="fu">dod.tideGauge</span><span class="op">(</span><span class="fl">491</span>, destdir <span class="op">=</span> <span class="va">destdir</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pfile</span> <span class="op">&lt;-</span> <span class="fu">dod.tideGauge</span><span class="op">(</span><span class="fl">491</span>, <span class="st">"predictions"</span>, destdir <span class="op">=</span> <span class="va">destdir</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">O</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">ofile</span><span class="op">)</span></span></span>
@@ -233,7 +231,7 @@ Therefore, numerical comparision with CHS data will require interpolation
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
