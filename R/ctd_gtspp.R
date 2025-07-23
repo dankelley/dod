@@ -17,10 +17,10 @@
 #' @param year integer value giving the year in which the data were acquired.
 #' NB. `year` is ignored if `nc` is #' provided, and is a full URL.
 #'
-#' @param month integer value giving the month in which the data were acquired.
-#' If in character form, a two-digit value is required, with the first digit
-#' being `"0"` for early months of the year.
-#' NB. `month` is ignored if `nc` is #' provided, and is a full URL.
+#' @param month integer or character value giving the month in which the data
+#' were acquired. If in character form, a two-digit value is required, with the
+#' first digit being `"0"` for early months of the year. NB. `month` is ignored
+#' if `nc` is #' provided, and is a full URL.
 #'
 #' @param file character value giving the name to be used for the downloaded
 #' file.
@@ -128,7 +128,11 @@ dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index 
         if (missing(month)) {
             stop("must provide month")
         }
-        month <- as.integer(month)
+        monthOrig <- month
+        month <- monthNumberFromName(monthOrig)
+        if (is.na(month)) {
+            stop("unknown month \"", monthOrig, "\"")
+        }
         dodDebug(debug, "month =", month, "\n")
         if (!is.logical(index)) {
             stop("index must be a logical value")

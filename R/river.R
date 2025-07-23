@@ -122,7 +122,7 @@ dod.river.index <- function(url, name, debug = 0) {
 #'
 #' @export
 #'
-#' @importFrom lubridate ymd_hms
+## @importFrom lubridate ymd_hms
 #'
 #' @author Dan Kelley
 dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
@@ -130,6 +130,10 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
     if (length(id) != 1L) stop("length of 'id' must be 1")
     if (length(region) != 1L) stop("length of 'region' must be 1")
     if (length(interval) != 1L) stop("length of 'interval' must be 1")
+    if (!requireNamespace("lubridate", quietly = TRUE)) {
+        stop("must install.packages(\"lubridate\") before using dod.tideGauge() with agency=\"CHS\"")
+    }
+
     url <- paste0(
         "https://hpfx.collab.science.gc.ca/today/hydrometric/csv/",
         region,

@@ -2,6 +2,7 @@
 
 * `dod.met.index()` handles the new URL that contains the Station ID field, and
   `dod.met()` compensates for a change to the Name field (issue #23).
+* `dod.met()` and `dod.ctd.gtspp()` permit specifying month by name (issue #24).
 
 # dod 0.1.17
 

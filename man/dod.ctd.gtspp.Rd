@@ -26,10 +26,10 @@ NB. \code{basin} is ignored if \code{nc} is #' provided, and is a full URL.}
 \item{year}{integer value giving the year in which the data were acquired.
 NB. \code{year} is ignored if \code{nc} is #' provided, and is a full URL.}
 
-\item{month}{integer value giving the month in which the data were acquired.
-If in character form, a two-digit value is required, with the first digit
-being \code{"0"} for early months of the year.
-NB. \code{month} is ignored if \code{nc} is #' provided, and is a full URL.}
+\item{month}{integer or character value giving the month in which the data
+were acquired. If in character form, a two-digit value is required, with the
+first digit being \code{"0"} for early months of the year. NB. \code{month} is ignored
+if \code{nc} is #' provided, and is a full URL.}
 
 \item{file}{character value giving the name to be used for the downloaded
 file.}

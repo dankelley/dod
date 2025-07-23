@@ -102,6 +102,11 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     if (!monthGiven) {
         month <- thisMonth
     }
+    monthOrig <- month
+    month <- monthNumberFromName(monthOrig)
+    if (is.na(month)) {
+        stop("unknown month \"", monthOrig, "\"")
+    }
     # go back 1 month if defaulting to current month on day 1,
     # when the data will be missing.
     if (thisDay == 1 && !yearGiven && !monthGiven) {

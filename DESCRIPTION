@@ -10,9 +10,9 @@ Description: The package is used to download various types of oceanographic data
 License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/dod/
-Depends: R (>= 4.1.0), lubridate
+Depends: R (>= 4.1.0)
 RoxygenNote: 7.3.2
-Suggests: curl, foreign, knitr, oce, ncdf4, jsonlite, ocedata, rmarkdown, terra, testthat, XML
+Suggests: curl, foreign, knitr, oce, ncdf4, jsonlite, lubridate, ocedata, rmarkdown, terra, testthat, XML
 BugReports: https://github.com/dankelley/dod/issues
 Roxygen: list(markdown = TRUE)
 BuildVignettes: true
