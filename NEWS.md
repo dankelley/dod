@@ -1,3 +1,7 @@
+# dod 0.1.19
+
+* `dod.river.usgs()` added to download data for American rivers from a USGS server.
+
 # dod 0.1.18
 
 * `dod.met.index()` handles the new URL that contains the Station ID field, and

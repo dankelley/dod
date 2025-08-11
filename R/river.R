@@ -131,7 +131,7 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
     if (length(region) != 1L) stop("length of 'region' must be 1")
     if (length(interval) != 1L) stop("length of 'interval' must be 1")
     if (!requireNamespace("lubridate", quietly = TRUE)) {
-        stop("must install.packages(\"lubridate\") before using dod.tideGauge() with agency=\"CHS\"")
+        stop("must install.packages(\"lubridate\") before using dod.river()")
     }
 
     url <- paste0(
@@ -160,4 +160,61 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
         time = lubridate::ymd_hms(data[, 2]), level = data[, 3],
         grade = data[, 4], discharge = data[, 7]
     )
-} # dod.river
+} # dod.river.
+
+#' Download American river-gauge data from USGS
+#'
+#' @param id character value giving the numeric code for the gauge. This
+#' defaults to a river in Ohio.
+#'
+#' @param start an indication of the start time of the requested data window.
+#' If provided, this may be in a (non-ambiguous) character form or, better,
+#' in a POSIXt object. The "UTC" timezone is assumed.  If not provided,
+#' `start` defaults to 1 week before the present time.
+#'
+#' @param end as for `start`, but instead for the end date.
+#'
+#' @examples
+#' library(dod)
+#' file <- dod.river.usgs()
+#' lines <- readLines(file)
+#' skip <- 1 + grep("agency_cd", lines)
+#' data <- read.delim(text = lines, skip = skip, sep = "\t", header = FALSE)
+#' # Note that the data at this site, if downloaded during daylight-savings
+#' # time, are offset from UTC by 4 hours. I'm not sure how to make the server
+#' # return in UTC.
+#' time <- as.POSIXct(data$V3, tz="UTC") + 4 * 3600
+#' # Convert from feet to metres
+#' height <- 0.3048 * data$V5
+#' plot(time, height, type = "l")
+#' mtext(paste("Station", data$V2[1]))
+#' file.remove(file) # needed for tests on CRAN
+#'
+#' @export
+#'
+#' @author Dan Kelley
+dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL) {
+    if (length(id) != 1L) stop("length of 'id' must be 1")
+    if (xor(is.null(end), is.null(start))) {
+        stop("if either 'start' or 'end' is NULL, then both must be NULL")
+    }
+    if (is.null(start)) {
+        end <- as.POSIXlt(Sys.time(), tz = "UTC")
+        start <- end - 7 * 86400
+    }
+    start <- format(as.POSIXct(start), "%Y-%m-%dT%H:%M:%S")
+    end <- format(as.POSIXct(end), "%Y-%m-%dT%H:%M:%S")
+    url <- paste0(
+        "https://waterservices.usgs.gov/nwis/iv/?",
+        "sites=", id, "&",
+        "agencyCd=USGS&",
+        #"startDT=", start, "-", sprintf("%02d", hourOffset), "&", # 2025-07-31T18:35:50.593-04:00&",
+        "startDT=", start, "&", # 2025-07-31T18:35:50.593-04:00&",
+        #"endDT=", end, "-", sprintf("%02d", hourOffset), "&", # 2025-07-31T18:35:50.593-04:00&",
+        "endDT=", end, "&", # 2025-07-31T18:35:50.593-04:00&",
+        "parameterCd=00065&format=rdb"
+    )
+    file <- paste0("river_usgs_", id, "_", start, "_", end, ".csv")
+    download.file(url, file)
+    file
+}
