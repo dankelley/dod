@@ -191,8 +191,11 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
 #' time <- as.POSIXct(data$V3, tz = "UTC") + 4 * 3600
 #' # Convert from feet to metres
 #' height <- 0.3048 * data$V5
-#' plot(time, height, type = "l")
-#' mtext(paste("Station", data$V2[1]))
+#' plot(time, height,
+#'     type = "l", xlab = "Day in year 2025",
+#'     ylab = "River Height [m]"
+#' )
+#' mtext(paste("USGS station", data$V2[1]))
 #' file.remove(destfile) # needed for tests on CRAN
 #'
 #' @export
