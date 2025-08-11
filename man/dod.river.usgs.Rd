@@ -22,14 +22,14 @@ Download American river-gauge data from USGS
 }
 \examples{
 library(dod)
-file <- dod.river.usgs()
+file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08")
 lines <- readLines(file)
 skip <- 1 + grep("agency_cd", lines)
 data <- read.delim(text = lines, skip = skip, sep = "\t", header = FALSE)
 # Note that the data at this site, if downloaded during daylight-savings
 # time, are offset from UTC by 4 hours. I'm not sure how to make the server
 # return in UTC.
-time <- as.POSIXct(data$V3, tz="UTC") + 4 * 3600
+time <- as.POSIXct(data$V3, tz = "UTC") + 4 * 3600
 # Convert from feet to metres
 height <- 0.3048 * data$V5
 plot(time, height, type = "l")
