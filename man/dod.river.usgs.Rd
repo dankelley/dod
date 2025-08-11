@@ -29,9 +29,10 @@ library(dod)
 destfile <- tempfile("river", fileext = ".tsv")
 file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destfile = destfile)
 lines <- readLines(destfile)
+file.remove(destfile) # needed for tests on CRAN
 skip <- 1 + grep("agency_cd", lines)
 data <- read.delim(text = lines, skip = skip, sep = "\t", header = FALSE)
-# Note that the data at this site, if downloaded during daylight-savings
+# The data at this site, if downloaded during daylight-savings
 # time, are offset from UTC by 4 hours. I'm not sure how to make the server
 # return in UTC.
 time <- as.POSIXct(data$V3, tz = "UTC") + 4 * 3600
@@ -41,8 +42,7 @@ plot(time, height,
     type = "l", xlab = "Day in year 2025",
     ylab = "River Height [m]"
 )
-mtext(paste("USGS station", data$V2[1]))
-file.remove(destfile) # needed for tests on CRAN
+mtext(gsub("#[ ]*", "", lines[grep("#    USGS ",lines)]))
 
 }
 \author{
