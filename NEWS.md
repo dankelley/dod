@@ -1,6 +1,6 @@
 # dod 0.1.19
 
-* `dod.river.usgs()` added to download data for American rivers from a USGS server.
+* `dod.river.usgs()` added to download data for American rivers from a USGS server (issue #25).
 
 # dod 0.1.18
 
