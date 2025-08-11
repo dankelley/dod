@@ -4,7 +4,7 @@
 \alias{dod.river.usgs}
 \title{Download American river-gauge data from USGS}
 \usage{
-dod.river.usgs(id = "03242350", start = NULL, end = NULL)
+dod.river.usgs(id = "03242350", start = NULL, end = NULL, destfile = NULL)
 }
 \arguments{
 \item{id}{character value giving the numeric code for the gauge. This
@@ -16,14 +16,19 @@ in a POSIXt object. The "UTC" timezone is assumed.  If not provided,
 \code{start} defaults to 1 week before the present time.}
 
 \item{end}{as for \code{start}, but instead for the end date.}
+
+\item{destfile}{optional character value indicating the desired name of the
+downloaded file.  If NULL (the default) then a filename will be constructed
+that contains the station ID and the start/end dates.}
 }
 \description{
 Download American river-gauge data from USGS
 }
 \examples{
 library(dod)
-file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08")
-lines <- readLines(file)
+destfile <- tempfile("river", fileext = ".tsv")
+file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destfile = destfile)
+lines <- readLines(destfile)
 skip <- 1 + grep("agency_cd", lines)
 data <- read.delim(text = lines, skip = skip, sep = "\t", header = FALSE)
 # Note that the data at this site, if downloaded during daylight-savings
@@ -34,7 +39,7 @@ time <- as.POSIXct(data$V3, tz = "UTC") + 4 * 3600
 height <- 0.3048 * data$V5
 plot(time, height, type = "l")
 mtext(paste("Station", data$V2[1]))
-file.remove(file) # needed for tests on CRAN
+file.remove(destfile) # needed for tests on CRAN
 
 }
 \author{

@@ -174,10 +174,15 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
 #'
 #' @param end as for `start`, but instead for the end date.
 #'
+#' @param destfile optional character value indicating the desired name of the
+#' downloaded file.  If NULL (the default) then a filename will be constructed
+#' that contains the station ID and the start/end dates.
+#'
 #' @examples
 #' library(dod)
-#' file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08")
-#' lines <- readLines(file)
+#' destfile <- tempfile("river", fileext = ".tsv")
+#' file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destfile = destfile)
+#' lines <- readLines(destfile)
 #' skip <- 1 + grep("agency_cd", lines)
 #' data <- read.delim(text = lines, skip = skip, sep = "\t", header = FALSE)
 #' # Note that the data at this site, if downloaded during daylight-savings
@@ -188,12 +193,12 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
 #' height <- 0.3048 * data$V5
 #' plot(time, height, type = "l")
 #' mtext(paste("Station", data$V2[1]))
-#' file.remove(file) # needed for tests on CRAN
+#' file.remove(destfile) # needed for tests on CRAN
 #'
 #' @export
 #'
 #' @author Dan Kelley
-dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL) {
+dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL, destfile = NULL) {
     if (length(id) != 1L) stop("length of 'id' must be 1")
     if (xor(is.null(end), is.null(start))) {
         stop("if either 'start' or 'end' is NULL, then both must be NULL")
@@ -214,7 +219,7 @@ dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL) {
         "endDT=", end, "&", # 2025-07-31T18:35:50.593-04:00&",
         "parameterCd=00065&format=rdb"
     )
-    file <- paste0("river_usgs_", id, "_", start, "_", end, ".csv")
+    file <- if (is.null(destfile)) paste0("river_usgs_", id, "_", start, "_", end, ".csv") else destfile
     download.file(url, file)
     file
 }
