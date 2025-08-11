@@ -50,7 +50,7 @@ index <- dod.ctd.bbmp.index(year = "2024")
 ctdFile <- dod.ctd.bbmp(year = index$year[1], ID = index$ID[1], direction = "DN")
 # Use oce to read, summarize and plot the data.
 ctd <- read.netcdf(ctdFile) |>
-    rename() |>
+    oceRename() |>
     as.ctd()
 # Plot some biochemistry variables
 par(mfrow = c(2, 2))
