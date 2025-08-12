@@ -79,7 +79,7 @@ dod.amsr <- function(
     type = "3day",
     quiet = FALSE,
     debug = 0) {
-    dodDebug(debug, "dod.amsr(..., type=\"", type, "\", ...) START\n", sep = "")
+    dodDebug(debug, "dod.amsr(..., type=\"", type, "\", destdir=\"", destdir, "\", ...) START\n", sep = "")
     if (!type %in% c("3day", "daily", "weekly", "monthly")) {
         stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
     }
