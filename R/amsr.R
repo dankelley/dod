@@ -83,6 +83,7 @@ dod.amsr <- function(
     if (!type %in% c("3day", "daily", "weekly", "monthly")) {
         stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
     }
+    dodDebug(debug, "    using server=\"", server, "\"\n", sep = "")
     if (is.character(date)) {
         date <- as.Date(date)
     }
@@ -92,6 +93,7 @@ dod.amsr <- function(
     year <- 1900 + date$year
     dodDebug(debug, "    inferred year=", year, ", month=", month, ", day=", day, "\n", sep = "")
     if (type %in% c("3day", "daily")) {
+        dodDebug(debug, "    handling type=\"", type, "\" with 3day/daily code\n", sep = "")
         # https://data.remss.com/amsr2/ocean/L3/v08.2/3day/2023/RSS_AMSR2_ocean_L3_3day_2023-07-24_v08.2.nc
         # ^                                           ^    ^                       ^    ^    ^  ^
         # server                                      type year                  type year month day
@@ -99,7 +101,9 @@ dod.amsr <- function(
             "%s/%s/%d/RSS_AMSR2_ocean_L3_%s_%04d-%02d-%02d_v08.2.nc",
             server, type, year, type, year, month, day
         )
+        dodDebug(debug, "    constructed url=\"", url, "\"\n", sep = "")
     } else if (identical(type, "weekly")) {
+        dodDebug(debug, "    handling type=\"", type, "\" with 'weekly' code\n", sep = "")
         ymd <- sprintf("%4d-%02d-%02d", year, month, day)
         dodDebug(debug, "    user-provided ymd=\"", ymd, "\"\n")
         # https://data.remss.com/amsr2/ocean/L3/v08.2/weekly/RSS_AMSR2_ocean_L3_weekly_2023-07-15_v08.2.nc
@@ -109,7 +113,9 @@ dod.amsr <- function(
             "%s/%s/RSS_AMSR2_ocean_L3_%s_%s_v08.2.nc",
             server, type, type, ymd
         )
+        dodDebug(debug, "    constructed url=\"", url, "\"\n", sep = "")
     } else if (identical(type, "monthly")) {
+        dodDebug(debug, "    handling type=\"", type, "\" with 'monthly' code\n", sep = "")
         # https://data.remss.com/amsr2/ocean/L3/v08.2/monthly/RSS_AMSR2_ocean_L3_monthly_2023-05_v08.2.nc
         # ^                                           ^                            ^    ^    ^
         # server                                      type                       type year month
@@ -118,6 +124,7 @@ dod.amsr <- function(
             "%s/%s/RSS_AMSR2_ocean_L3_%s_%04d-%02d_v08.2.nc",
             server, type, type, year, month
         )
+        dodDebug(debug, "    constructed url=\"", url, "\"\n", sep = "")
     } else {
         # check again (but should not be able to get here)
         stop("type='", type, "' not permitted; try '3day', 'daily', 'weekly' or 'monthly'")
