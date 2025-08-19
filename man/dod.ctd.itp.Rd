@@ -103,7 +103,6 @@ url <- paste0(
 nc <- dod.ctd.itp(url = url, age = 1)
 d <- oce::read.netcdf(nc)
 time <- as.POSIXct("1970-01-01") + 86400 * d[["profile_info/time"]]
-col <- cut(time, "year")
 lat <- d[["profile_info/latitude"]]
 lon <- d[["profile_info/longitude"]]
 png("itp.png")
@@ -114,7 +113,9 @@ mapPlot(coastlineWorld,
     projection = "+proj=stere +lat_0=90 +lat_ts=90 +lon_0=-130",
     col = "lightgray"
 )
-mapPoints(lon, lat, cex = 0.3, pch = 20, col = f)
+col <- cut(time, "year")
+mapPoints(lon, lat, cex = 0.3, pch = 20, col = col)
+mapScalebar("topleft", length = 1000)
 }\if{html}{\out{</div>}}
 
 \if{html}{\figure{itp.png}{options: width="400" alt="Figure: itp.png"}}
