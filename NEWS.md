@@ -1,5 +1,10 @@
 # dod 0.1.19
 
+* Fix problem with `dod.ctd.itp()` by adding new `url` parameter (issue #27)
+* Fix problem with `dod.amsr()` (issue #26)
+
+# dod 0.1.19
+
 * `dod.river.usgs()` added to download data for American rivers from a USGS server (issue #25).
 
 # dod 0.1.18

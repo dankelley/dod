@@ -3,11 +3,15 @@
 Institutions Ice-Thethered Profile program
 https://www2.whoi.edu/site/itp/.  Note that this
 server does not provide a searchable index, so users will need to visit the website
-https://www2.whoi.edu/site/itp/data/ to determine IDs of interest."><meta property="og:description" content="dod.ctd.itp() downloads CTD data from the Woods Hole Oceanographic
+https://www2.whoi.edu/site/itp/data/ to determine IDs of interest. Please
+take note of the &amp;#8216;Historical update&amp;#8217; section, regarding whether to
+supply ID (with or without info) or to supply url."><meta property="og:description" content="dod.ctd.itp() downloads CTD data from the Woods Hole Oceanographic
 Institutions Ice-Thethered Profile program
 https://www2.whoi.edu/site/itp/.  Note that this
 server does not provide a searchable index, so users will need to visit the website
-https://www2.whoi.edu/site/itp/data/ to determine IDs of interest."></head><body>
+https://www2.whoi.edu/site/itp/data/ to determine IDs of interest. Please
+take note of the &amp;#8216;Historical update&amp;#8217; section, regarding whether to
+supply ID (with or without info) or to supply url."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +19,7 @@ https://www2.whoi.edu/site/itp/data/ to determine IDs of interest."></head><body
 
     <a class="navbar-brand me-2" href="../index.html">dod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.19</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.20</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +56,9 @@ https://www2.whoi.edu/site/itp/data/ to determine IDs of interest."></head><body
 Institutions Ice-Thethered Profile program
 <a href="https://www2.whoi.edu/site/itp/" class="external-link">https://www2.whoi.edu/site/itp/</a>.  Note that this
 server does not provide a searchable index, so users will need to visit the website
-<a href="https://www2.whoi.edu/site/itp/data/" class="external-link">https://www2.whoi.edu/site/itp/data/</a> to determine IDs of interest.</p>
+<a href="https://www2.whoi.edu/site/itp/data/" class="external-link">https://www2.whoi.edu/site/itp/data/</a> to determine IDs of interest. Please
+take note of the ‘Historical update’ section, regarding whether to
+supply <code>ID</code> (with or without <code>info</code>) or to supply <code>url</code>.</p>
     </div>
 
     <div class="section level2">
@@ -60,6 +66,7 @@ server does not provide a searchable index, so users will need to visit the webs
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dod.ctd.itp</span><span class="op">(</span></span>
 <span>  <span class="va">ID</span>,</span>
 <span>  info <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">url</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>  age <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -86,6 +93,12 @@ way to do this.)
 On the other hand, if <code>info</code> is TRUE, then
 nothing is downloaded, and <code>dod.ctd.itp()</code> returns a
 URL holding information about the profiler.</p></dd>
+
+
+<dt id="arg-url">url<a class="anchor" aria-label="anchor" href="#arg-url"></a></dt>
+<dd><p>optional character value supplying the full URL for the sought-after
+file.  If this is supplied, then both <code>ID</code> and <code>info</code> are ignored.  See
+“Historical notes” to learn more about this parameter.</p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
@@ -129,6 +142,51 @@ for each pass.</p></dd>
     <p><code>dod.ctd.itp()</code> returns the full pathname of the
 downloaded zip file, or a URL of an information site,
 depending on the value of <code>info</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="historical-notes">Historical notes<a class="anchor" aria-label="anchor" href="#historical-notes"></a></h2>
+
+
+<ul><li><p>2025-08-19. The <code>url</code> parameter was added, when it was discovered that the
+organizational structure of the remote-server directories had changed
+compared with that upon which the code for <code>ID</code> and <code>info</code> was written.
+It is possible that the code that handles <code>ID</code> and <code>info</code> will be updated
+for the new organizational structure, but, even if it is, users
+may be better-off by exploring the server website and isolating files
+of interest that way. Supplying <code>url</code> is also advantageous because it
+lets the user control what version of data are to be downloaded,
+as in the “Worked Example”.</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="worked-example">Worked Example<a class="anchor" aria-label="anchor" href="#worked-example"></a></h2>
+
+
+
+<p>Note that the following code is not run during the package build
+process, as it downloads a large file. It was last run, and the
+resultant PNG created, on 2025-08-19.</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/dod/">dod</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/" class="external-link">oce</a></span><span class="op">)</span></span>
+<span><span class="va">url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>    <span class="st">"https://scienceweb.whoi.edu/itp/data/"</span>,</span>
+<span>    <span class="st">"itpsys137/itp137_level2.nc"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dod.ctd.itp.html">dod.ctd.itp</a></span><span class="op">(</span>url <span class="op">=</span> <span class="va">url</span>, age <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">oce</span><span class="fu">::</span><span class="fu"><a href="https://dankelley.github.io/oce/reference/read.netcdf.html" class="external-link">read.netcdf</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span></span>
+<span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"1970-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">86400</span> <span class="op">*</span> <span class="va">d</span><span class="op">[[</span><span class="st">"profile_info/time"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">time</span>, <span class="st">"year"</span><span class="op">)</span></span>
+<span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[[</span><span class="st">"profile_info/latitude"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">lon</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[[</span><span class="st">"profile_info/longitude"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span><span class="st">"itp.png"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">coastlineWorld</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/mapPlot.html" class="external-link">mapPlot</a></span><span class="op">(</span><span class="va">coastlineWorld</span>,</span>
+<span>    longitudelim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span>, latitudelim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>, <span class="fl">90</span><span class="op">)</span>,</span>
+<span>    projection <span class="op">=</span> <span class="st">"+proj=stere +lat_0=90 +lat_ts=90 +lon_0=-130"</span>,</span>
+<span>    col <span class="op">=</span> <span class="st">"lightgray"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dankelley.github.io/oce/reference/mapPoints.html" class="external-link">mapPoints</a></span><span class="op">(</span><span class="va">lon</span>, <span class="va">lat</span>, cex <span class="op">=</span> <span class="fl">0.3</span>, pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span></code></pre><p></p></div>
+<p><img src="figures/itp.png" width="400" alt="Figure: itp.png"></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

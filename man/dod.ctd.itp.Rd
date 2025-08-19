@@ -7,6 +7,7 @@
 dod.ctd.itp(
   ID,
   info = FALSE,
+  url,
   file = NULL,
   destdir = ".",
   age = 0,
@@ -26,6 +27,10 @@ way to do this.)
 On the other hand, if \code{info} is TRUE, then
 nothing is downloaded, and \code{\link[=dod.ctd.itp]{dod.ctd.itp()}} returns a
 URL holding information about the profiler.}
+
+\item{url}{optional character value supplying the full URL for the sought-after
+file.  If this is supplied, then both \code{ID} and \code{info} are ignored.  See
+\dQuote{Historical notes} to learn more about this parameter.}
 
 \item{file}{character value giving the name to be used for the downloaded
 file.  If \code{file} is NULL, which is the default, then the filename on the
@@ -63,8 +68,58 @@ depending on the value of \code{info}.
 Institutions Ice-Thethered Profile program
 \url{https://www2.whoi.edu/site/itp/}.  Note that this
 server does not provide a searchable index, so users will need to visit the website
-\url{https://www2.whoi.edu/site/itp/data/} to determine IDs of interest.
+\url{https://www2.whoi.edu/site/itp/data/} to determine IDs of interest. Please
+take note of the \sQuote{Historical update} section, regarding whether to
+supply \code{ID} (with or without \code{info}) or to supply \code{url}.
 }
+\section{Historical notes}{
+
+\itemize{
+\item 2025-08-19. The \code{url} parameter was added, when it was discovered that the
+organizational structure of the remote-server directories had changed
+compared with that upon which the code for \code{ID} and \code{info} was written.
+It is possible that the code that handles \code{ID} and \code{info} will be updated
+for the new organizational structure, but, even if it is, users
+may be better-off by exploring the server website and isolating files
+of interest that way. Supplying \code{url} is also advantageous because it
+lets the user control what version of data are to be downloaded,
+as in the \dQuote{Worked Example}.
+}
+}
+
+\section{Worked Example}{
+
+
+Note that the following code is not run during the package build
+process, as it downloads a large file. It was last run, and the
+resultant PNG created, on 2025-08-19.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{library(dod)
+library(oce)
+url <- paste0(
+    "https://scienceweb.whoi.edu/itp/data/",
+    "itpsys137/itp137_level2.nc"
+)
+nc <- dod.ctd.itp(url = url, age = 1)
+d <- oce::read.netcdf(nc)
+time <- as.POSIXct("1970-01-01") + 86400 * d[["profile_info/time"]]
+col <- cut(time, "year")
+lat <- d[["profile_info/latitude"]]
+lon <- d[["profile_info/longitude"]]
+png("itp.png")
+data(coastlineWorld)
+par(mar = c(2, 2, 2, 1))
+mapPlot(coastlineWorld,
+    longitudelim = c(-180, 180), latitudelim = c(70, 90),
+    projection = "+proj=stere +lat_0=90 +lat_ts=90 +lon_0=-130",
+    col = "lightgray"
+)
+mapPoints(lon, lat, cex = 0.3, pch = 20, col = f)
+}\if{html}{\out{</div>}}
+
+\if{html}{\figure{itp.png}{options: width="400" alt="Figure: itp.png"}}
+}
+
 \seealso{
 Other functions that download files: 
 \code{\link{dod.amsr}()},
