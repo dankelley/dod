@@ -182,10 +182,10 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
 #'
 #' @examples
 #' library(dod)
-#' destdir <- tempdir()
-#' file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destdir = destdir)
-#' lines <- readLines(destfile)
-#' file.remove(destfile) # needed for tests on CRAN
+#' destdir <- tempdir(check = TRUE)
+#' print(destdir)
+#' file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destdir = destdir, debug=4)
+#' lines <- readLines(file)
 #' skip <- 1 + grep("agency_cd", lines)
 #' data <- read.delim(text = lines, skip = skip, sep = "\t", header = FALSE)
 #' # The data at this site, if downloaded during daylight-savings
@@ -229,5 +229,5 @@ dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL, destdir = 
     file <-  paste0("river_usgs_", id, "_", start, "_", end, ".csv")
     rval <- dod.download(url = url, destdir = destdir, file = file, age = 0, quiet = FALSE, debug = debug)
     dodDebug(debug, "    END dod.river.usgs()\n")
-    file
+    rval
 }

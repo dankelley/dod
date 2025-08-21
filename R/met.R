@@ -176,22 +176,15 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
 #'
 #' Download an atmospheric sounding file from the University of Wyoming
 #' Department of Atmospheric science website at
-#' <https://weather.uwyo.edu/upperair/sounding.html>.
+#' <https://weather.uwyo.edu/upperair/sounding.html>. This server has
+#' changed over time, and the present code for `dod.met.sounding()` reflects
+#' its file and URL-query structure as inferred on 2025-08-21.
 #'
-#' @param station character value indicating the station identifier.  The
-#' default is for a station near Halifax, Nova Scotia.
+#' @param id character value indicating the station identifier.  The
+#' default is for a station at Yarmouth, Nova Scotia.
 #'
-#' @param year integer or character value indicating the year.  If this is not
-#' supplied, the present year is used.
-#'
-#' @param month integer or character value indicating the month. If this is not
-#' supplied, the present month is used.
-#'
-#' @param day integer or character value indicating the day If this is not
-#' supplied, the present day is used.
-#'
-#' @param region character value indicating the region. For example, stations in north
-#' America seem to be associated with region `"naconf"` (which is the default).
+#' @param time the time for which data are sought, in `POSIXct`, `POSIXlt`
+#' or `Date` format.  The default is the previous day.
 #'
 #' @template destdirTemplate
 #'
@@ -199,62 +192,46 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
 #'
 #' @template debugTemplate
 #'
-#' @return The local name of the downloaded file.
+#' @return `dod.met.sounding()` returns the name of the downloadeded file.
 #'
 #' @examples
-#' if (interactive()) { # sidestep a pkgdown::build_site() error
-#'     # NOTE: data file is removed at end, to pass CRAN checks
-#'     # Download
-#'     destdir <- tempdir()
-#'     station <- "73110"
-#'     year <- "2023"
-#'     month <- "01"
-#'     day <- "08"
-#'     file <- dod.met.sounding(station, year = year, month = month, day = day, destdir = tempdir)
-#'     # Read data, extracting the table crudely.
-#'     lines <- readLines(file)
-#'     start <- grep("<PRE>", lines)[1]
-#'     end <- grep("</PRE>", lines)[1]
-#'     table <- lines[seq(start + 5, end - 1)]
-#'     col.names <- strsplit(gsub("^ [ ]*", "", lines[start + 2]), "[ ]+")[[1]]
-#'     # Must read in fixed-width format because missing data are blanked out
-#'     data <- read.fwf(
-#'         file = textConnection(table),
-#'         widths = rep(7, 11), col.names = col.names
-#'     )
-#'     # Plot mixing ratio variation with height
-#'     plot(data$MIXR, data$HGHT,
-#'         type = "l", cex = 0.5, pch = 20, col = 4,
-#'         xlab = "Mixing Ratio", ylab = "Height [m]"
-#'     )
-#'     unlink(destdir, recursive = TRUE)
-#' }
+#' # Get most yesterday's data at Yarmouth, Nova Scotia.
+#' destdir <- tempdir() # removed at end to pass CRAN checks
+#' file <- dod.met.sounding(destdir = destdir)
+#' data <- read.csv(file)
+#' names(data) # discover names of data items
+#' plot(data$temperature_C, data$pressure_hPa,
+#'     type = "l",
+#'     xlab = "Temperature [C]", ylab = "Pressure [hPa]", ylim = rev(range(data$pressure_hPa))
+#' )
+#' unlink(destdir, recursive = TRUE)
 #'
 #' @export
-dod.met.sounding <- function(station = "73110", year, month, day, region = "naconf", destdir = ".", age = 0, debug = 0) {
-    # https://weather.uwyo.edu/upperair/sounding.html
-    # url <- "https://weather.uwyo.edu/cgi-bin/sounding?region=naconf&TYPE=TEXT%3ALIST&YEAR=2023&MONTH=01&FROM=0812&TO=0812&STNM=73110"
-    ymd <- strsplit(format(Sys.Date()), "-")[[1]]
-    if (missing(year)) year <- ymd[1]
-    if (missing(month)) month <- ymd[2]
-    if (missing(day)) day <- ymd[3]
-    from <- paste0(day, "12")
-    to <- from
-    base <- "https://weather.uwyo.edu/cgi-bin/sounding"
+#' @author Dan Kelley
+dod.met.sounding <- function(id = "71603", time = Sys.Date() - 1, destdir = ".", age = 0, debug = 0) {
+    if (!inherits(time, "Date") && !inherits(time, "POSIXt")) {
+        stop("'time' must be of class Date, POSIXlt, or POSIXct")
+    }
+    time <- as.POSIXlt(time)
+    datetime <- format(time, "%Y-%m-%d")
+    dodDebug("datetime: \"", datetime, "\"\n", sep = "")
+    # As of 2025-08:
+    sample <- "https://weather.uwyo.edu/wsgi/sounding?datetime=2025-08-21%200:00:00&id=72518&src=BUFR&type=TEXT:CSV"
     url <- sprintf(
-        "%s?region=%s&TYPE=TEXT%%3ALIST&YEAR=%s&MONTH=%s&FROM=%s&TO=%s&STNM=%s",
-        base, region, year, month, from, to, station
+        "https://weather.uwyo.edu/wsgi/sounding?datetime=%s%%200:00:00&id=%s&src=BUFR&type=TEXT:CSV",
+        datetime, id
     )
-    dodDebug(debug, "url=\"", url, "\"\n", sep = "")
-    file <- paste0("/sounding", "_", station, "_", year, "_", month, ".dat")
-    dodDebug(debug, "file=\"", destdir, "/", file, "\"\n", sep = "")
-    cat(paste0(
-        "https://climate.weather.gc.ca/climate_data/hourly_data_e.html?",
-        "timeframe=1&Year=2023&Month=9&Day=16&hlyRange=2019-03-19%7C2023-09-16&",
-        "dlyRange=2019-03-19%7C2023-09-15&mlyRange=%7C&StationID=53938&Prov=NS&",
-        "urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=1840&",
-        "EndYear=2023&selRowPerPage=25&Line=8&searchMethod=contains&txtStationName=halifax\n"
-    ))
+    dodDebug(debug, "url: \"", url, "\"\n", sep = "")
+    dodDebug(debug, "sample: \"", sample, "\"\n", sep = "")
+    file <- paste0("sounding", "_", id, "_", datetime, ".csv")
+    dodDebug(debug, "file: \"", destdir, "/", file, "\"\n", sep = "")
+    # cat(paste0(
+    #    "https://climate.weather.gc.ca/climate_data/hourly_data_e.html?",
+    #    "timeframe=1&Year=2023&Month=9&Day=16&hlyRange=2019-03-19%7C2023-09-16&",
+    #    "dlyRange=2019-03-19%7C2023-09-15&mlyRange=%7C&StationID=53938&Prov=NS&",
+    #    "urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=1840&",
+    #    "EndYear=2023&selRowPerPage=25&Line=8&searchMethod=contains&txtStationName=halifax\n"
+    # ))
     dod.download(url, destdir = destdir, file = file, age = age, debug = debug - 1)
 } # dod.met.sounding
 

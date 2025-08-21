@@ -111,8 +111,7 @@ Therefore, numerical comparision with CHS data will require interpolation
 # Download and plot tide-guage data for Halifax Harbour
 library(dod)
 library(oce)
-destdir <- tempfile() # removed at the end, since CRAN requires that
-dir.create(destdir)
+destdir <- tempdir(check = TRUE) # removed at the end, since CRAN requires that
 ofile <- dod.tideGauge(491, destdir = destdir)
 pfile <- dod.tideGauge(491, "predictions", destdir = destdir)
 O <- read.csv(ofile)

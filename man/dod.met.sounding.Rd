@@ -5,31 +5,19 @@
 \title{Download sounding data}
 \usage{
 dod.met.sounding(
-  station = "73110",
-  year,
-  month,
-  day,
-  region = "naconf",
+  id = "71603",
+  time = Sys.Date() - 1,
   destdir = ".",
   age = 0,
   debug = 0
 )
 }
 \arguments{
-\item{station}{character value indicating the station identifier.  The
-default is for a station near Halifax, Nova Scotia.}
+\item{id}{character value indicating the station identifier.  The
+default is for a station at Yarmouth, Nova Scotia.}
 
-\item{year}{integer or character value indicating the year.  If this is not
-supplied, the present year is used.}
-
-\item{month}{integer or character value indicating the month. If this is not
-supplied, the present month is used.}
-
-\item{day}{integer or character value indicating the day If this is not
-supplied, the present day is used.}
-
-\item{region}{character value indicating the region. For example, stations in north
-America seem to be associated with region \code{"naconf"} (which is the default).}
+\item{time}{the time for which data are sought, in \code{POSIXct}, \code{POSIXlt}
+or \code{Date} format.  The default is the previous day.}
 
 \item{destdir}{a character value indicating the directory
 in which to store downloaded files.}
@@ -48,40 +36,28 @@ value is passed down to related functions, but with 1 subtracted
 for each pass.}
 }
 \value{
-The local name of the downloaded file.
+\code{dod.met.sounding()} returns the name of the downloadeded file.
 }
 \description{
 Download an atmospheric sounding file from the University of Wyoming
 Department of Atmospheric science website at
-\url{https://weather.uwyo.edu/upperair/sounding.html}.
+\url{https://weather.uwyo.edu/upperair/sounding.html}. This server has
+changed over time, and the present code for \code{dod.met.sounding()} reflects
+its file and URL-query structure as inferred on 2025-08-21.
 }
 \examples{
-if (interactive()) { # sidestep a pkgdown::build_site() error
-    # NOTE: data file is removed at end, to pass CRAN checks
-    # Download
-    destdir <- tempdir()
-    station <- "73110"
-    year <- "2023"
-    month <- "01"
-    day <- "08"
-    file <- dod.met.sounding(station, year = year, month = month, day = day, destdir = tempdir)
-    # Read data, extracting the table crudely.
-    lines <- readLines(file)
-    start <- grep("<PRE>", lines)[1]
-    end <- grep("</PRE>", lines)[1]
-    table <- lines[seq(start + 5, end - 1)]
-    col.names <- strsplit(gsub("^ [ ]*", "", lines[start + 2]), "[ ]+")[[1]]
-    # Must read in fixed-width format because missing data are blanked out
-    data <- read.fwf(
-        file = textConnection(table),
-        widths = rep(7, 11), col.names = col.names
-    )
-    # Plot mixing ratio variation with height
-    plot(data$MIXR, data$HGHT,
-        type = "l", cex = 0.5, pch = 20, col = 4,
-        xlab = "Mixing Ratio", ylab = "Height [m]"
-    )
-    unlink(destdir, recursive = TRUE)
-}
+# Get most yesterday's data at Yarmouth, Nova Scotia.
+destdir <- tempdir() # removed at end to pass CRAN checks
+file <- dod.met.sounding(destdir = destdir)
+data <- read.csv(file)
+names(data) # discover names of data items
+plot(data$temperature_C, data$pressure_hPa,
+    type = "l",
+    xlab = "Temperature [C]", ylab = "Pressure [hPa]", ylim = rev(range(data$pressure_hPa))
+)
+unlink(destdir, recursive = TRUE)
 
+}
+\author{
+Dan Kelley
 }

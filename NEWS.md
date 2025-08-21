@@ -1,7 +1,10 @@
-# dod 0.1.19
+# dod 0.1.20
 
-* Fix problem with `dod.ctd.itp()` by adding new `url` parameter (issue #27)
-* Fix problem with `dod.amsr()` (issue #26)
+* Fix problem with `dod.amsr()` (issue #26).
+* Fix problem with `dod.ctd.itp()` by adding new `url` parameter (issue #27).
+* Fix problem with `dod.met.sounding()` owing to new server layout (issue #28).
+* Fix problem with `dod.river.usgs()` (issue #29).
+* Fix problems with checks of examples relating to temporary directories.
 
 # dod 0.1.19
 

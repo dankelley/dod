@@ -4,7 +4,13 @@
 \alias{dod.river.usgs}
 \title{Download American river-gauge data from USGS}
 \usage{
-dod.river.usgs(id = "03242350", start = NULL, end = NULL, destfile = NULL)
+dod.river.usgs(
+  id = "03242350",
+  start = NULL,
+  end = NULL,
+  destdir = ".",
+  debug = 0
+)
 }
 \arguments{
 \item{id}{character value giving the numeric code for the gauge. This
@@ -17,19 +23,24 @@ in a POSIXt object. The "UTC" timezone is assumed.  If not provided,
 
 \item{end}{as for \code{start}, but instead for the end date.}
 
-\item{destfile}{optional character value indicating the desired name of the
-downloaded file.  If NULL (the default) then a filename will be constructed
-that contains the station ID and the start/end dates.}
+\item{destdir}{character giving the destination directory in
+which the downloaded file will be stored. The default value
+is \code{"."}, meaning to store the file in the persent directory.}
+
+\item{debug}{an integer value indicating the level of debugging. If
+this exceeds 0, then some debugging messages will be printed. This
+value is passed down to related functions, but with 1 subtracted
+for each pass.}
 }
 \description{
 Download American river-gauge data from USGS
 }
 \examples{
 library(dod)
-destfile <- tempfile("river", fileext = ".tsv")
-file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destfile = destfile)
-lines <- readLines(destfile)
-file.remove(destfile) # needed for tests on CRAN
+destdir <- tempdir(check = TRUE)
+print(destdir)
+file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destdir = destdir, debug=4)
+lines <- readLines(file)
 skip <- 1 + grep("agency_cd", lines)
 data <- read.delim(text = lines, skip = skip, sep = "\t", header = FALSE)
 # The data at this site, if downloaded during daylight-savings
@@ -42,7 +53,9 @@ plot(time, height,
     type = "l", xlab = "Day in year 2025",
     ylab = "River Height [m]"
 )
-mtext(gsub("#[ ]*", "", lines[grep("#    USGS ",lines)]))
+mtext(gsub("#[ ]*", "", lines[grep("#    USGS ", lines)]))
+# Clean up space
+unlink(destdir, recursive = TRUE)
 
 }
 \author{
