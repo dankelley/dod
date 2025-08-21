@@ -70,10 +70,10 @@ buoys in the Atlantic Provinces, are as follows.
 }
 \examples{
 # Show significant wave height in Halifax Harbour over past 28 days.
-if (interactive()) { # sidestep a pkgdown::build_site() error
+if (interactive()) { # pkgdown::build_site() cannot handle downloads
     # NOTE: data file is removed at end, to pass CRAN checks
     library(dod)
-    destdir <- tempdir()
+    destdir <- tempdir(check = TRUE)
     file <- dod.buoy("smartatlantic", "h1", destdir = destdir)
     col.names <- strsplit(readLines(file, 1), ",")[[1]]
     d <- read.csv(file, skip = 2, col.names = col.names)

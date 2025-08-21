@@ -70,10 +70,9 @@ package (reference 2) or the weathercan package (reference 3).
 }
 \examples{
 # Meteorological data for Halifax, Nova Scotia.
-if (interactive()) { # sidestep a pkgdown::build_site() error
-    # NOTE: data file is removed at end, to pass CRAN checks
+if (interactive()) { # pkgdown::build_site() cannot handle downloads
     library(dod)
-    destdir <- tempdir()
+    destdir <- tempdir(check = TRUE)
     metFile <- dod.met(43405, destdir = destdir)
     if (requireNamespace("oce", quietly = TRUE) &&
         requireNamespace("XML", quietly = TRUE)) {

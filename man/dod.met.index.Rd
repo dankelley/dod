@@ -60,7 +60,7 @@ with \code{\link[=dod.met]{dod.met()}}, the ID field that is of use is named
 interest for hourly data.
 }
 \examples{
-if (interactive()) { # sidestep a pkgdown::build_site() error
+if (interactive()) { # pkgdown::build_site() cannot handle downloads
     # Get index of meteorological data for Halifax, N.S.
     library(dod)
     i <- dod.met.index("halifax")

@@ -41,10 +41,9 @@
 #'
 #' @examples
 #' # Meteorological data for Halifax, Nova Scotia.
-#' if (interactive()) { # sidestep a pkgdown::build_site() error
-#'     # NOTE: data file is removed at end, to pass CRAN checks
+#' if (interactive()) { # pkgdown::build_site() cannot handle downloads
 #'     library(dod)
-#'     destdir <- tempdir()
+#'     destdir <- tempdir(check = TRUE)
 #'     metFile <- dod.met(43405, destdir = destdir)
 #'     if (requireNamespace("oce", quietly = TRUE) &&
 #'         requireNamespace("XML", quietly = TRUE)) {
@@ -67,12 +66,14 @@
 #' 3. Weathercan package `https://github.com/ropensci/weathercan/tree/main`
 #'
 #' @importFrom utils capture.output
+#'
 #' @export
-#' @author Dan Kelley
+#'
 #' @family functions that download files
+#'
 #' @author Dan Kelley
 dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 1, debug = 0) {
-    dodDebug(debug, "dod.met() ...\n")
+    dodDebug(debug, "dod.met() START\n")
     if (missing(id)) {
         id <- 43405 # was 6358 until 2024-03-16
         dodDebug(debug, "    defaulting id to ", id, "\n")
@@ -166,10 +167,12 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     } else {
         stop("deltat must be \"hour\" or \"month\"")
     }
-    return(dod.download(
+    rval <- dod.download(
         url = url, file = file, age = age,
         destdir = destdir, debug = debug - 1
-    ))
+    )
+    dodDebug(debug, "dod.met() END\n")
+    rval
 } # dod.met
 
 #' Download sounding data
@@ -195,20 +198,23 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
 #' @return `dod.met.sounding()` returns the name of the downloadeded file.
 #'
 #' @examples
-#' # Get most yesterday's data at Yarmouth, Nova Scotia.
-#' destdir <- tempdir() # removed at end to pass CRAN checks
-#' file <- dod.met.sounding(destdir = destdir)
-#' data <- read.csv(file)
-#' names(data) # discover names of data items
-#' plot(data$temperature_C, data$pressure_hPa,
-#'     type = "l",
-#'     xlab = "Temperature [C]", ylab = "Pressure [hPa]", ylim = rev(range(data$pressure_hPa))
-#' )
-#' unlink(destdir, recursive = TRUE)
+#' if (interactive()) { # pkgdown::build_site() cannot handle downloads
+#'     # Get yesterday's data at Yarmouth, Nova Scotia.
+#'     destdir <- tempdir(check = TRUE) # removed at end to pass CRAN checks
+#'     file <- dod.met.sounding(destdir = destdir)
+#'     data <- read.csv(file)
+#'     names(data) # discover names of data items
+#'     plot(data$temperature_C, data$pressure_hPa,
+#'         type = "l",
+#'         xlab = "Temperature [C]", ylab = "Pressure [hPa]", ylim = rev(range(data$pressure_hPa))
+#'     )
+#'     unlink(destdir, recursive = TRUE)
+#' }
 #'
 #' @export
 #' @author Dan Kelley
 dod.met.sounding <- function(id = "71603", time = Sys.Date() - 1, destdir = ".", age = 0, debug = 0) {
+    dodDebug(debug, "dod.met.sounding() START\n")
     if (!inherits(time, "Date") && !inherits(time, "POSIXt")) {
         stop("'time' must be of class Date, POSIXlt, or POSIXct")
     }
@@ -216,23 +222,17 @@ dod.met.sounding <- function(id = "71603", time = Sys.Date() - 1, destdir = ".",
     datetime <- format(time, "%Y-%m-%d")
     dodDebug("datetime: \"", datetime, "\"\n", sep = "")
     # As of 2025-08:
-    sample <- "https://weather.uwyo.edu/wsgi/sounding?datetime=2025-08-21%200:00:00&id=72518&src=BUFR&type=TEXT:CSV"
+    urlExample <- "https://weather.uwyo.edu/wsgi/sounding?datetime=2025-08-21%200:00:00&id=72518&src=BUFR&type=TEXT:CSV"
     url <- sprintf(
         "https://weather.uwyo.edu/wsgi/sounding?datetime=%s%%200:00:00&id=%s&src=BUFR&type=TEXT:CSV",
         datetime, id
     )
     dodDebug(debug, "url: \"", url, "\"\n", sep = "")
-    dodDebug(debug, "sample: \"", sample, "\"\n", sep = "")
+    dodDebug(debug, "urlExample: \"", sample, "\"\n", sep = "")
     file <- paste0("sounding", "_", id, "_", datetime, ".csv")
-    dodDebug(debug, "file: \"", destdir, "/", file, "\"\n", sep = "")
-    # cat(paste0(
-    #    "https://climate.weather.gc.ca/climate_data/hourly_data_e.html?",
-    #    "timeframe=1&Year=2023&Month=9&Day=16&hlyRange=2019-03-19%7C2023-09-16&",
-    #    "dlyRange=2019-03-19%7C2023-09-15&mlyRange=%7C&StationID=53938&Prov=NS&",
-    #    "urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=1840&",
-    #    "EndYear=2023&selRowPerPage=25&Line=8&searchMethod=contains&txtStationName=halifax\n"
-    # ))
-    dod.download(url, destdir = destdir, file = file, age = age, debug = debug - 1)
+    rval <- dod.download(url, destdir = destdir, file = file, age = age, debug = debug)
+    dodDebug(debug, "dod.met.sounding() END\n")
+    rval
 } # dod.met.sounding
 
 #' Get Index of Canadian Meteorological Stations
@@ -274,7 +274,7 @@ dod.met.sounding <- function(id = "71603", time = Sys.Date() - 1, destdir = ".",
 #' @template debugTemplate
 #'
 #' @examples
-#' if (interactive()) { # sidestep a pkgdown::build_site() error
+#' if (interactive()) { # pkgdown::build_site() cannot handle downloads
 #'     # Get index of meteorological data for Halifax, N.S.
 #'     library(dod)
 #'     i <- dod.met.index("halifax")

@@ -84,9 +84,9 @@ hints from \code{marmap::getNOAAbathy()}.
 
 \examples{
 # Download and plot topographic data
-if (interactive()) { # sidestep a pkgdown::build_site() error
+if (interactive()) { # pkgdown::build_site() cannot handle downloads
     library(oce)
-    destdir <- tempdir()
+    destdir <- tempdir(check = TRUE)
     topoFile <- dod.topo(
         west = -66, east = -60, south = 43, north = 47,
         resolution = 1, destdir = destdir

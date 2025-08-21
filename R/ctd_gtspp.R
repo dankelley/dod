@@ -46,7 +46,7 @@
 #' @return [dod.ctd.gtspp()] returns the local name of the downloaded file.
 #'
 #' @examples
-#' if (interactive()) { # sidestep a pkgdown::build_site() error
+#' if (interactive()) { # pkgdown::build_site() cannot handle downloads
 #'     # Two examples are shown here.  The first specifies the remote file by a full
 #'     # URL, and the second infers such a URL from a subset of an index file. Since
 #'     # downloading an index is slow, a common approach is to combine the approaches,

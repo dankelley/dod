@@ -46,16 +46,18 @@ changed over time, and the present code for \code{dod.met.sounding()} reflects
 its file and URL-query structure as inferred on 2025-08-21.
 }
 \examples{
-# Get most yesterday's data at Yarmouth, Nova Scotia.
-destdir <- tempdir() # removed at end to pass CRAN checks
-file <- dod.met.sounding(destdir = destdir)
-data <- read.csv(file)
-names(data) # discover names of data items
-plot(data$temperature_C, data$pressure_hPa,
-    type = "l",
-    xlab = "Temperature [C]", ylab = "Pressure [hPa]", ylim = rev(range(data$pressure_hPa))
-)
-unlink(destdir, recursive = TRUE)
+if (interactive()) { # pkgdown::build_site() cannot handle downloads
+    # Get yesterday's data at Yarmouth, Nova Scotia.
+    destdir <- tempdir(check = TRUE) # removed at end to pass CRAN checks
+    file <- dod.met.sounding(destdir = destdir)
+    data <- read.csv(file)
+    names(data) # discover names of data items
+    plot(data$temperature_C, data$pressure_hPa,
+        type = "l",
+        xlab = "Temperature [C]", ylab = "Pressure [hPa]", ylim = rev(range(data$pressure_hPa))
+    )
+    unlink(destdir, recursive = TRUE)
+}
 
 }
 \author{

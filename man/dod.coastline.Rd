@@ -53,10 +53,10 @@ data (or lake data, river data, etc) in any of three resolutions.
 \examples{
 
 # Download, unzip, read file, and then erase (as per CRAN policies)
-if (interactive()) { # this is a problem for pkgdown::build_site()
+if (interactive()) { # pkgdown::build_site() cannot handle downloads
     library(dod)
     # NOTE: data file is removed at end, to pass CRAN checks
-    destdir <- tempdir()
+    destdir <- tempdir(check = TRUE)
     zip <- dod.coastline(destdir = destdir, debug = 3)
     unzip(zip, exdir = destdir)
     list.files(destdir) # note the .shp file

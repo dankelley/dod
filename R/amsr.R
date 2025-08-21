@@ -56,10 +56,10 @@
 #' `oce` function.
 #'
 #' @examples
-#' if (interactive()) { # sidestep a pkgdown::build_site() error
+#' if (interactive()) { # pkgdown::build_site() cannot handle downloads
 #'     library("oce")
 #'     # Get temporary space (to obey CRAN rules)
-#'     destdir <- tempdir()
+#'     destdir <- tempdir(check = TRUE)
 #'     file <- dod.amsr(destdir = destdir)
 #'     natl <- read.amsr(file) |>
 #'         subset(-90 < longitude & longitude < 0) |>

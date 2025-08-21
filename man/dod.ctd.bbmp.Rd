@@ -84,11 +84,11 @@ function \code{\link[=dod.ctd.bbmp.index]{dod.ctd.bbmp.index()}} was added then.
 
 \examples{
 # Download and study first BBMP CTD file of year 2024
-if (interactive()) { # sidestep a pkgdown::build_site() error
+if (interactive()) { # pkgdown::build_site() cannot handle downloads
     library(dod)
     # Note: cannot specify year=2025 because the URL is differently constructed
     index <- dod.ctd.bbmp.index(year = "2024")
-    destdir <- tempdir() # get temporary storage
+    destdir <- tempdir(check = TRUE) # get temporary storage
     ctdFile <- dod.ctd("BBMP",
         year = index$year[1], ID = index$ID[1],
         direction = "DN", destdir = destdir
