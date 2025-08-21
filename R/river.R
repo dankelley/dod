@@ -174,14 +174,16 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
 #'
 #' @param end as for `start`, but instead for the end date.
 #'
-#' @param destfile optional character value indicating the desired name of the
-#' downloaded file.  If NULL (the default) then a filename will be constructed
-#' that contains the station ID and the start/end dates.
+#' @param destdir character giving the destination directory in
+#' which the downloaded file will be stored. The default value
+#' is `"."`, meaning to store the file in the persent directory.
+#'
+#' @template debugTemplate
 #'
 #' @examples
 #' library(dod)
-#' destfile <- tempfile("river", fileext = ".tsv")
-#' file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destfile = destfile)
+#' destdir <- tempdir()
+#' file <- dod.river.usgs(start = "2025-08-01", end = "2025-08-08", destdir = destdir)
 #' lines <- readLines(destfile)
 #' file.remove(destfile) # needed for tests on CRAN
 #' skip <- 1 + grep("agency_cd", lines)
@@ -196,13 +198,17 @@ dod.river <- function(id = "01EJ001", region = "NS", interval = "daily",
 #'     type = "l", xlab = "Day in year 2025",
 #'     ylab = "River Height [m]"
 #' )
-#' mtext(gsub("#[ ]*", "", lines[grep("#    USGS ",lines)]))
+#' mtext(gsub("#[ ]*", "", lines[grep("#    USGS ", lines)]))
+#' # Clean up space
+#' unlink(destdir, recursive = TRUE)
 #'
 #' @export
 #'
 #' @author Dan Kelley
-dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL, destfile = NULL) {
-    if (length(id) != 1L) stop("length of 'id' must be 1")
+dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL, destdir = ".", debug = 0) {
+    if (length(id) != 1L) {
+        stop("length of 'id' must be 1")
+    }
     if (xor(is.null(end), is.null(start))) {
         stop("if either 'start' or 'end' is NULL, then both must be NULL")
     }
@@ -216,13 +222,12 @@ dod.river.usgs <- function(id = "03242350", start = NULL, end = NULL, destfile =
         "https://waterservices.usgs.gov/nwis/iv/?",
         "sites=", id, "&",
         "agencyCd=USGS&",
-        # "startDT=", start, "-", sprintf("%02d", hourOffset), "&", # 2025-07-31T18:35:50.593-04:00&",
         "startDT=", start, "&", # 2025-07-31T18:35:50.593-04:00&",
-        # "endDT=", end, "-", sprintf("%02d", hourOffset), "&", # 2025-07-31T18:35:50.593-04:00&",
         "endDT=", end, "&", # 2025-07-31T18:35:50.593-04:00&",
         "parameterCd=00065&format=rdb"
     )
-    file <- if (is.null(destfile)) paste0("river_usgs_", id, "_", start, "_", end, ".csv") else destfile
-    download.file(url, file)
+    file <-  paste0("river_usgs_", id, "_", start, "_", end, ".csv")
+    rval <- dod.download(url = url, destdir = destdir, file = file, age = 0, quiet = FALSE, debug = debug)
+    dodDebug(debug, "    END dod.river.usgs()\n")
     file
 }
