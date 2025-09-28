@@ -15,7 +15,7 @@
 #' NB. `basin` is ignored if `nc` is #' provided, and is a full URL.
 #'
 #' @param year integer value giving the year in which the data were acquired.
-#' NB. `year` is ignored if `nc` is #' provided, and is a full URL.
+#' NB. `year` is ignored if `nc` is provided, and is a full URL.
 #'
 #' @param month integer or character value giving the month in which the data
 #' were acquired. If in character form, a two-digit value is required, with the
