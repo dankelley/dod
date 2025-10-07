@@ -325,7 +325,7 @@ dod.tideGauge <- function(
         }
     }
     rval <- try(
-        dod.download(url = url, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1L),
+        dod.download(url = url, destdir = destdir, file = file, age = age, quiet = quiet, debug = incrementDebug(debug)),
         silent = TRUE
     )
     if (inherits(rval, "try-error")) {

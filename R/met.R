@@ -169,7 +169,7 @@ dod.met <- function(id, year, month, deltat, type = "xml", destdir = ".", age = 
     }
     rval <- dod.download(
         url = url, file = file, age = age,
-        destdir = destdir, debug = debug - 1
+        destdir = destdir, debug = incrementDebug(debug)
     )
     dodDebug(debug, "dod.met() END\n")
     rval

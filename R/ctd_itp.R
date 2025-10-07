@@ -110,7 +110,7 @@ dod.ctd.itp <- function(ID, info = FALSE, url,
         filename <- try(
             dod.download(
                 url = url, destdir = destdir,
-                file = file, age = age, quiet = quiet, debug = debug - 1
+                file = file, age = age, quiet = quiet, debug = incrementDebug(debug)
             ),
             silent = quiet
         )
@@ -140,7 +140,7 @@ dod.ctd.itp <- function(ID, info = FALSE, url,
         file <- gsub(".*/", "", dataURL)
     }
     # Try e.g. b50056_ctd.txt and if that fails, try b50056_ctd_QC.txt
-    filename <- try(dod.download(url = dataURL, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1),
+    filename <- try(dod.download(url = dataURL, destdir = destdir, file = file, age = age, quiet = quiet, debug = incrementDebug(debug)),
         silent = quiet
     )
     if (inherits(filename, "try-error")) {

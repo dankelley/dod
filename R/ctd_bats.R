@@ -115,7 +115,7 @@ dod.ctd.bats <- function() {
                 file <- paste0("b", ID, "_info.txt")
             }
             url <- paste0(server, "b", ID, "_info.txt")
-            filename <- dod.download(url, destdir = destdir, file = file, age = age, debug = debug - 1)
+            filename <- dod.download(url, destdir = destdir, file = file, age = age, debug = incrementDebug(debug))
             return(filename)
         } else {
             if (is.null(file)) {
@@ -123,12 +123,12 @@ dod.ctd.bats <- function() {
             }
             url <- paste0(server, "b", ID, "_ctd.txt")
             # Try e.g. b50056_ctd.txt and if that fails, try b50056_ctd_QC.txt
-            filename <- try(dod.download(url = url, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1),
+            filename <- try(dod.download(url = url, destdir = destdir, file = file, age = age, quiet = quiet, debug = incrementDebug(debug)),
                 silent = quiet
             )
             if (inherits(filename, "try-error")) {
                 url2 <- gsub(".txt", "_QC.txt", url)
-                filename <- try(dod.download(url = url2, destdir = destdir, file = file, age = age, quiet = quiet, debug = debug - 1),
+                filename <- try(dod.download(url = url2, destdir = destdir, file = file, age = age, quiet = quiet, debug = incrementDebug(debug)),
                     silent = quiet
                 )
                 if (inherits(filename, "try-error")) {

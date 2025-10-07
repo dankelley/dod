@@ -110,7 +110,7 @@ dod.ctd.bbmp <- function(year, ID = NULL, direction = "DN",
     rval <- try(
         dod.download(
             url = url, file = file,
-            destdir = destdir, age = age, quiet = quiet, debug = debug - 1
+            destdir = destdir, age = age, quiet = quiet, debug = incrementDebug(debug)
         ),
         silent = TRUE
     )

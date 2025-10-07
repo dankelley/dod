@@ -1,3 +1,7 @@
+incrementDebug <- function(debug = 0) { # not exported
+    if (debug > 0) debug + 1 else 0
+}
+
 #' Debug dod package functions
 #'
 #' This function is used throughout the `dod` package to provide
@@ -19,10 +23,7 @@ dodDebug <- function(debug = 0, ..., unindent = 0, sep = "") {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     unindent <- max(0, min(3, unindent))
     if (debug > 0) {
-        n <- 3 - debug - unindent
-        if (n > 0) {
-            cat(paste(rep("  ", n), collapse = "", sep = ""))
-        }
+        cat(paste(rep("    ", debug - 1), collapse = "", sep = ""))
         cat(..., sep = sep)
     }
 }

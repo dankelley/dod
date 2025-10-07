@@ -84,7 +84,9 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = 1, debug = 0) {
     if (is.null(ID)) {
         stop("Must provide an ID argument")
     }
-    dodDebug(debug, "dod.buoy(program=\"", program, "\", ID=\"", ID, "\", ...)\n", sep = "")
+    dodDebug(debug, "dod.buoy() START\n")
+    dodDebug(debug, "    program: \"", program, "\"\n", sep = "")
+    dodDebug(debug, "    ID: \"", ID, "\"\n", sep = "")
     if (program == "MEDS") {
         loc <- list(
             "East Scotian Slope" = "44137",
@@ -94,21 +96,21 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = 1, debug = 0) {
             "Port Hope" = "45135", "Prince Edward Point" = "45135",
             "Minas Basin" = "MEDS027"
         )
-        dodDebug(debug, "Initial ID=", ID, "\n")
+        dodDebug(debug, "    initial ID: \"", ID, "\"\n", sep = "")
         if (ID %in% names(loc)) {
             ID <- loc[[ID]]
         }
-        dodDebug(debug, "Final ID=", ID, "\n")
+        dodDebug(debug, "    final ID: ", ID, "\n")
         server <- "https://www.meds-sdmm.dfo-mpo.gc.ca/alphapro/wave/waveshare/csvData"
         url <- paste0(server, "/c", ID, "_csv.zip")
         zipfile <- paste0("c", ID, "_csv.zip")
         dodDebug(debug, url)
-        dod.download(url = url, file = zipfile, age = age, debug = debug - 1)
+        dod.download(url = url, file = zipfile, age = age, debug = incrementDebug(debug))
         unzip(zipfile)
         unlink(zipfile)
         # NOTE: we should delete the zipfile too; see ?unlink
         rval <- paste0("C", ID, ".CSV")
-        dodDebug(debug, "downloaded \"", rval, "\"\n", sep = "")
+        dodDebug(debug, "END dod.buoy()\n")
         return(rval)
     } else if (program == "smartatlantic") {
         IDabbrev <- list(
@@ -130,7 +132,10 @@ dod.buoy <- function(program, ID = NULL, destdir = ".", age = 1, debug = 0) {
         base <- "https://www.smartatlantic.ca/erddap/files/"
         url <- paste0(base, IDabbrev[ID])
         file <- gsub(".*/", "", url)
-        return(dod.download(url = url, file = file, age = age, destdir = destdir, debug = debug - 1))
+        rval <- dod.download(url = url, file = file, age = age, destdir = destdir, debug = incrementDebug(debug))
+        dodDebug(debug, "    downloaded \"", rval, "\"\n", sep = "")
+        dodDebug(debug, "END dod.buoy()\n")
+        return(rval)
     } else {
         stop("unrecognized program=\"", program, "\"; try one of: \"", paste(programAllowed, collapse = "\" \""), "\"")
     }

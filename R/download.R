@@ -33,15 +33,13 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
     if (!dir.exists(destdir)) {
         stop("destdir \"", destdir, "\" not found; please create it first.")
     }
-    dodDebug(debug, "    dod.download(",
-        "url=\"", url, "\", ",
-        "file=\"", file, "\", ",
-        "destdir=\"", destdir, "\", ",
-        "age=", age, ", quiet=", quiet, ", debug=", debug, ")\n",
-        sep = ""
-    )
+    dodDebug(debug, "dod.download() START\n", sep = "")
+    dodDebug(debug, "    url: \"", url, "\"\n", sep = "")
+    dodDebug(debug, "    file: \"", file, "\"\n", sep = "")
+    dodDebug(debug, "    destdir: \"", destdir, "\"\n", sep = "")
+    dodDebug(debug, "    age: ", age, "\n", sep = "")
     filepath <- file.path(destdir, file)
-    dodDebug(debug, "    using filepath = \"", filepath, "\"\n", sep = "")
+    dodDebug(debug, "    using filepath: \"", filepath, "\"\n", sep = "")
     # For negative age, set timer to 1000 years
     if (age < 0) {
         age <- 1000 * 365
@@ -59,16 +57,17 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
             sprintf("%.1f months", fileAge / 28)
         }
         if (fileAge < age) {
-            dodDebug(debug, "        an existing file is ", fileAgeMsg,
+            dodDebug(debug, "    an existing file is ", fileAgeMsg,
                 " old, so it will not be downloaded\n",
                 sep = ""
             )
+            dodDebug(debug, "END dod.download()\n", sep = "")
             return(filepath)
         } else {
-            dodDebug(debug, "      an existing file is ", fileAgeMsg, " old, so must download a newer version\n", sep = "")
+            dodDebug(debug, "    an existing file is ", fileAgeMsg, " old, so must download a newer version\n", sep = "")
         }
     } else {
-        dodDebug(debug, "      new file, so must download\n")
+        dodDebug(debug, "    new file, so a new copy is to be downloaded\n")
     }
     owarn <- options("warn")$warn
     options(warn = -1)
@@ -84,5 +83,6 @@ dod.download <- function(url = NULL, file = NULL, destdir = ".", age = 0, quiet 
     if (inherits(t, "try-error")) {
         stop("An error occured when trying to download \"", url, "\"")
     }
-    filepath
+    dodDebug(debug, "END dod.download()\n", sep = "")
+    return(filepath)
 }

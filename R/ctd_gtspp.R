@@ -157,7 +157,7 @@ dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index 
         }
         file <- paste0(destdir, "/", file)
         dodDebug(debug, "file = \"", file, "\"\n", sep = "")
-        return(dod.download(url = server, file = file, destdir = destdir, quiet = quiet, age = age, debug = debug - 1))
+        return(dod.download(url = server, file = file, destdir = destdir, quiet = quiet, age = age, debug = incrementDebug(debug)))
     } else { # get a data file
         # E.G. https://www.ncei.noaa.gov/data/oceans/gtspp/bestcopy/atlantic/2022/11/gtspp_48577347_ba_111.nc
         if (is.null(nc)) {
@@ -177,6 +177,6 @@ dod.ctd.gtspp <- function(basin, year, month, file = NULL, destdir = ".", index 
                 file <- nc
             }
         }
-        return(dod.download(url = server, file = file, destdir = destdir, quiet = quiet, age = age, debug = debug - 1))
+        return(dod.download(url = server, file = file, destdir = destdir, quiet = quiet, age = age, debug = incrementDebug(debug)))
     }
 }
