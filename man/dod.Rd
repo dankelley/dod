@@ -19,7 +19,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Dan Kelley \email{Dan.Kelley@Dal.Ca} (\href{https://orcid.org/0000-0001-7808-5911}{ORCID})
+\strong{Maintainer}: Dan Kelley \email{kelley.dan@gmail.com} (\href{https://orcid.org/0000-0001-7808-5911}{ORCID})
 
 Authors:
 \itemize{

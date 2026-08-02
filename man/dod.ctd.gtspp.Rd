@@ -24,7 +24,7 @@ Atlantic, Pacific and Indian basins, respectively.
 NB. \code{basin} is ignored if \code{nc} is #' provided, and is a full URL.}
 
 \item{year}{integer value giving the year in which the data were acquired.
-NB. \code{year} is ignored if \code{nc} is #' provided, and is a full URL.}
+NB. \code{year} is ignored if \code{nc} is provided, and is a full URL.}
 
 \item{month}{integer or character value giving the month in which the data
 were acquired. If in character form, a two-digit value is required, with the
